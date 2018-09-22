@@ -1,6 +1,54 @@
 """Provide utility functions for the main experiment."""
-from psychopy import visual
+from psychopy import visual, event, core
 from numpy import random
+
+
+def inquire_action(win, timeout_seconds):
+    """Wait for an action and return it.
+
+    Parameters
+    ----------
+    win : psychopy.visual.Window
+        The psychopy window on which to draw the outcome.
+
+    timeout_seconds : float | 'inf'
+        Maximum number of seconds to wait for an action. Or 'inf' to wait
+        forever.
+
+    Returns
+    -------
+    action : int, one of [0, 1]
+        The selected action.
+
+    rt : float
+        The reaction time in seconds.
+
+    Notes
+    -----
+    Using event.waitKeys(), which will stop everything while waiting for a key
+    press. According to [1] this has a better time resolution than
+    event.getKeys().
+
+    References
+    ----------
+    .. [1] https://groups.google.com/forum/#!topic/psychopy-dev/u3WyDfnIYBo
+
+    """
+    timer = core.Clock()
+    keys = event.waitKeys(maxWait=timeout_seconds,
+                          keyList=['left', 'right'],
+                          timeStamped=timer)
+    # NOTE: ***TRIGGER***
+    if keys:
+        assert len(keys) == 1
+        action, rt = keys[0]
+        action = 0 if action == 'left' else 1
+        return action, abs(rt)
+
+    # Timeout, trigger BAD TRIAL
+    else:
+        win.close()
+        raise ValueError('BAD TRIAL')
 
 
 def display_outcome(win, action, payoff_dict, mask_frames, show_frames):

@@ -2,7 +2,7 @@
 from psychopy import visual, event
 
 from sp_psychopy.utils import (get_fixation_stim, display_message,
-                               display_outcome)
+                               display_outcome, inquire_action)
 from sp_psychopy.payoff_distributions import payoff_dict_1
 
 
@@ -29,17 +29,17 @@ display_message(mywin, 'A new sequence has started', 120)
 
 # Display fixation stim
 [stim.setAutoDraw(True) for stim in fixation_stim_parts]
-for frame in range(1*fps):
+mywin.flip()
+
+for trial in range(5):
+    # A Trial starts by waiting for a response
+    action, rt = inquire_action(mywin, 'inf')
+
+    # As soon as we got one, display the outcome
+    display_outcome(mywin, action, payoff_dict_1, 60, 120)
+
+    # Then get ready for the next trial
     mywin.flip()
-
-# Stop drawing the stim
-# [stim.setAutoDraw(False) for stim in fixation_stim_parts]
-# mywin.flip()
-
-display_outcome(mywin, 0, payoff_dict_1, 60, 120)
-
-display_outcome(mywin, 1, payoff_dict_1, 60, 120)
-
 
 # After some time, allow user to close by pressing a button
 event.waitKeys()
