@@ -2,6 +2,14 @@
 from psychopy import visual
 
 
+def display_message(win, message, frames):
+    """Draw a message to the center of the screen for a number of frames."""
+    txt_stim = visual.TextStim(win, text=message)
+    for frame in range(frames):
+        txt_stim.draw()
+        win.flip()
+
+
 def get_fixation_stim(win):
     u"""Provide objects to represent a fixation stimulus as in [1].
 

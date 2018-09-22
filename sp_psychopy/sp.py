@@ -1,7 +1,7 @@
 """Implement the Sampling Paradigm."""
 from psychopy import visual, event
 
-from sp_psychopy.utils import get_fixation_stim
+from sp_psychopy.utils import get_fixation_stim, display_message
 
 
 # Define monitor specific window object
@@ -16,32 +16,30 @@ mywin = visual.Window(size=[1280, 800],  # Size of window in pixels (x,y)
 
 # Get the objects for the fixation stim
 outer, inner, horz, vert = get_fixation_stim(mywin)
-
-# Now the presentation of the stimulus
-# Flip the window once per frame
-framerate = int(round(mywin.getActualFrameRate()))
-present_time = 2  # In seconds
-present_frames = present_time * framerate
-
-# Now draw fixation stim
 fixation_stim_parts = [outer, horz, vert, inner]
-for stim in fixation_stim_parts:
-    stim.setAutoDraw(True)  # Draw stim again after each flip
 
-# Actual presentation
-for frame in range(present_frames):
+# On which frame rate are we operating?
+fps = int(round(mywin.getActualFrameRate()))
+assert fps == 60
+
+# Starting a new sequence
+display_message(mywin, 'A new sequence has started', 300)
+
+# Display fixation stim
+[stim.setAutoDraw(True) for stim in fixation_stim_parts]
+for frame in range(2*fps):
     mywin.flip()
+
+# Stop drawing the stim
+[stim.setAutoDraw(False) for stim in fixation_stim_parts]
+mywin.flip()
+
+for i in range(0, 10):
+    display_message(mywin, str(i), 100)
+
 
 # After some time, allow user to close by pressing a button
 event.waitKeys()
-
-# Stop drawing the stim
-for stim in fixation_stim_parts:
-    stim.setAutoDraw(False)
-
-for frame in range(30):
-    mywin.flip()
-
 
 # Close the Window
 mywin.close()
