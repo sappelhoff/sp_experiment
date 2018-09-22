@@ -1,7 +1,9 @@
 """Implement the Sampling Paradigm."""
 from psychopy import visual, event
 
-from sp_psychopy.utils import get_fixation_stim, display_message
+from sp_psychopy.utils import (get_fixation_stim, display_message,
+                               display_outcome)
+from sp_psychopy.payoff_distributions import payoff_dict_1
 
 
 # Define monitor specific window object
@@ -23,19 +25,18 @@ fps = int(round(mywin.getActualFrameRate()))
 assert fps == 60
 
 # Starting a new sequence
-display_message(mywin, 'A new sequence has started', 300)
+display_message(mywin, 'A new sequence has started', 120)
 
 # Display fixation stim
 [stim.setAutoDraw(True) for stim in fixation_stim_parts]
-for frame in range(2*fps):
+for frame in range(1*fps):
     mywin.flip()
 
 # Stop drawing the stim
 [stim.setAutoDraw(False) for stim in fixation_stim_parts]
 mywin.flip()
 
-for i in range(0, 10):
-    display_message(mywin, str(i), 100)
+display_outcome(mywin, 0, payoff_dict_1, 120)
 
 
 # After some time, allow user to close by pressing a button

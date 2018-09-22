@@ -1,5 +1,51 @@
 """Provide utility functions for the main experiment."""
 from psychopy import visual
+from numpy import random
+
+
+def display_outcome(win, action, payoff_dict, frames):
+    """Display the outcome of an action.
+
+    Parameters
+    ----------
+    win : psychopy.visual.Window
+        The psychopy window on which to draw the outcome.
+
+    action : int, one of [0, 1]
+        The selected action.
+
+    payoff_dict : dict
+        Dictionary with as many keys as there are actions. For each action key,
+        there is an associated list of outcomes representing the payoff
+        distribution for that action.
+
+    frames : int
+        Number of frames to display the outcome
+
+    Returns
+    -------
+    outcome : int
+        The outcome that was displayed.
+
+    """
+    # First, draw the outcome
+    outcome = random.choice(payoff_dict[action])
+
+    # Where should it be displayed
+    pos = (-0.5, 0) if action == 0 else (0.5, 0)
+    circ_stim = visual.Circle(win, pos=pos, units='deg',
+                              fillColor=(-1, -1, -1),
+                              lineColor=(-1, -1, -1),
+                              radius=0.5,
+                              edges=128)
+    txt_stim = visual.TextStim(win, text=str(outcome), pos=pos, units='deg')
+
+    for frame in range(frames):
+        circ_stim.draw()
+        txt_stim.draw()
+        win.flip()
+
+    return outcome
 
 
 def display_message(win, message, frames):
