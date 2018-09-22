@@ -3,7 +3,7 @@ from psychopy import visual
 from numpy import random
 
 
-def display_outcome(win, action, payoff_dict, frames):
+def display_outcome(win, action, payoff_dict, mask_frames, show_frames):
     """Display the outcome of an action.
 
     Parameters
@@ -19,7 +19,10 @@ def display_outcome(win, action, payoff_dict, frames):
         there is an associated list of outcomes representing the payoff
         distribution for that action.
 
-    frames : int
+    mask_frames : int
+        Number of frames to mask the outcome
+
+    show_frames : int
         Number of frames to display the outcome
 
     Returns
@@ -32,15 +35,30 @@ def display_outcome(win, action, payoff_dict, frames):
     outcome = random.choice(payoff_dict[action])
 
     # Where should it be displayed
-    pos = (-0.5, 0) if action == 0 else (0.5, 0)
-    circ_stim = visual.Circle(win, pos=pos, units='deg',
-                              fillColor=(-1, -1, -1),
-                              lineColor=(-1, -1, -1),
-                              radius=0.5,
+    pos = (-5.5, 0.) if action == 0 else (5.5, 0.)
+    circ_stim = visual.Circle(win,
+                              pos=pos,
+                              units='deg',
+                              fillColor=(-1., -1., -1.),
+                              lineColor=(-1., -1., -1.),
+                              radius=2.5,
                               edges=128)
-    txt_stim = visual.TextStim(win, text=str(outcome), pos=pos, units='deg')
 
-    for frame in range(frames):
+    txt_stim = visual.TextStim(win,
+                               text=str(outcome),
+                               pos=pos,
+                               units='deg',
+                               height=5,
+                               color=(1., 1., 1.))
+
+    # Mask the outcome
+    for frame in range(mask_frames):
+        txt_stim.draw()
+        circ_stim.draw()
+        win.flip()
+
+    # Flip the mask ... show the outcome
+    for frame in range(show_frames):
         circ_stim.draw()
         txt_stim.draw()
         win.flip()
@@ -50,7 +68,7 @@ def display_outcome(win, action, payoff_dict, frames):
 
 def display_message(win, message, frames):
     """Draw a message to the center of the screen for a number of frames."""
-    txt_stim = visual.TextStim(win, text=message)
+    txt_stim = visual.TextStim(win, text=message, units='deg', height=1)
     for frame in range(frames):
         txt_stim.draw()
         win.flip()
@@ -83,28 +101,28 @@ def get_fixation_stim(win):
                           radius=0.6/2,
                           edges=32,
                           units='deg',
-                          fillColor=[1, 1, 1],
-                          lineColor=[0, 0, 0])
+                          fillColor=[1., 1., 1.],
+                          lineColor=[0., 0., 0.])
 
     inner = visual.Circle(win=win,
                           radius=0.2/2,
                           edges=32,
                           units='deg',
-                          fillColor=[1, 1, 1],
-                          lineColor=[1, 1, 1])
+                          fillColor=[1., 1., 1.],
+                          lineColor=[1., 1., 1.])
 
     horz = visual.Line = visual.Rect(win=win,
                                      units='deg',
                                      width=0.6,
                                      height=0.2,
-                                     fillColor=[0, 0, 0],
-                                     lineColor=[0, 0, 0])
+                                     fillColor=[0., 0., 0.],
+                                     lineColor=[0., 0., 0.])
 
     vert = visual.Line = visual.Rect(win=win,
                                      units='deg',
                                      width=0.2,
                                      height=0.6,
-                                     fillColor=[0, 0, 0],
-                                     lineColor=[0, 0, 0])
+                                     fillColor=[0., 0., 0.],
+                                     lineColor=[0., 0., 0.])
 
     return(outer, inner, horz, vert)

@@ -33,10 +33,12 @@ for frame in range(1*fps):
     mywin.flip()
 
 # Stop drawing the stim
-[stim.setAutoDraw(False) for stim in fixation_stim_parts]
-mywin.flip()
+# [stim.setAutoDraw(False) for stim in fixation_stim_parts]
+# mywin.flip()
 
-display_outcome(mywin, 0, payoff_dict_1, 120)
+display_outcome(mywin, 0, payoff_dict_1, 60, 120)
+
+display_outcome(mywin, 1, payoff_dict_1, 60, 120)
 
 
 # After some time, allow user to close by pressing a button
