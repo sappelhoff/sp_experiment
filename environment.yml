@@ -54,6 +54,7 @@ dependencies:
 - cython
 - seaborn
 - pysoundfile
+- ipython
 - pip:
   - arabic_reshaper
   - json-tricks
