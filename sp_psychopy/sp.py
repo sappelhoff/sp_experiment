@@ -6,7 +6,7 @@ from sp_psychopy.utils import (get_fixation_stim, display_message,
 from sp_psychopy.define_payoff_distributions import payoff_dict_1
 from sp_psychopy.define_ttl_triggers import (trig_begin_experiment,
                                              trig_msg_new_trial,
-                                             trig_trl_onset,
+                                             trig_sample_onset,
                                              trig_left_choice,
                                              trig_right_choice,
                                              trig_final_choice,
@@ -66,7 +66,7 @@ while overall_samples < max_samples_overall:
 
     # Display fixation stim
     [stim.setAutoDraw(True) for stim in fixation_stim_parts]
-    mywin.callOnFlip(ser.write, trig_trl_onset)
+    mywin.callOnFlip(ser.write, trig_sample_onset)
     mywin.flip()
 
     trial_samples = 0
@@ -130,7 +130,7 @@ while overall_samples < max_samples_overall:
             trigger_final_choice = True
 
         # Finally, get ready for the next sample within this trial
-        mywin.callOnFlip(ser.write, trig_trl_onset)
+        mywin.callOnFlip(ser.write, trig_sample_onset)
         mywin.flip()
 
 
