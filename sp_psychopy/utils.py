@@ -3,14 +3,20 @@ from psychopy import visual, event, core
 from numpy import random
 
 
-def inquire_action(win, timeout_seconds,
-                   keylist=['left', 'right', 'down', 'x']):
+def inquire_action(win, ser, timeout_seconds,
+                   keylist=['left', 'right', 'down', 'x'],
+                   trig_left=None,
+                   trig_right=None,
+                   trig_final=None):
     """Wait for an action and send a TTL trigger once it happened.
 
     Parameters
     ----------
     win : psychopy.visual.Window
         The psychopy window on which to draw the outcome.
+
+    ser : serial.Serial
+        The port over which to send a trigger
 
     timeout_seconds : float | 'inf'
         Maximum number of seconds to wait for an action. Or 'inf' to wait
@@ -20,6 +26,9 @@ def inquire_action(win, timeout_seconds,
         The list of keys that are valid responses. Practically, this should
         be used to pass a reduced list ['left', 'right'] as parameter for
         "final choices", when only one of two options can be selected.
+
+    trig_left_choice, trig_right_choice, trig_final_choice : byte
+        Triggers to be sent at onset.
 
     Returns
     -------
@@ -49,13 +58,13 @@ def inquire_action(win, timeout_seconds,
         assert len(keys) == 1
         action, rt = keys[0]
         if action == 'left':
-            # ser.write(left_choice)
+            ser.write(trig_left)
             action = 0
         elif action == 'right':
-            # ser.write(right_choice)
+            ser.write(trig_right)
             action = 1
         elif action == 'down':
-            # ser.write(final_choice)
+            ser.write(trig_final)
             action = 2
         else:  # action == 'x':
             win.close()
@@ -66,17 +75,22 @@ def inquire_action(win, timeout_seconds,
     # Timeout, trigger BAD TRIAL message shutdown
     else:
         print('TIMEOUT during inquire_action ... shutting down.')
+        print('Consider not using a timeout by passing float("Inf")')
         win.close()
         core.quit()
 
 
-def display_outcome(win, action, payoff_dict, mask_frames, show_frames):
+def display_outcome(win, ser, action, payoff_dict, mask_frames, show_frames,
+                    trig_mask=None, trig_show=None):
     """Display the outcome of an action.
 
     Parameters
     ----------
     win : psychopy.visual.Window
         The psychopy window on which to draw the outcome.
+
+    ser : serial.Serial
+        The port over which to send a trigger
 
     action : int, one of [0, 1]
         The selected action.
@@ -91,6 +105,12 @@ def display_outcome(win, action, payoff_dict, mask_frames, show_frames):
 
     show_frames : int
         Number of frames to display the outcome
+
+    trig_mask : byte
+        Byte to send at onset of masking.
+
+    trig_show : byte
+        Byte to send at onset of outcome.
 
     Returns
     -------
@@ -118,13 +138,15 @@ def display_outcome(win, action, payoff_dict, mask_frames, show_frames):
                                height=5,
                                color=(1., 1., 1.))
 
-    # Mask the outcome
+    # Mask the outcome, send a trigger for the first flip
+    win.callOnFlip(ser.write, trig_mask)
     for frame in range(mask_frames):
         txt_stim.draw()
         circ_stim.draw()
         win.flip()
 
-    # Flip the mask ... show the outcome
+    # Flip the mask ... show the outcome, send a trigger for the first flip
+    win.callOnFlip(ser.write, trig_show)
     for frame in range(show_frames):
         circ_stim.draw()
         txt_stim.draw()
@@ -133,10 +155,29 @@ def display_outcome(win, action, payoff_dict, mask_frames, show_frames):
     return outcome
 
 
-def display_message(win, message, frames, color=(1, 1, 1)):
-    """Draw a message to the center of the screen for a number of frames."""
-    txt_stim = visual.TextStim(win, text=message, units='deg', height=1,
-                               color=color)
+def display_message(win, ser, message, frames, trig=None):
+    """Draw a message to the center of the screen for a number of frames.
+
+    Parameters
+    ----------
+    win : psychopy.visual.Window
+        The psychopy window on which to draw the outcome.
+
+    ser : serial.Serial
+        The port over which to send a trigger
+
+    message : str
+        The message.
+
+    frames : int
+        Number of frames to show the message
+
+    trig : bytes
+        TTL trigger to send upon onset.
+
+    """
+    txt_stim = visual.TextStim(win, text=message, units='deg', height=1)
+    win.callOnFlip(ser.write, trig)
     for frame in range(frames):
         txt_stim.draw()
         win.flip()

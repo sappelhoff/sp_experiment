@@ -1,0 +1,18 @@
+"""Definitions for the TTL triggers to be sent."""
+
+trig_begin_experiment = bytes([1])
+trig_msg_new_trial = bytes([2])
+trig_left_choice = bytes([3])
+trig_right_choice = bytes([4])
+trig_final_choice = bytes([5])
+trig_mask_outcome = bytes([6])
+trig_outcome = bytes([7])
+trig_msg_zero_samples = bytes([8])
+trig_msg_final_choice = bytes([9])
+trig_left_final_choice = bytes([10])
+trig_right_final_choice = bytes([11])
+trig_mask_final_outcome = bytes([12])
+trig_final_outcome = bytes([13])
+trig_end_experiment = bytes([14])
+trig_trl_onset = bytes([15])
+trig_choice_onset = bytes([16])
