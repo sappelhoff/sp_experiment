@@ -24,24 +24,67 @@ fixation_stim_parts = [outer, horz, vert, inner]
 fps = int(round(mywin.getActualFrameRate()))
 assert fps == 60
 
-# Starting a new sequence
-display_message(mywin, 'A new sequence has started', 120)
+# Settings for the experimental flow
+max_samples_overall = 10
+max_samples_per_trial = 5
 
-# Display fixation stim
-[stim.setAutoDraw(True) for stim in fixation_stim_parts]
-mywin.flip()
+# Start the experimental flow
+overall_samples = 0
+while overall_samples < max_samples_overall:
+    # Starting a new trial
+    display_message(mywin, 'A new trial has started', 120)
 
-for trial in range(5):
-    # A Trial starts by waiting for a response
-    action, rt = inquire_action(mywin, 'inf')
-
-    # As soon as we got one, display the outcome
-    display_outcome(mywin, action, payoff_dict_1, 60, 120)
-
-    # Then get ready for the next trial
+    # Display fixation stim
+    [stim.setAutoDraw(True) for stim in fixation_stim_parts]
     mywin.flip()
 
-# After some time, allow user to close by pressing a button
+    trial_samples = 0
+    trigger_final_choice = False
+    while True:
+
+        # Increment sample counter for this trial
+        trial_samples += 1
+
+        # A Trial starts by waiting for an action from the participant
+        action, rt = inquire_action(mywin, float('Inf'))
+
+        # If sampling action (0 or 1), display the outcome and go on
+        if action in [0, 1]:
+            display_outcome(mywin, action, payoff_dict_1, 60, 120)
+
+        # If sampling action 2, or the maximum of sample within a trial has
+        # been reached, a final choice should be triggered
+        # Afterwards, this trial has ended
+        if action == 2 or trigger_final_choice:
+            # Ask participant to make a final choice
+            [stim.setAutoDraw(False) for stim in fixation_stim_parts]
+            display_message(mywin, 'Please make your final choice.', 120)
+            [stim.setAutoDraw(True) for stim in fixation_stim_parts]
+            mywin.flip()
+
+            # Wait for the action
+            action, rt = inquire_action(mywin, float('Inf'),
+                                        keylist=['left', 'right'])
+
+            # Display the outcome and start a new trial
+            display_outcome(mywin, action, payoff_dict_1, 60, 120)
+            [stim.setAutoDraw(False) for stim in fixation_stim_parts]
+            overall_samples += trial_samples
+            break
+
+        # Check if enough samles have been taken to trigger a final choice
+        # after the next sample
+        if trial_samples + 1 == max_samples_per_trial:
+            trigger_final_choice = True
+
+        # Finally, get ready for the next sample within this trial
+        mywin.flip()
+
+
+# We are done!
+[stim.setAutoDraw(False) for stim in fixation_stim_parts]
+display_message(mywin, 'This task is over. '
+                       'Press any key to quit.', 1)
 event.waitKeys()
 
 # Close the Window

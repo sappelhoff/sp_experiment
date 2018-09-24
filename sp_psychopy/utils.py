@@ -3,8 +3,9 @@ from psychopy import visual, event, core
 from numpy import random
 
 
-def inquire_action(win, timeout_seconds):
-    """Wait for an action and return it.
+def inquire_action(win, timeout_seconds,
+                   keylist=['left', 'right', 'down', 'x']):
+    """Wait for an action and send a TTL trigger once it happened.
 
     Parameters
     ----------
@@ -15,10 +16,16 @@ def inquire_action(win, timeout_seconds):
         Maximum number of seconds to wait for an action. Or 'inf' to wait
         forever.
 
+    keylist : list
+        The list of keys that are valid responses. Practically, this should
+        be used to pass a reduced list ['left', 'right'] as parameter for
+        "final choices", when only one of two options can be selected.
+
     Returns
     -------
-    action : int, one of [0, 1]
-        The selected action.
+    action : int, one of [0, 1, 2]
+        The selected action. [0, 1] refer to sampling one or the other option,
+        2 refers to stopping to sample and making a final choice.
 
     rt : float
         The reaction time in seconds.
@@ -36,19 +43,31 @@ def inquire_action(win, timeout_seconds):
     """
     timer = core.Clock()
     keys = event.waitKeys(maxWait=timeout_seconds,
-                          keyList=['left', 'right'],
+                          keyList=keylist,
                           timeStamped=timer)
-    # NOTE: ***TRIGGER***
     if keys:
         assert len(keys) == 1
         action, rt = keys[0]
-        action = 0 if action == 'left' else 1
+        if action == 'left':
+            # ser.write(left_choice)
+            action = 0
+        elif action == 'right':
+            # ser.write(right_choice)
+            action = 1
+        elif action == 'down':
+            # ser.write(final_choice)
+            action = 2
+        else:  # action == 'x':
+            win.close()
+            core.quit()
+
         return action, abs(rt)
 
-    # Timeout, trigger BAD TRIAL
+    # Timeout, trigger BAD TRIAL message shutdown
     else:
+        print('TIMEOUT during inquire_action ... shutting down.')
         win.close()
-        raise ValueError('BAD TRIAL')
+        core.quit()
 
 
 def display_outcome(win, action, payoff_dict, mask_frames, show_frames):
@@ -114,9 +133,10 @@ def display_outcome(win, action, payoff_dict, mask_frames, show_frames):
     return outcome
 
 
-def display_message(win, message, frames):
+def display_message(win, message, frames, color=(1, 1, 1)):
     """Draw a message to the center of the screen for a number of frames."""
-    txt_stim = visual.TextStim(win, text=message, units='deg', height=1)
+    txt_stim = visual.TextStim(win, text=message, units='deg', height=1,
+                               color=color)
     for frame in range(frames):
         txt_stim.draw()
         win.flip()
