@@ -42,9 +42,6 @@ while overall_samples < max_samples_overall:
     trigger_final_choice = False
     while True:
 
-        # Increment sample counter for this trial
-        trial_samples += 1
-
         # A Trial starts by waiting for an action from the participant
         action, rt = inquire_action(mywin, float('Inf'))
 
@@ -52,10 +49,22 @@ while overall_samples < max_samples_overall:
         if action in [0, 1]:
             display_outcome(mywin, action, payoff_dict_1, 60, 120)
 
+            # Increment sample counter for this trial
+            trial_samples += 1
+
         # If sampling action 2, or the maximum of sample within a trial has
         # been reached, a final choice should be triggered
         # Afterwards, this trial has ended
         if action == 2 or trigger_final_choice:
+            # Intercept if final_choice without having sampled before
+            if trial_samples == 0:
+                [stim.setAutoDraw(False) for stim in fixation_stim_parts]
+                display_message(mywin, 'Take at least one sample before '
+                                       'your final choice.', 120)
+                [stim.setAutoDraw(True) for stim in fixation_stim_parts]
+                mywin.flip()
+                continue
+
             # Ask participant to make a final choice
             [stim.setAutoDraw(False) for stim in fixation_stim_parts]
             display_message(mywin, 'Please make your final choice.', 120)
