@@ -1,6 +1,5 @@
+clean-test-experiment-data:
+	rm sp_psychopy/experiment_data/sub-a415b473_task-sp_events.tsv
 
-clean-experiment-data:
-	rm -rf sp_pychopy/experiment_data
-
-start-experiment:
-	python sp_psychopy/sp.py --sub_id abcdefghijklmnop
+start-test-experiment:
+	python sp_psychopy/sp.py --sub_id a415b473
