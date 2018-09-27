@@ -37,7 +37,7 @@
     },
     "response_time": {
         "LongName": "response time",
-        "Description": "the time it took the subject to respond after the onset of the trial",
+        "Description": "the time it took the subject to respond after the onset of the event",
         "Units": "milliseconds"
     },
     "event_value": {

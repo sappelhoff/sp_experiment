@@ -20,7 +20,7 @@ from psychopy import visual, event, core
 
 import sp_psychopy
 from sp_psychopy.utils import (get_fixation_stim, display_message,
-                               display_outcome, inquire_action)
+                               display_outcome, inquire_action, log_data)
 from sp_psychopy.define_payoff_distributions import payoff_dict_1
 from sp_psychopy.define_ttl_triggers import (trig_begin_experiment,
                                              trig_msg_new_trial,
@@ -102,38 +102,50 @@ assert fps == 60
 max_samples_overall = 10
 max_samples_per_trial = 5
 
-# We time the experiment ...
-# upon the next window flip, also send a trigger to mark the beginning
-experiment_timer = core.Clock()
-ser.write(trig_begin_experiment)
+# Get ready to start the experiment. Start timing from next button press.
+message = 'Welcome to the Sampling Paradigm task. Press any key to start.'
+txt_stim = visual.TextStim(mywin, text=message, units='deg', height=1)
+txt_stim.draw()
+mywin.flip()
+mywin.callOnFlip(ser.write, trig_begin_experiment)
+event.waitKeys()
+mywin.flip()
+timer = core.Clock()
+log_data(data_file, onset=timer.getTime(),
+         event_value=trig_begin_experiment)
+txt_stim = None
 
 # Start the experimental flow
 overall_samples = 0
 while overall_samples < max_samples_overall:
     # Starting a new trial
-    display_message(mywin, ser, 'A new trial has started', 120,
-                    trig=trig_msg_new_trial)
+    display_message(mywin, ser, data_file, timer, 'A new trial has started',
+                    120, trig=trig_msg_new_trial)
 
     # Display fixation stim
     [stim.setAutoDraw(True) for stim in fixation_stim_parts]
     mywin.callOnFlip(ser.write, trig_sample_onset)
     mywin.flip()
+    log_data(data_file, onset=timer.getTime(),
+             event_value=trig_sample_onset)
 
     trial_samples = 0
     trigger_final_choice = False
     while True:
 
         # A Trial starts by waiting for an action from the participant
-        action, rt = inquire_action(mywin, ser, float('Inf'),
+        action, rt = inquire_action(mywin, ser, data_file, timer,
+                                    timeout=float('Inf'), final=False,
                                     trig_left=trig_left_choice,
                                     trig_right=trig_right_choice,
                                     trig_final=trig_final_choice)
 
         # If sampling action (0 or 1), display the outcome and go on
         if action in [0, 1]:
-            display_outcome(mywin, ser, action, payoff_dict_1, 60, 120,
-                            trig_mask=trig_mask_outcome,
-                            trig_show=trig_outcome)
+            outcome = display_outcome(mywin, ser, data_file, timer, action,
+                                      payoff_dict_1, 60, 120,
+                                      trig_mask=trig_mask_outcome,
+                                      trig_show=trig_outcome)
 
             # Increment sample counter for this trial
             trial_samples += 1
@@ -145,7 +157,8 @@ while overall_samples < max_samples_overall:
             # Intercept if final_choice without having sampled before
             if trial_samples == 0:
                 [stim.setAutoDraw(False) for stim in fixation_stim_parts]
-                display_message(mywin, ser, 'Take at least one sample before '
+                display_message(mywin, ser, data_file, timer,
+                                'Take at least one sample before '
                                 'your final choice.', 120,
                                 trig=trig_msg_zero_samples)
                 [stim.setAutoDraw(True) for stim in fixation_stim_parts]
@@ -154,24 +167,31 @@ while overall_samples < max_samples_overall:
 
             # Ask participant to make a final choice
             [stim.setAutoDraw(False) for stim in fixation_stim_parts]
-            display_message(mywin, ser, 'Please make your final choice.', 120,
+            display_message(mywin, ser, data_file, timer,
+                            'Please make your final choice.', 120,
                             trig=trig_msg_final_choice)
             [stim.setAutoDraw(True) for stim in fixation_stim_parts]
             mywin.callOnFlip(ser.write, trig_choice_onset)
             mywin.flip()
+            log_data(data_file, onset=timer.getTime(),
+                     event_value=trig_choice_onset)
 
             # Wait for the action
-            action, rt = inquire_action(mywin, ser, float('Inf'),
+            action, rt = inquire_action(mywin, ser, data_file, timer,
+                                        timeout=float('Inf'), final=True,
                                         keylist=['left', 'right'],
                                         trig_left=trig_left_final_choice,
                                         trig_right=trig_right_final_choice)
 
-            # Display the outcome and start a new trial
-            display_outcome(mywin, ser, action, payoff_dict_1, 60, 120,
-                            trig_mask=trig_mask_final_outcome,
-                            trig_show=trig_final_outcome)
+            # Display the outcome
+            outcome = display_outcome(mywin, ser, data_file, timer, action,
+                                      payoff_dict_1, 60, 120,
+                                      trig_mask=trig_mask_final_outcome,
+                                      trig_show=trig_final_outcome)
             [stim.setAutoDraw(False) for stim in fixation_stim_parts]
             overall_samples += trial_samples
+
+            # Start a new trial
             break
 
         # Check if enough samles have been taken to trigger a final choice
@@ -182,12 +202,15 @@ while overall_samples < max_samples_overall:
         # Finally, get ready for the next sample within this trial
         mywin.callOnFlip(ser.write, trig_sample_onset)
         mywin.flip()
+        log_data(data_file, onset=timer.getTime(),
+                 event_value=trig_sample_onset)
 
 
 # We are done!
 [stim.setAutoDraw(False) for stim in fixation_stim_parts]
-display_message(mywin, ser, 'This task is over. '
-                'Press any key to quit.', 1, trig=trig_end_experiment)
+display_message(mywin, ser, data_file, timer,
+                'This task is over. Press any key to quit.',
+                1, trig=trig_end_experiment)
 event.waitKeys()
 
 # Close the Window and quit

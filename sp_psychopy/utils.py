@@ -7,11 +7,68 @@ from psychopy import visual, event, core
 from numpy import random
 
 
-def inquire_action(win, ser, timeout_seconds,
+def log_data(fpath, onset='n/a', duration='n/a', action='n/a', outcome='n/a',
+             response_time='n/a', event_value='n/a'):
+    """Write data to the log file.
+
+    All inputs except the file path default to 'n/a'.
+
+    See also the 'task-sp_events.json' file.
+
+    Parameters
+    ----------
+    fpath : str
+        Path to the log file.
+
+    onset : float | 'n/a'
+        onset of the event in seconds
+
+    duration : float | 'n/a'
+        duration of the event in seconds
+
+    action : int, one of [1, 2, 3] | 'n/a'
+        the concrete action that the subject performed for the action type
+
+    outcome : int | 'n/a'
+        the outcome that the subject received for their action
+
+    response_time : float | 'n/a'
+        the time it took the subject to respond after the onset of the event
+
+    event_value : byte | 'n/a'
+        the TTL trigger value (=EEG marker value) associated with an event
+
+    """
+    action_type_dict = dict()
+    action_type_dict[0] = 'sample'
+    action_type_dict[1] = 'sample'
+    action_type_dict[2] = 'stop'
+    action_type_dict[3] = 'final_choice'
+    action_type_dict[4] = 'final_choice'
+    action_type_dict['n/a'] = 'n/a'
+
+    action_type = action_type_dict[action]
+    if action != 'n/a':
+        action = (action - 3) if action >= 3 else action
+
+    with open(fpath, 'a') as fout:
+        data = [onset,
+                duration,
+                action_type,
+                action,
+                outcome,
+                response_time,
+                ord(event_value)]
+        line = '\t'.join([str(i) for i in data])
+        fout.write(line + '\n')
+
+
+def inquire_action(win, ser, logfile, timer, timeout, final,
                    keylist=['left', 'right', 'down', 'x'],
-                   trig_left=None,
-                   trig_right=None,
-                   trig_final=None):
+                   trig_left=bytes([0]),
+                   trig_right=bytes([0]),
+                   trig_final=bytes([0]),
+                   ):
     """Wait for an action and send a TTL trigger once it happened.
 
     Parameters
@@ -22,7 +79,17 @@ def inquire_action(win, ser, timeout_seconds,
     ser : serial.Serial
         The port over which to send a trigger
 
-    timeout_seconds : float | 'inf'
+    logfile : str
+        The path to the log file.
+
+    timer : psychopy.core.Clock
+        The timer of the overall experiment time.
+
+    final : bool
+        Qualifier whether the action to be inquired will be for a final
+        choice or not.
+
+    timeout : float | 'inf'
         Maximum number of seconds to wait for an action. Or 'inf' to wait
         forever.
 
@@ -55,7 +122,7 @@ def inquire_action(win, ser, timeout_seconds,
 
     """
     timer = core.Clock()
-    keys = event.waitKeys(maxWait=timeout_seconds,
+    keys = event.waitKeys(maxWait=timeout,
                           keyList=keylist,
                           timeStamped=timer)
     if keys:
@@ -63,16 +130,27 @@ def inquire_action(win, ser, timeout_seconds,
         action, rt = keys[0]
         if action == 'left':
             ser.write(trig_left)
-            action = 0
+            action = 0 if not final else 3
+            trig = trig_left
         elif action == 'right':
             ser.write(trig_right)
-            action = 1
+            action = 1 if not final else 4
+            trig = trig_right
         elif action == 'down':
             ser.write(trig_final)
             action = 2
+            trig = trig_final
         else:  # action == 'x':
             win.close()
             core.quit()
+
+        # Log the data
+        log_data(logfile, onset=timer.getTime(),
+                 action=action, response_time=abs(rt), event_value=trig)
+
+        # If this was for a final choice, we need to remap
+        if final:
+            action = (action - 3) if action >= 3 else action
 
         return action, abs(rt)
 
@@ -84,8 +162,8 @@ def inquire_action(win, ser, timeout_seconds,
         core.quit()
 
 
-def display_outcome(win, ser, action, payoff_dict, mask_frames, show_frames,
-                    trig_mask=None, trig_show=None):
+def display_outcome(win, ser, logfile, timer, action, payoff_dict, mask_frames,
+                    show_frames, trig_mask=bytes([0]), trig_show=bytes([0])):
     """Display the outcome of an action.
 
     Parameters
@@ -95,6 +173,12 @@ def display_outcome(win, ser, action, payoff_dict, mask_frames, show_frames,
 
     ser : serial.Serial
         The port over which to send a trigger
+
+    logfile : str
+        The path to the log file.
+
+    timer : psychopy.core.Clock
+        The timer of the overall experiment time.
 
     action : int, one of [0, 1]
         The selected action.
@@ -148,6 +232,8 @@ def display_outcome(win, ser, action, payoff_dict, mask_frames, show_frames,
         txt_stim.draw()
         circ_stim.draw()
         win.flip()
+        if frame == 0:
+            log_data(logfile, onset=timer.getTime(), event_value=trig_mask)
 
     # Flip the mask ... show the outcome, send a trigger for the first flip
     win.callOnFlip(ser.write, trig_show)
@@ -155,11 +241,15 @@ def display_outcome(win, ser, action, payoff_dict, mask_frames, show_frames,
         circ_stim.draw()
         txt_stim.draw()
         win.flip()
+        if frame == 0:
+            log_data(logfile, onset=timer.getTime(), outcome=outcome,
+                     event_value=trig_show)
 
     return outcome
 
 
-def display_message(win, ser, message, frames, trig=None):
+def display_message(win, ser, logfile, timer, message, frames,
+                    trig=bytes([0])):
     """Draw a message to the center of the screen for a number of frames.
 
     Parameters
@@ -169,6 +259,12 @@ def display_message(win, ser, message, frames, trig=None):
 
     ser : serial.Serial
         The port over which to send a trigger
+
+    logfile : str
+        The path to the log file.
+
+    timer : psychopy.core.Clock
+        The timer of the overall experiment time.
 
     message : str
         The message.
@@ -185,6 +281,8 @@ def display_message(win, ser, message, frames, trig=None):
     for frame in range(frames):
         txt_stim.draw()
         win.flip()
+        if frame == 0:
+            log_data(logfile, onset=timer.getTime(), event_value=trig)
 
 
 def get_fixation_stim(win):
