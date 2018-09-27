@@ -16,5 +16,7 @@ my_monitor.setWidth(34.6)  # width of display in cm
 my_monitor.setDistance(50)  # distance of eyes from screen in cm
 my_monitor.saveMon()
 
+# Add new monitor below
+
 # Print all available monitors
 print(monitors.getAllMonitors())

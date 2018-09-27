@@ -9,7 +9,24 @@ see 'define_payoff_distributions.py' for a closer look at the environments
 where subjects have to make choices during this EEG experiment.
 
 see 'define_ttl_triggers.py' for extensive comments on the meaning of the TTL
-trigger values to be sent during the EEG experiment.
+trigger values to be sent during the EEG experiment. You can also change the
+byte values if you want to.
+
+see task-sp_events.json' for a json dictionary explaining the variables that
+are collected with this experiment code.
+
+There are some necessary adjustments based on the used hardware. Just search
+the script for the following lines and adjust to your needs:
+1. assert fps == 60  # adjust to whatever your framerate is
+2. ser = Fake_serial()  # pass a true serial connection to it for TTL markers
+3. monitor='p51'  # check define_monitors.py to define your own monitor
+
+Furthermore, you might want to change some parameters of the experiment. Apart
+from the secondary files mentioned further above, the following lines in this
+script are relevant to that end:
+1. max_samples_overall = 10  # adjust to your needs
+2. max_samples_per_trial = 5  # adjust to your needs
+
 
 """
 import os
@@ -19,9 +36,14 @@ import argparse
 from psychopy import visual, event, core
 
 import sp_psychopy
-from sp_psychopy.utils import (get_fixation_stim, display_message,
-                               display_outcome, inquire_action, log_data)
-from sp_psychopy.define_payoff_distributions import payoff_dict_1
+from sp_psychopy.utils import (get_fixation_stim,
+                               display_message,
+                               display_outcome,
+                               inquire_action,
+                               log_data,
+                               jitter_wait_time,
+                               utils_fps)
+from sp_psychopy.define_payoff_distributions import (payoff_dict_1)
 from sp_psychopy.define_ttl_triggers import (trig_begin_experiment,
                                              trig_msg_new_trial,
                                              trig_sample_onset,
@@ -97,6 +119,8 @@ fixation_stim_parts = [outer, horz, vert, inner]
 # On which frame rate are we operating?
 fps = int(round(mywin.getActualFrameRate()))
 assert fps == 60
+if utils_fps != fps:
+    raise ValueError('Please adjust the utils_fps variable in utils.py')
 
 # Settings for the experimental flow
 max_samples_overall = 10
@@ -120,7 +144,7 @@ overall_samples = 0
 while overall_samples < max_samples_overall:
     # Starting a new trial
     display_message(mywin, ser, data_file, timer, 'A new trial has started',
-                    120, trig=trig_msg_new_trial)
+                    jitter_wait_time(1*fps, 1.5*fps), trig=trig_msg_new_trial)
 
     # Display fixation stim
     [stim.setAutoDraw(True) for stim in fixation_stim_parts]
@@ -143,7 +167,9 @@ while overall_samples < max_samples_overall:
         # If sampling action (0 or 1), display the outcome and go on
         if action in [0, 1]:
             outcome = display_outcome(mywin, ser, data_file, timer, action,
-                                      payoff_dict_1, 60, 120,
+                                      payoff_dict_1,
+                                      jitter_wait_time(),
+                                      jitter_wait_time(),
                                       trig_mask=trig_mask_outcome,
                                       trig_show=trig_outcome)
 

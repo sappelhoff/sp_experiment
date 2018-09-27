@@ -6,9 +6,32 @@ main file: sp.py
 from psychopy import visual, event, core
 from numpy import random
 
+# Frames per second. Change depending on your hardware.
+utils_fps = 60
 
-def log_data(fpath, onset='n/a', duration='n/a', action='n/a', outcome='n/a',
-             response_time='n/a', event_value='n/a'):
+
+def jitter_wait_time(min_wait, max_wait):
+    """From a uniform distribution, determine a waiting time within an interval.
+
+    Parameters
+    ----------
+    min_wait, max_wait : float | int
+        The minimum and maximum wait time in frames.
+
+    Returns
+    -------
+    wait_time : int
+        A wait time in frames in the interval [min_wait, max_wait]
+
+    """
+    low = int(round(min_wait))
+    high = int(round(max_wait))
+    wait_time = random.randint(low, high+1)
+    return wait_time
+
+
+def log_data(fpath, onset='n/a', duration=0, action='n/a', outcome='n/a',
+             response_time='n/a', event_value='n/a', fps=utils_fps):
     """Write data to the log file.
 
     All inputs except the file path default to 'n/a'.
@@ -23,8 +46,8 @@ def log_data(fpath, onset='n/a', duration='n/a', action='n/a', outcome='n/a',
     onset : float | 'n/a'
         onset of the event in seconds
 
-    duration : float | 'n/a'
-        duration of the event in seconds
+    duration : int | 0
+        duration of the event in frames. Will then be converted to seconds
 
     action : int, one of [1, 2, 3] | 'n/a'
         the concrete action that the subject performed for the action type
@@ -53,7 +76,7 @@ def log_data(fpath, onset='n/a', duration='n/a', action='n/a', outcome='n/a',
 
     with open(fpath, 'a') as fout:
         data = [onset,
-                duration,
+                duration / fps,
                 action_type,
                 action,
                 outcome,
