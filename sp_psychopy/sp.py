@@ -17,15 +17,22 @@ are collected with this experiment code.
 
 There are some necessary adjustments based on the used hardware. Just search
 the script for the following lines and adjust to your needs:
-1. assert fps == 60  # adjust to your framerate is and also change in utils.py
-2. ser = Fake_serial()  # pass a true serial connection to it for TTL markers
-3. monitor='p51'  # check define_monitors.py to define your own monitor
+1. assert fps ==   # adjust to your framerate is and also change in utils.py
+2. ser =   # pass a true serial connection to it for TTL markers
+3. monitor=  # check define_monitors.py to define your own monitor
 
 Furthermore, you might want to change some parameters of the experiment. Apart
 from the secondary files mentioned further above, the following lines in this
 script are relevant to that end:
-1. max_samples_overall = 10  # adjust to your needs
-2. max_samples_per_trial = 5  # adjust to your needs
+# for samples/trial numbers
+1. max_samples_overall =   # maximum samples in the sampling paradigm task
+2. max_samples_per_trial =   # maximum samples before final choice triggered
+
+# for timings ... either stable or within a uniform range [min, max]
+3. tdisplay_secs =   # stable display time for messages
+4. post_action_jitter_secs =   # jitter after action before continue
+5. toutmask_secs =   # jitter masking the outcome
+6. toutshow_secs =   # jitter showing the outcome
 
 
 """
@@ -41,7 +48,7 @@ from sp_psychopy.utils import (get_fixation_stim,
                                display_outcome,
                                inquire_action,
                                log_data,
-                               jitter_wait_time,
+                               tw_jit,
                                utils_fps)
 from sp_psychopy.define_payoff_distributions import (payoff_dict_1)
 from sp_psychopy.define_ttl_triggers import (trig_begin_experiment,
@@ -125,7 +132,9 @@ if utils_fps != fps:
 # Settings for the experimental flow
 max_samples_overall = 10
 max_samples_per_trial = 5
-display_time_seconds = 1
+tdisplay_secs = 2.
+toutmask_secs = [0.5, 0.75]
+toutshow_secs = [0.5, 0.75]
 
 # Get ready to start the experiment. Start timing from next button press.
 message = 'Welcome to the Sampling Paradigm task. Press any key to start.'
@@ -144,7 +153,7 @@ overall_samples = 0
 while overall_samples < max_samples_overall:
     # Starting a new trial
     display_message(mywin, ser, data_file, timer, 'A new trial has started',
-                    jitter_wait_time(1*fps, 1.5*fps), trig=trig_msg_new_trial)
+                    frames=int(tdisplay_secs*fps), trig=trig_msg_new_trial)
 
     # Display fixation stim
     [stim.setAutoDraw(True) for stim in fixation_stim_parts]
@@ -168,8 +177,10 @@ while overall_samples < max_samples_overall:
         if action in [0, 1]:
             outcome = display_outcome(mywin, ser, data_file, timer, action,
                                       payoff_dict_1,
-                                      mask_frames=jitter_wait_time(1*fps, 1*fps),
-                                      show_frames=jitter_wait_time(1*fps, 1*fps),
+                                      mask_frames=tw_jit(toutmask_secs[0]*fps,
+                                                         toutmask_secs[1]*fps),
+                                      show_frames=tw_jit(toutshow_secs[0]*fps,
+                                                         toutshow_secs[1]*fps),
                                       trig_mask=trig_mask_outcome,
                                       trig_show=trig_outcome)
 
@@ -186,7 +197,7 @@ while overall_samples < max_samples_overall:
                 display_message(mywin, ser, data_file, timer,
                                 'Take at least one sample before '
                                 'your final choice.',
-                                frames=jitter_wait_time(1*fps),
+                                frames=int(tdisplay_secs*fps),
                                 trig=trig_msg_zero_samples)
                 [stim.setAutoDraw(True) for stim in fixation_stim_parts]
                 mywin.flip()
@@ -196,7 +207,7 @@ while overall_samples < max_samples_overall:
             [stim.setAutoDraw(False) for stim in fixation_stim_parts]
             display_message(mywin, ser, data_file, timer,
                             'Please make your final choice.',
-                            frames=jitter_wait_time(1*fps),
+                            frames=int(tdisplay_secs*fps),
                             trig=trig_msg_final_choice)
             [stim.setAutoDraw(True) for stim in fixation_stim_parts]
             mywin.callOnFlip(ser.write, trig_choice_onset)
@@ -214,8 +225,10 @@ while overall_samples < max_samples_overall:
             # Display the outcome
             outcome = display_outcome(mywin, ser, data_file, timer, action,
                                       payoff_dict_1,
-                                      mask_frames=jitter_wait_time(1*fps, 1*fps),
-                                      show_frames=jitter_wait_time(1*fps, 1*fps),
+                                      mask_frames=tw_jit(toutmask_secs[0]*fps,
+                                                         toutmask_secs[1]*fps),
+                                      show_frames=tw_jit(toutshow_secs[0]*fps,
+                                                         toutshow_secs[1]*fps),
                                       trig_mask=trig_mask_final_outcome,
                                       trig_show=trig_final_outcome)
             [stim.setAutoDraw(False) for stim in fixation_stim_parts]

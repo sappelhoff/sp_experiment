@@ -10,7 +10,7 @@ from numpy import random
 utils_fps = 60
 
 
-def jitter_wait_time(min_wait, max_wait):
+def tw_jit(min_wait, max_wait):
     """From a uniform distribution, determine a waiting time within an interval.
 
     Parameters
