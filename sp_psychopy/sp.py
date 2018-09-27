@@ -17,7 +17,7 @@ are collected with this experiment code.
 
 There are some necessary adjustments based on the used hardware. Just search
 the script for the following lines and adjust to your needs:
-1. assert fps == 60  # adjust to whatever your framerate is
+1. assert fps == 60  # adjust to your framerate is and also change in utils.py
 2. ser = Fake_serial()  # pass a true serial connection to it for TTL markers
 3. monitor='p51'  # check define_monitors.py to define your own monitor
 
@@ -125,6 +125,7 @@ if utils_fps != fps:
 # Settings for the experimental flow
 max_samples_overall = 10
 max_samples_per_trial = 5
+display_time_seconds = 1
 
 # Get ready to start the experiment. Start timing from next button press.
 message = 'Welcome to the Sampling Paradigm task. Press any key to start.'
@@ -137,7 +138,6 @@ mywin.flip()
 timer = core.Clock()
 log_data(data_file, onset=timer.getTime(),
          event_value=trig_begin_experiment)
-txt_stim = None
 
 # Start the experimental flow
 overall_samples = 0
@@ -168,8 +168,8 @@ while overall_samples < max_samples_overall:
         if action in [0, 1]:
             outcome = display_outcome(mywin, ser, data_file, timer, action,
                                       payoff_dict_1,
-                                      jitter_wait_time(),
-                                      jitter_wait_time(),
+                                      mask_frames=jitter_wait_time(1*fps, 1*fps),
+                                      show_frames=jitter_wait_time(1*fps, 1*fps),
                                       trig_mask=trig_mask_outcome,
                                       trig_show=trig_outcome)
 
@@ -185,7 +185,8 @@ while overall_samples < max_samples_overall:
                 [stim.setAutoDraw(False) for stim in fixation_stim_parts]
                 display_message(mywin, ser, data_file, timer,
                                 'Take at least one sample before '
-                                'your final choice.', 120,
+                                'your final choice.',
+                                frames=jitter_wait_time(1*fps),
                                 trig=trig_msg_zero_samples)
                 [stim.setAutoDraw(True) for stim in fixation_stim_parts]
                 mywin.flip()
@@ -194,7 +195,8 @@ while overall_samples < max_samples_overall:
             # Ask participant to make a final choice
             [stim.setAutoDraw(False) for stim in fixation_stim_parts]
             display_message(mywin, ser, data_file, timer,
-                            'Please make your final choice.', 120,
+                            'Please make your final choice.',
+                            frames=jitter_wait_time(1*fps),
                             trig=trig_msg_final_choice)
             [stim.setAutoDraw(True) for stim in fixation_stim_parts]
             mywin.callOnFlip(ser.write, trig_choice_onset)
@@ -211,7 +213,9 @@ while overall_samples < max_samples_overall:
 
             # Display the outcome
             outcome = display_outcome(mywin, ser, data_file, timer, action,
-                                      payoff_dict_1, 60, 120,
+                                      payoff_dict_1,
+                                      mask_frames=jitter_wait_time(1*fps, 1*fps),
+                                      show_frames=jitter_wait_time(1*fps, 1*fps),
                                       trig_mask=trig_mask_final_outcome,
                                       trig_show=trig_final_outcome)
             [stim.setAutoDraw(False) for stim in fixation_stim_parts]
@@ -234,10 +238,17 @@ while overall_samples < max_samples_overall:
 
 # We are done!
 [stim.setAutoDraw(False) for stim in fixation_stim_parts]
-display_message(mywin, ser, data_file, timer,
-                'This task is over. Press any key to quit.',
-                1, trig=trig_end_experiment)
+mywin.callOnFlip(ser.write, trig_end_experiment)
+mywin.flip()
+log_data(data_file, onset=timer.getTime(),
+         event_value=trig_end_experiment)
+
+message = 'This task is over. Press any key to quit.'
+txt_stim.text = message
+txt_stim.draw()
+mywin.flip()
 event.waitKeys()
+txt_stim = None
 
 # Close the Window and quit
 mywin.close()

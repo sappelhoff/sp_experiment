@@ -47,7 +47,8 @@ def log_data(fpath, onset='n/a', duration=0, action='n/a', outcome='n/a',
         onset of the event in seconds
 
     duration : int | 0
-        duration of the event in frames. Will then be converted to seconds
+        duration of the event in frames. Will then be converted to seconds by
+        dividing with `utils_fps`.
 
     action : int, one of [1, 2, 3] | 'n/a'
         the concrete action that the subject performed for the action type
@@ -256,7 +257,8 @@ def display_outcome(win, ser, logfile, timer, action, payoff_dict, mask_frames,
         circ_stim.draw()
         win.flip()
         if frame == 0:
-            log_data(logfile, onset=timer.getTime(), event_value=trig_mask)
+            log_data(logfile, onset=timer.getTime(), duration=mask_frames,
+                     event_value=trig_mask)
 
     # Flip the mask ... show the outcome, send a trigger for the first flip
     win.callOnFlip(ser.write, trig_show)
@@ -265,8 +267,8 @@ def display_outcome(win, ser, logfile, timer, action, payoff_dict, mask_frames,
         txt_stim.draw()
         win.flip()
         if frame == 0:
-            log_data(logfile, onset=timer.getTime(), outcome=outcome,
-                     event_value=trig_show)
+            log_data(logfile, onset=timer.getTime(), duration=show_frames,
+                     outcome=outcome, event_value=trig_show)
 
     return outcome
 
@@ -305,7 +307,8 @@ def display_message(win, ser, logfile, timer, message, frames,
         txt_stim.draw()
         win.flip()
         if frame == 0:
-            log_data(logfile, onset=timer.getTime(), event_value=trig)
+            log_data(logfile, onset=timer.getTime(), duration=frames,
+                     event_value=trig)
 
 
 def get_fixation_stim(win):
