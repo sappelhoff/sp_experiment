@@ -1,6 +1,24 @@
-"""Implement the Sampling Paradigm."""
+"""Implement the Sampling Paradigm.
+
+This is the main file.
+
+see 'define_monitors.py' to first define a suitable monitor, which to then add
+in the mywin = visual.Window call.
+
+see 'define_payoff_distributions.py' for a closer look at the environments
+where subjects have to make choices during this EEG experiment.
+
+see 'define_ttl_triggers.py' for extensive comments on the meaning of the TTL
+trigger values to be sent during the EEG experiment.
+
+"""
+import os
+import os.path as op
+import argparse
+
 from psychopy import visual, event, core
 
+import sp_psychopy
 from sp_psychopy.utils import (get_fixation_stim, display_message,
                                display_outcome, inquire_action)
 from sp_psychopy.define_payoff_distributions import payoff_dict_1
@@ -20,6 +38,34 @@ from sp_psychopy.define_ttl_triggers import (trig_begin_experiment,
                                              trig_mask_final_outcome,
                                              trig_final_outcome,
                                              trig_end_experiment)
+
+# Prepare for logging all experimental variables of interest
+# Parse the subject ID
+parser = argparse.ArgumentParser()
+parser.add_argument('--sub_id', '-s', type=str, required=True)
+args = parser.parse_args()
+
+# BIDS data file name
+fname = 'sub-{}_task-sp_events.tsv'.format(args.sub_id)
+
+# Check directory is present and file name not yet used
+data_dir = op.join(op.dirname(sp_psychopy.__file__), 'experiment_data')
+if not op.exists(data_dir):
+    os.mkdir(data_dir)
+
+data_file = op.join(data_dir, fname)
+if op.exists(data_file):
+    raise OSError('A data file for {} '
+                  'already exists: {}'.format(args.sub_id, data_file))
+
+# Write an initial header to the tab separated log file
+# For a description of the keys, see the "task-sp_events.json" file.
+variables = ['onset', 'duration', 'action_type', 'action', 'outcome',
+             'response_time', 'event_value']
+
+with open(data_file, 'w') as fout:
+    header = '\t'.join(variables)
+    fout.write(header + '\n')
 
 
 # Open connection to the serial port
@@ -56,8 +102,12 @@ assert fps == 60
 max_samples_overall = 10
 max_samples_per_trial = 5
 
-# Start the experimental flow
+# We time the experiment ...
+# upon the next window flip, also send a trigger to mark the beginning
+experiment_timer = core.Clock()
 ser.write(trig_begin_experiment)
+
+# Start the experimental flow
 overall_samples = 0
 while overall_samples < max_samples_overall:
     # Starting a new trial

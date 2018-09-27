@@ -1,0 +1,65 @@
+{
+    "onset": {
+        "LongName": "onset",
+        "Description": "onset of the event",
+        "Units": "seconds"
+    },
+    "duration": {
+        "LongName": "duration",
+        "Description": "duration of the event",
+        "Units": "seconds"
+    },
+    "action_type": {
+        "LongName": "action type",
+        "Description": "type of the action that the subject performed at this event within a trial",
+        "Levels": {
+            "sample": "the subject sampled either the left or the right option",
+            "stop": "the subject decided to stop sampling the options and instead use the next action for a final choice",
+            "final_choice": "the subject chose either the left or the right option as a final choice"
+        }
+    },
+    "action": {
+        "LongName": "action",
+        "Description": "the concrete action that the subject performed for the action type",
+        "Levels": {
+            "0": "the subject picked the 'left' option",
+            "1": "the subject picked the 'right' option",
+            "2": "the subject decided to stop sampling - for action_type 'stop' only"
+        }
+    },
+    "outcome": {
+        "LongName": "outcome",
+        "Description": "the outcome that the subject received for their action",
+        "Levels": {
+            "0": "",
+            "1": ""
+        }
+    },
+    "response_time": {
+        "LongName": "response time",
+        "Description": "the time it took the subject to respond after the onset of the trial",
+        "Units": "milliseconds"
+    },
+    "event_value": {
+        "LongName": "event value",
+        "Description": "the TTL trigger value (=EEG marker value) associated with an event",
+        "Levels": {
+            "1": "beginning of the experiment",
+            "2": "display of message that a new trial has started",
+            "3": "onset of fixation stimulus during sampling",
+            "4": "subject chose 'left' during sampling",
+            "5": "subject chose 'right' during sampling",
+            "6": "subject chose 'stop' during sampling",
+            "7": "a masked outcome is shown after sampling",
+            "8": "a masked outcome is revealed after sampling",
+            "9": "display of a message that a final choice is not possible with zero prior samples",
+            "10": "display of a message that a final choice will be performed next",
+            "11": "onset of fixation stimulus during final choice",
+            "12": "subject chose 'left' for final choice",
+            "13": "subject chose 'right' for final choice",
+            "14": "a masked outcome is shown after final choice",
+            "15": "a masked outcome is revealed after final choice",
+            "16": "end of the experiment"
+        }
+    }
+}

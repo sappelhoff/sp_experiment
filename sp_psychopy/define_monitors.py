@@ -1,5 +1,7 @@
 """Define monitors to be used.
 
+main file: sp.py
+
 This is important for psychopy to work in units of visual degrees.
 """
 from psychopy import monitors

@@ -1,4 +1,8 @@
-"""Provide utility functions for the main experiment."""
+"""Provide utility functions for the main experiment.
+
+main file: sp.py
+
+"""
 from psychopy import visual, event, core
 from numpy import random
 
