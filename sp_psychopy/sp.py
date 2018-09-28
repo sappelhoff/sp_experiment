@@ -134,7 +134,7 @@ max_samples_overall = 10
 max_samples_per_trial = 5
 tdisplay_secs = 2.
 toutmask_secs = [0.5, 0.75]
-toutshow_secs = [0.5, 0.75]
+toutshow_secs = [0.6, 0.8]
 
 # Get ready to start the experiment. Start timing from next button press.
 message = 'Welcome to the Sampling Paradigm task. Press any key to start.'
