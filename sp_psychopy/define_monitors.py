@@ -16,6 +16,13 @@ my_monitor.setWidth(34.6)  # width of display in cm
 my_monitor.setDistance(50)  # distance of eyes from screen in cm
 my_monitor.saveMon()
 
+# My Dell Latitude 7490 monitor
+my_monitor = monitors.Monitor(name='latitude7490')
+my_monitor.setSizePix((1920, 1080))
+my_monitor.setWidth(30)
+my_monitor.setDistance(50)  # distance of eyes from screen in cm
+my_monitor.saveMon()
+
 # Add new monitor below
 
 # Print all available monitors
