@@ -145,10 +145,10 @@ def inquire_action(win, ser, logfile, timer, timeout, final,
     .. [1] https://groups.google.com/forum/#!topic/psychopy-dev/u3WyDfnIYBo
 
     """
-    timer = core.Clock()
+    t_rt = core.Clock()
     keys = event.waitKeys(maxWait=timeout,
                           keyList=keylist,
-                          timeStamped=timer)
+                          timeStamped=t_rt)
     if keys:
         assert len(keys) == 1
         action, rt = keys[0]
