@@ -87,7 +87,7 @@ def log_data(fpath, onset='n/a', duration=0, action='n/a', outcome='n/a',
         fout.write(line + '\n')
 
 
-def inquire_action(win, ser, logfile, timer, timeout, final,
+def inquire_action(win, ser, logfile, timer, t_rt, timeout, final,
                    keylist=['left', 'right', 'down', 'x'],
                    trig_left=bytes([0]),
                    trig_right=bytes([0]),
@@ -106,8 +106,12 @@ def inquire_action(win, ser, logfile, timer, timeout, final,
     logfile : str
         The path to the log file.
 
-    timer : psychopy.core.Clock
+    timer : psychopy.core.MonotonicClock
         The timer of the overall experiment time.
+
+    t_rt : psychopy.core.MonotonicClock
+        A timer that marks the start time to compare the reaction time
+        against.
 
     final : bool
         Qualifier whether the action to be inquired will be for a final
@@ -145,13 +149,13 @@ def inquire_action(win, ser, logfile, timer, timeout, final,
     .. [1] https://groups.google.com/forum/#!topic/psychopy-dev/u3WyDfnIYBo
 
     """
-    t_rt = core.Clock()
     keys = event.waitKeys(maxWait=timeout,
-                          keyList=keylist,
-                          timeStamped=t_rt)
+                          keyList=keylist)
+    rt = t_rt.getTime()
+
     if keys:
         assert len(keys) == 1
-        action, rt = keys[0]
+        action = keys[0]
         if action == 'left':
             ser.write(trig_left)
             action = 0 if not final else 3
@@ -170,7 +174,7 @@ def inquire_action(win, ser, logfile, timer, timeout, final,
 
         # Log the data
         log_data(logfile, onset=timer.getTime(),
-                 action=action, response_time=abs(rt), event_value=trig)
+                 action=action, response_time=rt, event_value=trig)
 
         # If this was for a final choice, we need to remap
         if final:

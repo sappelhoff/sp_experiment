@@ -144,14 +144,19 @@ mywin.flip()
 mywin.callOnFlip(ser.write, trig_begin_experiment)
 event.waitKeys()
 mywin.flip()
-timer = core.Clock()
+timer = core.MonotonicClock()
 log_data(data_file, onset=timer.getTime(),
          event_value=trig_begin_experiment)
+
+# Separate timer for collecting reaction times
+t_rt = core.Clock()
 
 # Start the experimental flow
 overall_samples = 0
 while overall_samples < max_samples_overall:
     # Starting a new trial
+    trial_samples = 0
+    trigger_final_choice = False
     display_message(mywin, ser, data_file, timer, 'A new trial has started',
                     frames=int(tdisplay_secs*fps), trig=trig_msg_new_trial)
 
@@ -159,15 +164,17 @@ while overall_samples < max_samples_overall:
     [stim.setAutoDraw(True) for stim in fixation_stim_parts]
     mywin.callOnFlip(ser.write, trig_sample_onset)
     mywin.flip()
+    # Start a timer to measure reaction time
+    t_rt.reset()
+
+    # Quickly log data before concentrating on reaction of participant
     log_data(data_file, onset=timer.getTime(),
              event_value=trig_sample_onset)
 
-    trial_samples = 0
-    trigger_final_choice = False
     while True:
 
         # A Trial starts by waiting for an action from the participant
-        action, rt = inquire_action(mywin, ser, data_file, timer,
+        action, rt = inquire_action(mywin, ser, data_file, timer, t_rt,
                                     timeout=float('Inf'), final=False,
                                     trig_left=trig_left_choice,
                                     trig_right=trig_right_choice,
@@ -212,11 +219,15 @@ while overall_samples < max_samples_overall:
             [stim.setAutoDraw(True) for stim in fixation_stim_parts]
             mywin.callOnFlip(ser.write, trig_choice_onset)
             mywin.flip()
+            # Start a timer to measure reaction time
+            t_rt.reset()
+
+            # Quickly log data before concentrating on reaction of participant
             log_data(data_file, onset=timer.getTime(),
                      event_value=trig_choice_onset)
 
             # Wait for the action
-            action, rt = inquire_action(mywin, ser, data_file, timer,
+            action, rt = inquire_action(mywin, ser, data_file, timer, t_rt,
                                         timeout=float('Inf'), final=True,
                                         keylist=['left', 'right'],
                                         trig_left=trig_left_final_choice,
@@ -245,6 +256,11 @@ while overall_samples < max_samples_overall:
         # Finally, get ready for the next sample within this trial
         mywin.callOnFlip(ser.write, trig_sample_onset)
         mywin.flip()
+
+        # Start a timer to measure reaction time
+        t_rt.reset()
+
+        # Quickly log data before concentrating on reaction of participant
         log_data(data_file, onset=timer.getTime(),
                  event_value=trig_sample_onset)
 
