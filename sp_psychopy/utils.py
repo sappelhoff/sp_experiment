@@ -3,11 +3,21 @@
 main file: sp.py
 
 """
+import os
+import os.path as op
+
 from psychopy import visual, event, core
 from numpy import random
 
+import sp_psychopy
+
 # Frames per second. Change depending on your hardware.
 utils_fps = 60
+
+# Define font to be used in this experiment
+init_dir = op.dirname(sp_psychopy.__file__)
+font = 'LiberationSans-Regular.ttf'
+font_path = op.join(os.sep.join(init_dir.split(os.sep)[:-1]), font)
 
 
 def tw_jit(min_wait, max_wait):
@@ -252,7 +262,9 @@ def display_outcome(win, ser, logfile, timer, action, payoff_dict, mask_frames,
                                pos=pos,
                                units='deg',
                                height=5,
-                               color=(1., 1., 1.))
+                               color=(1., 1., 1.),
+                               font=font,
+                               fontFiles=[font_path])
 
     # Mask the outcome, send a trigger for the first flip
     win.callOnFlip(ser.write, trig_mask)
@@ -305,7 +317,12 @@ def display_message(win, ser, logfile, timer, message, frames,
         TTL trigger to send upon onset.
 
     """
-    txt_stim = visual.TextStim(win, text=message, units='deg', height=1)
+    txt_stim = visual.TextStim(win,
+                               text=message,
+                               units='deg',
+                               height=1,
+                               font=font,
+                               fontFiles=[font_path])
     win.callOnFlip(ser.write, trig)
     for frame in range(frames):
         txt_stim.draw()

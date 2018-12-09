@@ -43,7 +43,8 @@ import argparse
 from psychopy import visual, event, core
 
 import sp_psychopy
-from sp_psychopy.utils import (get_fixation_stim,
+from sp_psychopy.utils import (font, font_path,
+                               get_fixation_stim,
                                display_message,
                                display_outcome,
                                inquire_action,
@@ -79,7 +80,8 @@ args = parser.parse_args()
 fname = 'sub-{}_task-sp_events.tsv'.format(args.sub_id)
 
 # Check directory is present and file name not yet used
-data_dir = op.join(op.dirname(sp_psychopy.__file__), 'experiment_data')
+init_dir = op.dirname(sp_psychopy.__file__)
+data_dir = op.join(init_dir, 'experiment_data')
 if not op.exists(data_dir):
     os.mkdir(data_dir)
 
@@ -143,7 +145,12 @@ payoff_settings = get_payoff_settings(expected_value_diff)
 
 # Get ready to start the experiment. Start timing from next button press.
 message = 'Welcome to the Sampling Paradigm task. Press any key to start.'
-txt_stim = visual.TextStim(mywin, text=message, units='deg', height=1)
+txt_stim = visual.TextStim(mywin,
+                           text=message,
+                           units='deg',
+                           height=1,
+                           font=font,
+                           fontFiles=[font_path])
 txt_stim.draw()
 mywin.flip()
 mywin.callOnFlip(ser.write, trig_begin_experiment)
