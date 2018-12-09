@@ -43,7 +43,7 @@ import argparse
 from psychopy import visual, event, core
 
 import sp_psychopy
-from sp_psychopy.utils import (font, font_path,
+from sp_psychopy.utils import (font,
                                get_fixation_stim,
                                display_message,
                                display_outcome,
@@ -133,8 +133,8 @@ if utils_fps != fps:
     raise ValueError('Please adjust the utils_fps variable in utils.py')
 
 # Settings for the experimental flow
-max_samples_overall = 10
-max_samples_per_trial = 5
+max_samples_overall = 60
+max_samples_per_trial = 30
 tdisplay_secs = 2.
 toutmask_secs = [0.5, 0.75]
 toutshow_secs = [0.6, 0.8]
@@ -149,8 +149,7 @@ txt_stim = visual.TextStim(mywin,
                            text=message,
                            units='deg',
                            height=1,
-                           font=font,
-                           fontFiles=[font_path])
+                           font=font)
 txt_stim.draw()
 mywin.flip()
 mywin.callOnFlip(ser.write, trig_begin_experiment)

@@ -16,8 +16,10 @@ utils_fps = 60
 
 # Define font to be used in this experiment
 init_dir = op.dirname(sp_psychopy.__file__)
-font = 'LiberationSans-Regular.ttf'
-font_path = op.join(os.sep.join(init_dir.split(os.sep)[:-1]), font)
+font = 'courier'
+# If it is a special font, add the .ttf file to be on the path defined below
+font_fpath = font + '.ttf'
+font_path = op.join(os.sep.join(init_dir.split(os.sep)[:-1]), font_fpath)
 
 
 def tw_jit(min_wait, max_wait):
@@ -263,8 +265,7 @@ def display_outcome(win, ser, logfile, timer, action, payoff_dict, mask_frames,
                                units='deg',
                                height=5,
                                color=(1., 1., 1.),
-                               font=font,
-                               fontFiles=[font_path])
+                               font=font)
 
     # Mask the outcome, send a trigger for the first flip
     win.callOnFlip(ser.write, trig_mask)
@@ -321,8 +322,7 @@ def display_message(win, ser, logfile, timer, message, frames,
                                text=message,
                                units='deg',
                                height=1,
-                               font=font,
-                               fontFiles=[font_path])
+                               font=font)
     win.callOnFlip(ser.write, trig)
     for frame in range(frames):
         txt_stim.draw()
