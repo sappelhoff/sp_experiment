@@ -117,7 +117,7 @@ mywin = visual.Window(size=[1280, 800],  # Size of window in pixels (x,y)
                       fullscr=False,  # Fullscreen for better timing
                       monitor='p51',  # see monitor_definition.py
                       units='deg',
-                      winType='pygame')  # Units being used for stimuli
+                      winType='pyglet')  # Units being used for stimuli
 
 
 # Get the objects for the fixation stim

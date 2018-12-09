@@ -1,16 +1,13 @@
 {
     "onset": {
-        "LongName": "onset",
         "Description": "onset of the event",
         "Units": "seconds"
     },
     "duration": {
-        "LongName": "duration",
         "Description": "duration of the event",
         "Units": "seconds"
     },
     "action_type": {
-        "LongName": "action type",
         "Description": "type of the action that the subject performed at this event within a trial",
         "Levels": {
             "sample": "the subject sampled either the left or the right option",
@@ -19,7 +16,6 @@
         }
     },
     "action": {
-        "LongName": "action",
         "Description": "the concrete action that the subject performed for the action type",
         "Levels": {
             "0": "the subject picked the 'left' option",
@@ -28,7 +24,6 @@
         }
     },
     "outcome": {
-        "LongName": "outcome",
         "Description": "the outcome that the subject received for their action",
         "Levels": {
             "0": "",
@@ -36,12 +31,10 @@
         }
     },
     "response_time": {
-        "LongName": "response time",
         "Description": "the time it took the subject to respond after the onset of the event",
         "Units": "milliseconds"
     },
     "event_value": {
-        "LongName": "event value",
         "Description": "the TTL trigger value (=EEG marker value) associated with an event",
         "Levels": {
             "1": "beginning of the experiment",
