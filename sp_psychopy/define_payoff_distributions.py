@@ -111,7 +111,38 @@ def get_payoff_distributions(ev_diff):
     return payoff_settings
 
 
-# Payoff 1
-payoff_dict_1 = {}
-payoff_dict_1[0] = [0] * 7 + [1] * 3
-payoff_dict_1[1] = [0] * 3 + [1] * 7
+def get_random_payoff_dict(payoff_settings):
+    """Given an array of possible payoff settings, get a random setting.
+
+    Parameters
+    ----------
+    payoff_settings : ndarray, shape (n, 8)
+        Subset of all possible payoff distribution settings.
+
+    Returns
+    -------
+    payoff_dict : dict
+        Dict with keys [0, 1] and each key containing as values a list of
+        possible outcomes, the frequency of which corresponds to a probability.
+        For example payoff_dict[0] = [0, 0, ,0 ,0, 0, 0, 0, 1, 1, 1] for a
+        payoff distribution "0" that yields 1 with 30% chance, and 0 otherwise.
+
+    payoff_settings : ndarray, shape (n, 8)
+        Input settings with the row selected for the present payoff_dict
+        removed.
+    """
+    n, __ = payoff_settings.shape
+    selected_row = np.random.randint(0, n+1)
+
+    # Form a payoff dictionary from the selected setting
+    payoff_setting = payoff_settings[selected_row, :]
+    payoff_dict = dict()
+    payoff_dict[0] = list(payoff_setting[0]) * payoff_setting[2]
+    payoff_dict[0] += list(payoff_setting[1]) * payoff_setting[3]
+    payoff_dict[1] = list(payoff_setting[4]) * payoff_setting[6]
+    payoff_dict[1] += list(payoff_setting[5]) * payoff_setting[7]
+
+    # Remore the selected setting from all settings (no replacement)
+    payoff_settings = np.delete(payoff_settings, [selected_row], axis=0)
+
+    return payoff_dict, payoff_settings
