@@ -11,7 +11,7 @@ import itertools
 import numpy as np
 
 
-def get_payoff_distributions(ev_diff):
+def get_payoff_settings(ev_diff):
     """Provide a set of possible payoff distributions.
 
     For two payoff distributions with two outcomes each, provide settings in
@@ -137,10 +137,10 @@ def get_random_payoff_dict(payoff_settings):
     # Form a payoff dictionary from the selected setting
     payoff_setting = payoff_settings[selected_row, :]
     payoff_dict = dict()
-    payoff_dict[0] = list(payoff_setting[0]) * payoff_setting[2]
-    payoff_dict[0] += list(payoff_setting[1]) * payoff_setting[3]
-    payoff_dict[1] = list(payoff_setting[4]) * payoff_setting[6]
-    payoff_dict[1] += list(payoff_setting[5]) * payoff_setting[7]
+    payoff_dict[0] = [int(payoff_setting[0])] * int(payoff_setting[2]*10)
+    payoff_dict[0] += [int(payoff_setting[1])] * int(payoff_setting[3]*10)
+    payoff_dict[1] = [int(payoff_setting[4])] * int(payoff_setting[6]*10)
+    payoff_dict[1] += [int(payoff_setting[5])] * int(payoff_setting[7]*10)
 
     # Remore the selected setting from all settings (no replacement)
     payoff_settings = np.delete(payoff_settings, [selected_row], axis=0)

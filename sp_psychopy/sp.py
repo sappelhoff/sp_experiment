@@ -50,7 +50,8 @@ from sp_psychopy.utils import (get_fixation_stim,
                                log_data,
                                tw_jit,
                                utils_fps)
-from sp_psychopy.define_payoff_distributions import (payoff_dict_1)
+from sp_psychopy.define_payoff_distributions import (get_payoff_settings,
+                                                     get_random_payoff_dict)
 from sp_psychopy.define_ttl_triggers import (trig_begin_experiment,
                                              trig_msg_new_trial,
                                              trig_sample_onset,
@@ -136,6 +137,10 @@ tdisplay_secs = 2.
 toutmask_secs = [0.5, 0.75]
 toutshow_secs = [0.6, 0.8]
 
+# Get payoff settings to be used
+expected_value_diff = 0.1
+payoff_settings = get_payoff_settings(expected_value_diff)
+
 # Get ready to start the experiment. Start timing from next button press.
 message = 'Welcome to the Sampling Paradigm task. Press any key to start.'
 txt_stim = visual.TextStim(mywin, text=message, units='deg', height=1)
@@ -160,6 +165,11 @@ while overall_samples < max_samples_overall:
     display_message(mywin, ser, data_file, timer, 'A new trial has started',
                     frames=int(tdisplay_secs*fps), trig=trig_msg_new_trial)
 
+    # For each trial, we use a new payoff setting
+    # reassign payoff_settings to same without currently used setting
+    # (no replacement)
+    payoff_dict, payoff_settings = get_random_payoff_dict(payoff_settings)
+
     # Display fixation stim
     [stim.setAutoDraw(True) for stim in fixation_stim_parts]
     mywin.callOnFlip(ser.write, trig_sample_onset)
@@ -183,7 +193,7 @@ while overall_samples < max_samples_overall:
         # If sampling action (0 or 1), display the outcome and go on
         if action in [0, 1]:
             outcome = display_outcome(mywin, ser, data_file, timer, action,
-                                      payoff_dict_1,
+                                      payoff_dict,
                                       mask_frames=tw_jit(toutmask_secs[0]*fps,
                                                          toutmask_secs[1]*fps),
                                       show_frames=tw_jit(toutshow_secs[0]*fps,
@@ -235,7 +245,7 @@ while overall_samples < max_samples_overall:
 
             # Display the outcome
             outcome = display_outcome(mywin, ser, data_file, timer, action,
-                                      payoff_dict_1,
+                                      payoff_dict,
                                       mask_frames=tw_jit(toutmask_secs[0]*fps,
                                                          toutmask_secs[1]*fps),
                                       show_frames=tw_jit(toutshow_secs[0]*fps,
