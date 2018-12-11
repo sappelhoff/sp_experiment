@@ -132,7 +132,7 @@ def get_random_payoff_dict(payoff_settings):
         removed.
     """
     n, __ = payoff_settings.shape
-    selected_row = np.random.randint(0, n+1)
+    selected_row = np.random.randint(0, n)
 
     # Form a payoff dictionary from the selected setting
     payoff_setting = payoff_settings[selected_row, :]
