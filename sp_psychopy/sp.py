@@ -154,7 +154,7 @@ expected_value_diff = 0.1
 payoff_settings = get_payoff_settings(expected_value_diff)
 
 # Get ready to start the experiment. Start timing from next button press.
-message = 'Welcome to the Sampling Paradigm task. Press any key to start.'
+message = 'Press any key to start.'
 txt_stim = visual.TextStim(mywin,
                            text=message,
                            units='deg',
