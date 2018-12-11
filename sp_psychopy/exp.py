@@ -1,4 +1,17 @@
-"""Simplified experimental flow."""
+"""Simplified experimental flow.
+
+TODO:
+- use timings with frames instead of core.wait
+- jittering timings
+- log the data
+- send triggers
+- incorporate eye tracking
+- allow for "passive replay"
+
+NOTES:
+- for overall experiment time, you can use core.monotonicClock
+
+"""
 import numpy as np
 from psychopy import visual, event, core
 
@@ -10,11 +23,8 @@ from sp_psychopy.define_payoff_distributions import (get_payoff_settings,
                                                      get_random_payoff_dict)
 # Get PsychoPy stimuli ready
 # ==========================
-
 # Define monitor specific window object
-win = visual.Window(size=[1280, 800],  # Size of window in pixels (x,y)
-                    pos=[0, 0],  # X,Y position of window on screen
-                    color=(0, 0, 0),  # Background color: RGB [-1,1]
+win = visual.Window(color=(0, 0, 0),  # Background color: RGB [-1,1]
                     fullscr=False,  # Fullscreen for better timing
                     monitor='p51',  # see monitor_definition.py
                     units='deg',
@@ -40,6 +50,8 @@ txt_stim = visual.TextStim(win,
 
 # Experiment settings
 # ===================
+condition = 'active'
+
 max_ntrls = 2
 max_nsamples = 3
 
@@ -105,10 +117,13 @@ while current_ntrls < max_ntrls:
         win.callOnFlip(rt_clock.reset)
         win.flip()
 
-        # Wait for an action of the participant
-        keys_rts = event.waitKeys(maxWait=maxwait_samples,
-                                  keyList=keylist_samples,
-                                  timeStamped=rt_clock)
+        if condition == 'active':
+            # Wait for an action of the participant
+            keys_rts = event.waitKeys(maxWait=maxwait_samples,
+                                      keyList=keylist_samples,
+                                      timeStamped=rt_clock)
+        else:  # condition == 'passive'
+            keys_rts = [[None]]
 
         assert len(keys_rts) == 1
         key, rt = keys_rts[0]
