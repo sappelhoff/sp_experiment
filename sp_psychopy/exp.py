@@ -24,19 +24,19 @@ win = visual.Window(size=[1280, 800],  # Size of window in pixels (x,y)
 outer, inner, horz, vert = get_fixation_stim(win)
 fixation_stim_parts = [outer, horz, vert, inner]
 
-# Set the fixation_stim colors for signalling state of the experiment
-color_standard = (1, 1, 1)  # prompt to do an action
-color_newtrl = (0, 1, 0)  # wait: a new trial is starting
-color_finchoice = (0, 0, 1)  # wait: next action will be "final choice"
-color_error = (1, 0, 0)  # wait: you did an error ... we have to restart
-
+# Mask and text for outcomes, properties will be set and reset below
 circ_stim = visual.Circle(win,
-                          pos=(5, 0),
+                          pos=(0, 0),
                           units='deg',
                           fillColor=(-1., -1., -1.),
                           lineColor=(-1., -1., -1.),
                           radius=2.5,
                           edges=128)
+
+txt_stim = visual.TextStim(win,
+                           units='deg',
+                           color=(1., 1., 1.))
+
 
 # Experiment settings
 # ===================
@@ -55,24 +55,29 @@ maxwait_finchoice = 10
 mask_frames = 30
 show_frames = 30
 
-keylist_samples = ['left', 'right', 'down', 'x']
+keylist_samples = ['left', 'right', 'down', 'x']  # press x to quit
 keylist_finchoice = ['left', 'right']
 
 expected_value_diff = 0.1  # For payoff settings to be used
+
+# Set the fixation_stim colors for signalling state of the experiment
+color_standard = (1, 1, 1)  # prompt to do an action
+color_newtrl = (0, 1, 0)  # wait: a new trial is starting
+color_finchoice = (0, 0, 1)  # wait: next action will be "final choice"
+color_error = (1, 0, 0)  # wait: you did an error ... we have to restart
 
 
 # Start the experimental flow
 # ===========================
 # Get ready to start the experiment. Start timing from next button press.
-message = 'Press any key to start.'
-txt_stim = visual.TextStim(win,
-                           text=message,
-                           units='deg',
-                           height=1,
-                           font=font)
+txt_stim.text = 'Press any key to start.'
+txt_stim.height = 1
+txt_stim.font = font
+
 txt_stim.draw()
 win.flip()
 event.waitKeys()
+txt_stim.height = 5  # set height for stimuli to be shown below
 
 # Get general payoff settings
 payoff_settings = get_payoff_settings(expected_value_diff)
@@ -111,28 +116,16 @@ while current_ntrls < max_ntrls:
         current_nsamples += 1
 
         # Based on the action, continue
-        if action == 'x':
+        if action == 3:
             core.quit()
 
         elif action in [0, 1] and current_nsamples <= max_nsamples:
             # Display the outcome
             outcome = np.random.choice(payoff_dict[action])
             pos = (-5, 0) if action == 0 else (5, 0)
-            circ_stim = visual.Circle(win,
-                                      pos=pos,
-                                      units='deg',
-                                      fillColor=(-1., -1., -1.),
-                                      lineColor=(-1., -1., -1.),
-                                      radius=2.5,
-                                      edges=128)
-
-            txt_stim = visual.TextStim(win,
-                                       text=str(outcome),
-                                       pos=pos,
-                                       units='deg',
-                                       height=5,
-                                       color=(1., 1., 1.),
-                                       font=font)
+            circ_stim.pos = pos
+            txt_stim.pos = pos
+            txt_stim.text = str(outcome)
             txt_stim.pos += (0, 0.3)  # manually push text to center of circle
 
             for frame in range(mask_frames):
@@ -175,21 +168,9 @@ while current_ntrls < max_ntrls:
             # Display final outcome
             outcome = np.random.choice(payoff_dict[action])
             pos = (-5, 0) if action == 0 else (5, 0)
-            circ_stim = visual.Circle(win,
-                                      pos=pos,
-                                      units='deg',
-                                      fillColor=(-1., -1., -1.),
-                                      lineColor=(-1., -1., -1.),
-                                      radius=2.5,
-                                      edges=128)
-
-            txt_stim = visual.TextStim(win,
-                                       text=str(outcome),
-                                       pos=pos,
-                                       units='deg',
-                                       height=5,
-                                       color=(1., 1., 1.),
-                                       font=font)
+            circ_stim.pos = pos
+            txt_stim.pos = pos
+            txt_stim.text = str(outcome)
             txt_stim.pos += (0, 0.3)  # manually push text to center of circle
 
             for frame in range(mask_frames):
@@ -207,12 +188,10 @@ while current_ntrls < max_ntrls:
 
 # We are done
 [stim.setAutoDraw(False) for stim in fixation_stim_parts]
-message = 'This task is over. Press any key to quit.'
-txt_stim = visual.TextStim(win,
-                           text=message,
-                           units='deg',
-                           height=1,
-                           font=font)
+txt_stim.text = 'This task is over. Press any key to quit.'
+txt_stim.pos = (0, 0)
+txt_stim.height = 1
+
 txt_stim.draw()
 win.flip()
 event.waitKeys()
