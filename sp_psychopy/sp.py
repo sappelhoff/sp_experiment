@@ -45,6 +45,7 @@ from psychopy import visual, event, core
 import sp_psychopy
 from sp_psychopy.utils import (font,
                                get_fixation_stim,
+                               set_fixstim_color,
                                display_message,
                                display_outcome,
                                inquire_action,
@@ -125,6 +126,15 @@ mywin = visual.Window(size=[1280, 800],  # Size of window in pixels (x,y)
 # Get the objects for the fixation stim
 outer, inner, horz, vert = get_fixation_stim(mywin)
 fixation_stim_parts = [outer, horz, vert, inner]
+
+# Set the fixation_stim colors for starting a new trial, final choice, and an
+# error (e.g., have to take more than one sample)
+color_standard = (1, 1, 1)
+color_newtrl = (0, 1, 0)
+color_finchoice = (0, 0, 1)
+color_error = (1, 0, 0)
+
+set_fixstim_color(inner, color_newtrl)
 
 # On which frame rate are we operating?
 fps = int(round(mywin.getActualFrameRate()))

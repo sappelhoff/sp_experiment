@@ -332,6 +332,13 @@ def display_message(win, ser, logfile, timer, message, frames,
                      event_value=trig)
 
 
+def set_fixstim_color(stim, color):
+    """Set the fill and line color of a stimulus."""
+    stim.setFillColor(color)
+    stim.setLineColor(color)
+    return stim
+
+
 def get_fixation_stim(win):
     u"""Provide objects to represent a fixation stimulus as in [1].
 
