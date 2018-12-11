@@ -1,12 +1,13 @@
 """Simplified experimental flow."""
+import numpy as np
 from psychopy import visual, event, core
-
-from psychopy.tools.monitorunittools import deg2pix
 
 from sp_psychopy.utils import (get_fixation_stim,
                                set_fixstim_color,
                                )
 
+from sp_psychopy.define_payoff_distributions import (get_payoff_settings,
+                                                     get_random_payoff_dict)
 # Get PsychoPy stimuli ready
 # ==========================
 
@@ -30,27 +31,34 @@ color_finchoice = (0, 0, 1)  # wait: next action will be "final choice"
 color_error = (1, 0, 0)  # wait: you did an error ... we have to restart
 
 circ_stim = visual.Circle(win,
-                          pos=[242.15028902, 9.68601156],
-                          units='pix',
+                          pos=(5, 0),
+                          units='deg',
                           fillColor=(-1., -1., -1.),
                           lineColor=(-1., -1., -1.),
-                          radius=deg2pix(2.5, win.monitor),
+                          radius=2.5,
                           edges=128)
 
 # Experiment settings
 # ===================
 max_ntrls = 2
-max_nsamples = 30
+max_nsamples = 3
 
-font = 'Courier'
-font = 'Liberation Sans'
+font = 'Liberation Sans'  # Looks like Arial, but it's free!
 
 twait_newtrial = 1
+twait_finchoice = 1
+twait_error = 1
 
 maxwait_samples = 10  # Maximum seconds we wait for a sample, if more: error
+maxwait_finchoice = 10
 
+mask_frames = 30
+show_frames = 30
 
-keylist_samples = ['left', 'right']
+keylist_samples = ['left', 'right', 'down', 'x']
+keylist_finchoice = ['left', 'right']
+
+expected_value_diff = 0.1  # For payoff settings to be used
 
 
 # Start the experimental flow
@@ -66,20 +74,17 @@ txt_stim.draw()
 win.flip()
 event.waitKeys()
 
-
-txt_stim = visual.TextStim(win,
-                           text=str(1),
-                           pos=(5, 0),
-                           units='deg',
-                           height=5,
-                           color=(1., 1., 1.),
-                           font=font)
+# Get general payoff settings
+payoff_settings = get_payoff_settings(expected_value_diff)
 
 # Start a clock for measuring reaction times
 rt_clock = core.Clock()
 
 current_ntrls = 0
 while current_ntrls < max_ntrls:
+
+    # For each trial, take a new payoff setting
+    payoff_dict, payoff_settings = get_random_payoff_dict(payoff_settings)
 
     # Starting a new trial
     [stim.setAutoDraw(True) for stim in fixation_stim_parts]
@@ -100,42 +105,116 @@ while current_ntrls < max_ntrls:
                                   keyList=keylist_samples,
                                   timeStamped=rt_clock)
 
-        print(keys_rts)
-
-        # DISPLAY OUTCOME
-        key = 1
-        while True:
-            circ_stim.draw()
-            txt_stim.text = str(key)
-            txt_stim.draw()
-            print(txt_stim.text)
-            win.flip()
-            print(txt_stim.pos, txt_stim.posPix)
-            print(txt_stim.boundingBox)
-            prev_key = key
-            key = event.waitKeys()
-            key = key[0]
-            if key == 'up':
-                txt_stim.pos += (0, 0.1)
-                key = prev_key
-            elif key == 'down':
-                txt_stim.pos -= (0, 0.1)
-                key = prev_key
-            elif key == 'left':
-                txt_stim.pos -= (0.1, 0)
-                key = prev_key
-            elif key == 'right':
-                txt_stim.pos += (0.1, 0)
-                key = prev_key
-            elif key in [1, 2, 3, 4, 5, 6, 7, 8, 9]:
-                txt_stim.setText = str(key)
-            elif key == 'x':
-                core.quit()
-            else:
-                print(key)
-
-        # Increment sample counter for this trial
+        assert len(keys_rts) == 1
+        key, rt = keys_rts[0]
+        action = keylist_samples.index(key)
         current_nsamples += 1
-        if current_nsamples == max_nsamples:
+
+        # Based on the action, continue
+        if action == 'x':
+            core.quit()
+
+        elif action in [0, 1] and current_nsamples <= max_nsamples:
+            # Display the outcome
+            outcome = np.random.choice(payoff_dict[action])
+            pos = (-5, 0) if action == 0 else (5, 0)
+            circ_stim = visual.Circle(win,
+                                      pos=pos,
+                                      units='deg',
+                                      fillColor=(-1., -1., -1.),
+                                      lineColor=(-1., -1., -1.),
+                                      radius=2.5,
+                                      edges=128)
+
+            txt_stim = visual.TextStim(win,
+                                       text=str(outcome),
+                                       pos=pos,
+                                       units='deg',
+                                       height=5,
+                                       color=(1., 1., 1.),
+                                       font=font)
+            txt_stim.pos += (0, 0.3)  # manually push text to center of circle
+
+            for frame in range(mask_frames):
+                circ_stim.draw()
+                win.flip()
+
+            for frame in range(show_frames):
+                circ_stim.draw()
+                txt_stim.draw()
+                win.flip()
+
+        else:  # action == 2 or current_nsamples == max_nsamples
+            # First need to check that a minimum of samples has been taken
+            if current_nsamples <= 1:
+                set_fixstim_color(inner, color_error)
+                win.flip()
+                core.wait(twait_error)
+                # start a new trial without incrementing the trial counter
+                break
+            # We survived the minimum samples check ...
+            # Now get ready for final choice
+            set_fixstim_color(inner, color_finchoice)
+            win.flip()
+            core.wait(twait_finchoice)
+
+            # Switch color of stim cross back to standard: action allowed
+            set_fixstim_color(inner, color_standard)
+            win.callOnFlip(rt_clock.reset)
+            win.flip()
+
+            # Wait for an action of the participant
+            keys_rts = event.waitKeys(maxWait=maxwait_finchoice,
+                                      keyList=keylist_finchoice,
+                                      timeStamped=rt_clock)
+
+            assert len(keys_rts) == 1
+            key, rt = keys_rts[0]
+            action = keylist_samples.index(key)
+
+            # Display final outcome
+            outcome = np.random.choice(payoff_dict[action])
+            pos = (-5, 0) if action == 0 else (5, 0)
+            circ_stim = visual.Circle(win,
+                                      pos=pos,
+                                      units='deg',
+                                      fillColor=(-1., -1., -1.),
+                                      lineColor=(-1., -1., -1.),
+                                      radius=2.5,
+                                      edges=128)
+
+            txt_stim = visual.TextStim(win,
+                                       text=str(outcome),
+                                       pos=pos,
+                                       units='deg',
+                                       height=5,
+                                       color=(1., 1., 1.),
+                                       font=font)
+            txt_stim.pos += (0, 0.3)  # manually push text to center of circle
+
+            for frame in range(mask_frames):
+                circ_stim.draw()
+                win.flip()
+
+            for frame in range(show_frames):
+                circ_stim.draw()
+                txt_stim.draw()
+                win.flip()
+
+            # This trial is done, start the next one
             current_ntrls += 1
             break
+
+# We are done
+[stim.setAutoDraw(False) for stim in fixation_stim_parts]
+message = 'This task is over. Press any key to quit.'
+txt_stim = visual.TextStim(win,
+                           text=message,
+                           units='deg',
+                           height=1,
+                           font=font)
+txt_stim.draw()
+win.flip()
+event.waitKeys()
+win.close()
+core.quit()

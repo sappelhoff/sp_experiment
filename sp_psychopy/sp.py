@@ -53,7 +53,6 @@ from sp_psychopy.utils import (font,
                                tw_jit,
                                utils_fps,
                                Fake_serial)
-
 from sp_psychopy.define_payoff_distributions import (get_payoff_settings,
                                                      get_random_payoff_dict)
 from sp_psychopy.define_ttl_triggers import (trig_begin_experiment,
@@ -101,7 +100,6 @@ variables = ['onset', 'duration', 'action_type', 'action', 'outcome',
 with open(data_file, 'w') as fout:
     header = '\t'.join(variables)
     fout.write(header + '\n')
-
 
 # For now, use a fake serial connection
 ser = Fake_serial()
