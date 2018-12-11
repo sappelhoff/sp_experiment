@@ -22,6 +22,14 @@ font_fpath = font + '.ttf'
 font_path = op.join(os.sep.join(init_dir.split(os.sep)[:-1]), font_fpath)
 
 
+class Fake_serial():
+    """Convenience class to run the code without true serial connection."""
+
+    def write(self, byte):
+        """Take a byte and do nothing."""
+        pass
+
+
 def tw_jit(min_wait, max_wait):
     """From a uniform distribution, determine a waiting time within an interval.
 
@@ -333,7 +341,7 @@ def display_message(win, ser, logfile, timer, message, frames,
 
 
 def set_fixstim_color(stim, color):
-    """Set the fill and line color of a stimulus."""
+    """Set the fill and line color of a stim."""
     stim.setFillColor(color)
     stim.setLineColor(color)
     return stim

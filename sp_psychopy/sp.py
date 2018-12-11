@@ -51,7 +51,9 @@ from sp_psychopy.utils import (font,
                                inquire_action,
                                log_data,
                                tw_jit,
-                               utils_fps)
+                               utils_fps,
+                               Fake_serial)
+
 from sp_psychopy.define_payoff_distributions import (get_payoff_settings,
                                                      get_random_payoff_dict)
 from sp_psychopy.define_ttl_triggers import (trig_begin_experiment,
@@ -99,15 +101,6 @@ variables = ['onset', 'duration', 'action_type', 'action', 'outcome',
 with open(data_file, 'w') as fout:
     header = '\t'.join(variables)
     fout.write(header + '\n')
-
-
-# Open connection to the serial port
-class Fake_serial():
-    """Convenience class to run the code without true serial connection."""
-
-    def write(self, byte):
-        """Take a byte and do nothing."""
-        pass
 
 
 # For now, use a fake serial connection
