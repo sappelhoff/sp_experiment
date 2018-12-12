@@ -12,15 +12,51 @@ NOTES:
 - for overall experiment time, you can use core.monotonicClock
 
 """
+import argparse
+
 import numpy as np
 from psychopy import visual, event, core
 
 from sp_psychopy.utils import (get_fixation_stim,
                                set_fixstim_color,
+                               log_data
                                )
 
 from sp_psychopy.define_payoff_distributions import (get_payoff_settings,
                                                      get_random_payoff_dict)
+
+# Participant information
+# =======================
+parser = argparse.ArgumentParser()
+parser.add_argument('--sub_id', '-s', type=str, required=True)
+parser.add_argument('--condition', '-c', type=str, required=True)
+args = parser.parse_args()
+
+# Data logging
+# ============
+fname = 'sub-{}_task-sp{}_events.tsv'.format(args.sub_id, args.condition)
+
+# Check directory is present and file name not yet used
+init_dir = op.dirname(sp_psychopy.__file__)
+data_dir = op.join(init_dir, 'experiment_data')
+if not op.exists(data_dir):
+    os.mkdir(data_dir)
+
+data_file = op.join(data_dir, fname)
+if op.exists(data_file):
+    raise OSError('A data file for {} '
+                  'already exists: {}'.format(args.sub_id, data_file))
+
+# Write header to the tab separated log file
+# For a description of the keys, see the "task-sp_events.json" file.
+variables = ['onset', 'duration', 'action_type', 'action', 'outcome',
+             'response_time', 'event_value']
+
+with open(data_file, 'w') as fout:
+    header = '\t'.join(variables)
+    fout.write(header + '\n')
+
+
 # Get PsychoPy stimuli ready
 # ==========================
 # Define monitor specific window object
@@ -90,6 +126,8 @@ txt_stim.draw()
 win.flip()
 event.waitKeys()
 txt_stim.height = 5  # set height for stimuli to be shown below
+exp_timer = core.MonotonicClock()
+log_data(data_file, onset=exp_timer.getTime(), event_value=)
 
 # Get general payoff settings
 payoff_settings = get_payoff_settings(expected_value_diff)
