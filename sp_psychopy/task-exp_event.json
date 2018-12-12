@@ -34,7 +34,7 @@
         "Description": "the time it took the subject to respond after the onset of the event",
         "Units": "milliseconds"
     },
-    "event_value": {
+    "value": {
         "Description": "the TTL trigger value (=EEG marker value) associated with an event",
         "Levels": {
             "1": "beginning of the experiment",
@@ -54,5 +54,37 @@
             "15": "a masked outcome is revealed after final choice",
             "16": "end of the experiment"
         }
+    },
+    "mag0.1": {
+        "LongName": "magnitude 0.1",
+        "Description": "the first of two possible magnitudes in outcomes for option 0"
+    },
+    "mag0.2": {
+        "LongName": "magnitude 0.2",
+        "Description": "the second of two possible magnitudes in outcomes for option 0"
+    },
+    "mag1.1": {
+        "LongName": "magnitude 1.1",
+        "Description": "the first of two possible magnitudes in outcomes for option 1"
+    },
+    "mag1.2": {
+        "LongName": "magnitude 1.2",
+        "Description": "the second of two possible magnitudes in outcomes for option 1"
+    },
+    "prob0.1": {
+        "LongName": "probability 0.1",
+        "Description": "the first of two possible probabilities in outcomes for option 0"
+    },
+    "prob0.2": {
+        "LongName": "probability 0.2",
+        "Description": "the second of two possible probabilities in outcomes for option 0"
+    },
+    "prob1.1": {
+        "LongName": "probability 1.1",
+        "Description": "the first of two possible probabilities in outcomes for option 1"
+    },
+    "prob1.2": {
+        "LongName": "probability 1.2",
+        "Description": "the second of two possible probabilities in outcomes for option 1"
     }
 }

@@ -25,6 +25,23 @@ from sp_psychopy.utils import (get_fixation_stim,
 from sp_psychopy.define_payoff_distributions import (get_payoff_settings,
                                                      get_random_payoff_dict)
 
+from sp_psychopy.define_ttl_triggers import (trig_begin_experiment,
+                                             trig_msg_new_trial,
+                                             trig_sample_onset,
+                                             trig_left_choice,
+                                             trig_right_choice,
+                                             trig_final_choice,
+                                             trig_mask_outcome,
+                                             trig_outcome,
+                                             trig_msg_zero_samples,
+                                             trig_msg_final_choice,
+                                             trig_choice_onset,
+                                             trig_left_final_choice,
+                                             trig_right_final_choice,
+                                             trig_mask_final_outcome,
+                                             trig_final_outcome,
+                                             trig_end_experiment)
+
 # Participant information
 # =======================
 parser = argparse.ArgumentParser()
@@ -127,7 +144,8 @@ win.flip()
 event.waitKeys()
 txt_stim.height = 5  # set height for stimuli to be shown below
 exp_timer = core.MonotonicClock()
-log_data(data_file, onset=exp_timer.getTime(), event_value=)
+log_data(data_file, onset=exp_timer.getTime(),
+         event_value=trig_begin_experiment)
 
 # Get general payoff settings
 payoff_settings = get_payoff_settings(expected_value_diff)
@@ -140,6 +158,7 @@ while current_ntrls < max_ntrls:
 
     # For each trial, take a new payoff setting
     payoff_dict, payoff_settings = get_random_payoff_dict(payoff_settings)
+    log_data(data_file, onset=exp_timer.getTime(), payoff_dict=payoff_dict)
 
     # Starting a new trial
     [stim.setAutoDraw(True) for stim in fixation_stim_parts]
