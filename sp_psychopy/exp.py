@@ -12,19 +12,21 @@ NOTES:
 - for overall experiment time, you can use core.monotonicClock
 
 """
+import os
+import os.path as op
 import argparse
+import json
 
 import numpy as np
 from psychopy import visual, event, core
 
+import sp_psychopy
 from sp_psychopy.utils import (get_fixation_stim,
                                set_fixstim_color,
                                log_data
                                )
-
 from sp_psychopy.define_payoff_distributions import (get_payoff_settings,
                                                      get_random_payoff_dict)
-
 from sp_psychopy.define_ttl_triggers import (trig_begin_experiment,
                                              trig_msg_new_trial,
                                              trig_sample_onset,
@@ -65,9 +67,9 @@ if op.exists(data_file):
                   'already exists: {}'.format(args.sub_id, data_file))
 
 # Write header to the tab separated log file
-# For a description of the keys, see the "task-sp_events.json" file.
-variables = ['onset', 'duration', 'action_type', 'action', 'outcome',
-             'response_time', 'event_value']
+with open('task-exp_events.json', 'r') as f:
+    json_contents = json.load(f)
+variables = list(json_contents.keys())
 
 with open(data_file, 'w') as fout:
     header = '\t'.join(variables)
