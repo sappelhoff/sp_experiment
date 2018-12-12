@@ -67,8 +67,8 @@ if op.exists(data_file):
                   'already exists: {}'.format(args.sub_id, data_file))
 
 # Write header to the tab separated log file
-with open('task-exp_events.json', 'r') as f:
-    json_contents = json.load(f)
+with open('task-exp_events.json', 'r') as fin:
+    json_contents = json.load(fin)
 variables = list(json_contents.keys())
 
 with open(data_file, 'w') as fout:

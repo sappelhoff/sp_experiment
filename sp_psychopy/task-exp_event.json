@@ -55,36 +55,37 @@
             "16": "end of the experiment"
         }
     },
-    "mag0.1": {
-        "LongName": "magnitude 0.1",
+    "mag0_1": {
+        "LongName": "magnitude 0_1",
         "Description": "the first of two possible magnitudes in outcomes for option 0"
     },
-    "mag0.2": {
-        "LongName": "magnitude 0.2",
+    "mag0_2": {
+        "LongName": "magnitude 0_2",
         "Description": "the second of two possible magnitudes in outcomes for option 0"
     },
-    "mag1.1": {
-        "LongName": "magnitude 1.1",
+    "mag1_1": {
+        "LongName": "magnitude 1_1",
         "Description": "the first of two possible magnitudes in outcomes for option 1"
     },
-    "mag1.2": {
-        "LongName": "magnitude 1.2",
+    "mag1_2": {
+        "LongName": "magnitude 1_2",
         "Description": "the second of two possible magnitudes in outcomes for option 1"
     },
-    "prob0.1": {
-        "LongName": "probability 0.1",
+    "prob0_1": {
+        "LongName": "probability 0_1",
         "Description": "the first of two possible probabilities in outcomes for option 0"
     },
-    "prob0.2": {
-        "LongName": "probability 0.2",
+    "prob0_2": {
+        "LongName": "probability 0_2",
         "Description": "the second of two possible probabilities in outcomes for option 0"
     },
-    "prob1.1": {
-        "LongName": "probability 1.1",
+    "prob1_1": {
+        "LongName": "probability 1_1",
         "Description": "the first of two possible probabilities in outcomes for option 1"
     },
-    "prob1.2": {
-        "LongName": "probability 1.2",
+    "prob1_2": {
+        "LongName": "probability 1_2",
         "Description": "the second of two possible probabilities in outcomes for option 1"
-    }
+    },
+    "version" :{"Description": "version of the experiment used for collecting this data."}
 }

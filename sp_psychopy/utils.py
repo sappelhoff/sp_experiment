@@ -51,7 +51,10 @@ def tw_jit(min_wait, max_wait):
 
 
 def log_data(fpath, onset='n/a', duration=0, action='n/a', outcome='n/a',
-             response_time='n/a', event_value='n/a', fps=utils_fps):
+             response_time='n/a', value='n/a', mag0_1='n/a', mag0_2='n/a',
+             mag1_1='n/a', mag1_2='n/a', prob0_1='n/a', prob0_2='n/a',
+             prob1_1='n/a', prob1_2='n/a', fps=utils_fps,
+             version=sp_psychopy.__version__):
     """Write data to the log file.
 
     All inputs except the file path default to 'n/a'.
@@ -79,8 +82,14 @@ def log_data(fpath, onset='n/a', duration=0, action='n/a', outcome='n/a',
     response_time : float | 'n/a'
         the time it took the subject to respond after the onset of the event
 
-    event_value : byte | 'n/a'
+    value : byte | 'n/a'
         the TTL trigger value (=EEG marker value) associated with an event
+
+    fps : int
+        frames per second used in this experiment
+
+    version : str
+        version of the experiment used for collecting this data
 
     """
     action_type_dict = dict()
@@ -102,7 +111,7 @@ def log_data(fpath, onset='n/a', duration=0, action='n/a', outcome='n/a',
                 action,
                 outcome,
                 response_time,
-                ord(event_value)]
+                ord(value)]
         line = '\t'.join([str(i) for i in data])
         fout.write(line + '\n')
 
