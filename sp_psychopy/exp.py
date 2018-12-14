@@ -147,7 +147,7 @@ event.waitKeys()
 txt_stim.height = 5  # set height for stimuli to be shown below
 exp_timer = core.MonotonicClock()
 log_data(data_file, onset=exp_timer.getTime(),
-         event_value=trig_begin_experiment)
+         value=trig_begin_experiment)
 
 # Get general payoff settings
 payoff_settings = get_payoff_settings(expected_value_diff)
