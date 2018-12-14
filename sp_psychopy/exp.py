@@ -3,6 +3,10 @@
 TODO:
 - incorporate eye tracking (gaze-contingent fixation cross)
 - allow for "passive replay"
+- update variable names and perhaps shorten
+- update triggers ... especially as levels in task-exp_events.json
+- reformat modules
+- update Makefile
 
 """
 import os
