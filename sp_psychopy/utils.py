@@ -7,6 +7,7 @@ import os
 import os.path as op
 
 from psychopy import visual, event, core
+import numpy as np
 from numpy import random
 
 import sp_psychopy
@@ -30,29 +31,33 @@ class Fake_serial():
         pass
 
 
-def tw_jit(min_wait, max_wait):
+def tw_jit(min_wait, max_wait, fps=utils_fps):
     """From a uniform distribution, determine a waiting time within an interval.
 
     Parameters
     ----------
-    min_wait, max_wait : float | int
-        The minimum and maximum wait time in frames.
+    min_wait, max_wait :  int
+        The minimum and maximum wait time in milliseconds.
+
+    fps : int
+        Refreshrate of the screen.
 
     Returns
     -------
-    wait_time : int
+    wait_frames : int
         A wait time in frames in the interval [min_wait, max_wait]
 
     """
-    low = int(round(min_wait))
-    high = int(round(max_wait))
-    wait_time = random.randint(low, high+1)
-    return wait_time
+    low = int(np.floor(min_wait/1000 * fps))
+    high = int(np.ceil(max_wait/1000 * fps))
+    wait_frames = random.randint(low, high+1)
+    return wait_frames
 
 
-def log_data(fpath, onset='n/a', duration=0, action='n/a', outcome='n/a',
-             response_time='n/a', value='n/a', payoff_dict='n/a',
-             fps=utils_fps, version=sp_psychopy.__version__):
+def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
+             outcome='n/a', response_time='n/a', value='n/a',
+             payoff_dict='n/a', fps=utils_fps, version=sp_psychopy.__version__,
+             reset=False):
     """Write data to the log file.
 
     All inputs except the file path default to 'n/a'.
@@ -70,6 +75,9 @@ def log_data(fpath, onset='n/a', duration=0, action='n/a', outcome='n/a',
     duration : int | 0
         duration of the event in frames. Will then be converted to seconds by
         dividing with `utils_fps`.
+
+    trial : int | 'n/a'
+        the number of the trial in which this event happened.
 
     action : int, one of [1, 2, 3] | 'n/a'
         the concrete action that the subject performed for the action type
@@ -93,6 +101,9 @@ def log_data(fpath, onset='n/a', duration=0, action='n/a', outcome='n/a',
     version : str
         version of the experiment used for collecting this data
 
+    reset : bool
+        if True, discard all prior events in the current trial because of
+        an error of the participant. If False, ignore it
     """
     # Infer action type
     action_type_dict = dict()
@@ -101,30 +112,47 @@ def log_data(fpath, onset='n/a', duration=0, action='n/a', outcome='n/a',
     action_type_dict[2] = 'stop'
     action_type_dict[3] = 'final_choice'
     action_type_dict[4] = 'final_choice'
+    action_type_dict[5] = 'forced_stop'
+    action_type_dict[6] = 'forced_stop'
+    action_type_dict[7] = 'premature_stop'
     action_type_dict['n/a'] = 'n/a'
 
     action_type = action_type_dict[action]
-    if action != 'n/a':
-        action = (action - 3) if action >= 3 else action
+    if action in [5, 6]:
+        action = action - 5
+    elif action == 7:
+        action = 2
+    elif action != 'n/a':
+        action = (action - 3) if action in [3, 4] else action
 
     # Reformat reward distribution settings
-    assert len(payoff_dict) == 2
-    setti = list()
-    for i in range(2):
-        for out_i in list(set(payoff_dict[i])):
-            prob_i = payoff_dict[i].count(out_i) / len(payoff_dict[i])
-            setti.append(out_i, prob_i)
-    mag0_1, prob0_1, mag0_2, prob0_2, mag1_1, prob1_1, mag1_2, prob1_2 = setti
+    if payoff_dict != 'n/a':
+        assert len(payoff_dict) == 2
+        setting = list()
+        for i in range(2):
+            for out_i in list(set(payoff_dict[i])):
+                prob_i = payoff_dict[i].count(out_i) / len(payoff_dict[i])
+                setting.append(out_i)
+                setting.append(prob_i)
+    else:
+        setting = ['n/a'] * 8
+    (mag0_1, prob0_1, mag0_2, prob0_2, mag1_1, prob1_1, mag1_2,
+     prob1_2) = setting
+
+    # turn byte into integer if we sent a trigger
+    value = ord(value) if isinstance(value, bytes) else 'n/a'
 
     # Write the data
     with open(fpath, 'a') as fout:
         data = [onset,
                 duration / fps,
+                trial,
                 action_type, action, outcome, response_time,
-                ord(value),
+                value,
                 mag0_1, prob0_1, mag0_2, prob0_2,
                 mag1_1, prob1_1, mag1_2, prob1_2,
-                version]
+                version,
+                int(reset)]
         line = '\t'.join([str(i) for i in data])
         fout.write(line + '\n')
 

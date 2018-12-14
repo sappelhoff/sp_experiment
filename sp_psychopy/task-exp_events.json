@@ -7,11 +7,16 @@
         "Description": "duration of the event",
         "Units": "seconds"
     },
+    "trial": {
+        "Description": "zero indexed trial counter, where a trial is a sequence of steps that ends with a final choice."
+    },
     "action_type": {
         "Description": "type of the action that the subject performed at this event within a trial",
         "Levels": {
             "sample": "the subject sampled either the left or the right option",
             "stop": "the subject decided to stop sampling the options and instead use the next action for a final choice",
+            "foced_stop": "the subject took a maximum of samples and wanted to take another one, so we force stopped in this turn",
+            "premature_stop": "the subject tried to stop sampling before taking a single sample. This lead to an error.",
             "final_choice": "the subject chose either the left or the right option as a final choice"
         }
     },
@@ -89,5 +94,12 @@
     },
     "version": {
         "Description": "version of the experiment used for collecting this data."
+    },
+    "reset": {
+        "Description": "boolean that describes whether of not to ignore events prior to this event in the current trial.",
+        "Levels": {
+            "0": "so far no error in this trial since the beginning or the last error",
+            "1": "error committed: disregard all events prior to this event for the current trial."
+        }
     }
 }

@@ -28,8 +28,8 @@ trig_final_choice = bytes([6])
 trig_mask_outcome = bytes([7])
 trig_outcome = bytes([8])
 
-# Messaging when final choice is not possible because too few samples
-trig_msg_zero_samples = bytes([9])
+# trigger for ERROR, when a trial has to be reset
+trig_error = bytes([9])
 
 # Message when a final choice is started
 trig_msg_final_choice = bytes([10])
@@ -44,3 +44,9 @@ trig_right_final_choice = bytes([13])
 # Displaying outcomes during CHOICE
 trig_mask_final_outcome = bytes([14])
 trig_final_outcome = bytes([15])
+
+# If the subject sampled a maximum of steps and now wants to take yet another
+# one, we force stop and initiate a final choice
+trig_forced_stop = bytes([16])
+
+trig_premature_stop = bytes([17])
