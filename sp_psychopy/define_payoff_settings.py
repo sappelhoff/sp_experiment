@@ -1,4 +1,4 @@
-"""Provide the payoff distributions to be used in the Sampling Paradigm.
+"""Provide the payoff settings to be used in the Sampling Paradigm.
 
 main file: sp.py
 

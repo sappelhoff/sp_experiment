@@ -6,9 +6,8 @@ main file: sp.py
 import os
 import os.path as op
 
-from psychopy import visual, event, core
 import numpy as np
-from numpy import random
+from psychopy import visual
 
 import sp_psychopy
 
@@ -50,7 +49,7 @@ def tw_jit(min_wait, max_wait, fps=utils_fps):
     """
     low = int(np.floor(min_wait/1000 * fps))
     high = int(np.ceil(max_wait/1000 * fps))
-    wait_frames = random.randint(low, high+1)
+    wait_frames = np.random.randint(low, high+1)
     return wait_frames
 
 
@@ -104,6 +103,7 @@ def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
     reset : bool
         if True, discard all prior events in the current trial because of
         an error of the participant. If False, ignore it
+
     """
     # Infer action type
     action_type_dict = dict()
