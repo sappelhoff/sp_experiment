@@ -4,7 +4,6 @@ TODO:
 - incorporate eye tracking (gaze-contingent fixation cross)
 - allow for "passive replay"
 - update variable names and perhaps shorten
-- update Makefile
 
 """
 import os
@@ -70,7 +69,8 @@ if op.exists(data_file):
                   'already exists: {}'.format(args.sub_id, data_file))
 
 # Write header to the tab separated log file
-with open('task-exp_events.json', 'r') as fin:
+events_json = op.join(init_dir, 'task-sp_events.json')
+with open(events_json, 'r') as fin:
     json_contents = json.load(fin, object_pairs_hook=OrderedDict)
 variables = list(json_contents.keys())
 
@@ -342,14 +342,13 @@ while current_ntrls < max_ntrls:
             if action == 0:
                 ser.write(trig_left_final_choice)
                 value = trig_left_final_choice
-                action = 3
             elif action == 1:
                 ser.write(trig_right_final_choice)
                 value = trig_right_final_choice
-                action = 4
 
+            # NOTE: add 3 to "action" to distinguish final choice from sampling
             log_data(data_file, onset=exp_timer.getTime(), trial=current_ntrls,
-                     action=action, response_time=rt, value=value)
+                     action=action+3, response_time=rt, value=value)
             current_nsamples += 1
 
             # Display final outcome
