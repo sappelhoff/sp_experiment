@@ -130,6 +130,7 @@ def get_random_payoff_dict(payoff_settings):
     payoff_settings : ndarray, shape (n, 8)
         Input settings with the row selected for the present payoff_dict
         removed.
+
     """
     n, __ = payoff_settings.shape
     selected_row = np.random.randint(0, n)

@@ -4,7 +4,6 @@ TODO:
 - incorporate eye tracking (gaze-contingent fixation cross)
 - allow for "passive replay"
 - update variable names and perhaps shorten
-- update triggers ... especially as levels in task-exp_events.json
 - reformat modules
 - update Makefile
 
@@ -29,19 +28,19 @@ from sp_psychopy.utils import (utils_fps,
 from sp_psychopy.define_payoff_distributions import (get_payoff_settings,
                                                      get_random_payoff_dict)
 from sp_psychopy.define_ttl_triggers import (trig_begin_experiment,
-                                             trig_msg_new_trial,
+                                             trig_new_trl,
                                              trig_sample_onset,
                                              trig_left_choice,
                                              trig_right_choice,
                                              trig_final_choice,
                                              trig_mask_outcome,
-                                             trig_outcome,
-                                             trig_msg_final_choice,
-                                             trig_choice_onset,
+                                             trig_show_outcome,
+                                             trig_new_final_choice,
+                                             trig_final_choice_onset,
                                              trig_left_final_choice,
                                              trig_right_final_choice,
                                              trig_mask_final_outcome,
-                                             trig_final_outcome,
+                                             trig_show_final_outcome,
                                              trig_end_experiment,
                                              trig_error,
                                              trig_forced_stop,
@@ -179,13 +178,13 @@ while current_ntrls < max_ntrls:
     # Starting a new trial
     [stim.setAutoDraw(True) for stim in fixation_stim_parts]
     set_fixstim_color(inner, color_newtrl)
-    win.callOnFlip(ser.write, trig_msg_new_trial)
+    win.callOnFlip(ser.write, trig_new_trl)
     frames = tw_jit(*tdisplay_ms)
     for frame in range(frames):
         win.flip()
         if frame == 0:
             log_data(data_file, onset=exp_timer.getTime(), trial=current_ntrls,
-                     value=trig_msg_new_trial, duration=frames)
+                     value=trig_new_trl, duration=frames)
 
     # Within this trial, allow sampling
     current_nsamples = 0
@@ -271,7 +270,7 @@ while current_ntrls < max_ntrls:
                              trial=current_ntrls, duration=frames,
                              value=trig_mask_outcome)
 
-            win.callOnFlip(ser.write, trig_outcome)
+            win.callOnFlip(ser.write, trig_show_outcome)
             frames = tw_jit(*toutshow_ms)
             for frame in range(frames):
                 circ_stim.draw()
@@ -280,7 +279,7 @@ while current_ntrls < max_ntrls:
                 if frame == 0:
                     log_data(data_file, onset=exp_timer.getTime(),
                              trial=current_ntrls, duration=frames,
-                             outcome=outcome, value=trig_outcome)
+                             outcome=outcome, value=trig_show_outcome)
 
         else:  # action == 2 or current_nsamples == max_nsamples
             # First need to check that a minimum of samples has been taken
@@ -301,22 +300,22 @@ while current_ntrls < max_ntrls:
             # We survived the minimum samples check ...
             # Now get ready for final choice
             set_fixstim_color(inner, color_finchoice)
-            win.callOnFlip(ser.write, trig_msg_final_choice)
+            win.callOnFlip(ser.write, trig_new_final_choice)
             frames = tw_jit(*tdisplay_ms)
             for frame in range(frames):
                 win.flip()
                 if frame == 0:
                     log_data(data_file, onset=exp_timer.getTime(),
                              trial=current_ntrls,
-                             value=trig_msg_final_choice, duration=frames)
+                             value=trig_new_final_choice, duration=frames)
 
             # Switch color of stim cross back to standard: action allowed
             set_fixstim_color(inner, color_standard)
-            win.callOnFlip(ser.write, trig_choice_onset)
+            win.callOnFlip(ser.write, trig_final_choice_onset)
             win.flip()
             rt_clock.reset()
             log_data(data_file, onset=exp_timer.getTime(),
-                     trial=current_ntrls, value=trig_choice_onset)
+                     trial=current_ntrls, value=trig_final_choice_onset)
 
             # Wait for an action of the participant
             keys_rts = event.waitKeys(maxWait=maxwait_finchoice,
@@ -372,7 +371,7 @@ while current_ntrls < max_ntrls:
                              trial=current_ntrls, duration=frames,
                              value=trig_mask_final_outcome)
 
-            win.callOnFlip(ser.write, trig_final_outcome)
+            win.callOnFlip(ser.write, trig_show_final_outcome)
             frames = tw_jit(*toutshow_ms)
             for frame in range(frames):
                 circ_stim.draw()
@@ -381,7 +380,7 @@ while current_ntrls < max_ntrls:
                 if frame == 0:
                     log_data(data_file, onset=exp_timer.getTime(),
                              trial=current_ntrls, duration=frames,
-                             outcome=outcome, value=trig_final_outcome)
+                             outcome=outcome, value=trig_show_final_outcome)
 
             # This trial is done, start the next one
             current_ntrls += 1

@@ -56,20 +56,20 @@ from sp_psychopy.utils import (font,
 from sp_psychopy.define_payoff_distributions import (get_payoff_settings,
                                                      get_random_payoff_dict)
 from sp_psychopy.define_ttl_triggers import (trig_begin_experiment,
-                                             trig_msg_new_trial,
+                                             trig_new_trl,
                                              trig_sample_onset,
                                              trig_left_choice,
                                              trig_right_choice,
                                              trig_final_choice,
                                              trig_mask_outcome,
-                                             trig_outcome,
+                                             trig_show_outcome,
                                              trig_msg_zero_samples,
-                                             trig_msg_final_choice,
-                                             trig_choice_onset,
+                                             trig_new_final_choice,
+                                             trig_final_choice_onset,
                                              trig_left_final_choice,
                                              trig_right_final_choice,
                                              trig_mask_final_outcome,
-                                             trig_final_outcome,
+                                             trig_show_final_outcome,
                                              trig_end_experiment)
 
 # Prepare for logging all experimental variables of interest
@@ -170,7 +170,7 @@ while overall_samples < max_samples_overall:
     trial_samples = 0
     trigger_final_choice = False
     display_message(mywin, ser, data_file, timer, 'A new trial has started',
-                    frames=int(tdisplay_secs*fps), trig=trig_msg_new_trial)
+                    frames=int(tdisplay_secs*fps), trig=trig_new_trl)
 
     # For each trial, we use a new payoff setting
     # reassign payoff_settings to same without currently used setting
@@ -206,7 +206,7 @@ while overall_samples < max_samples_overall:
                                       show_frames=tw_jit(toutshow_secs[0]*fps,
                                                          toutshow_secs[1]*fps),
                                       trig_mask=trig_mask_outcome,
-                                      trig_show=trig_outcome)
+                                      trig_show=trig_show_outcome)
 
             # Increment sample counter for this trial
             trial_samples += 1
@@ -232,16 +232,16 @@ while overall_samples < max_samples_overall:
             display_message(mywin, ser, data_file, timer,
                             'Please make your final choice.',
                             frames=int(tdisplay_secs*fps),
-                            trig=trig_msg_final_choice)
+                            trig=trig_new_final_choice)
             [stim.setAutoDraw(True) for stim in fixation_stim_parts]
-            mywin.callOnFlip(ser.write, trig_choice_onset)
+            mywin.callOnFlip(ser.write, trig_final_choice_onset)
             mywin.flip()
             # Start a timer to measure reaction time
             t_rt.reset()
 
             # Quickly log data before concentrating on reaction of participant
             log_data(data_file, onset=timer.getTime(),
-                     event_value=trig_choice_onset)
+                     event_value=trig_final_choice_onset)
 
             # Wait for the action
             action, rt = inquire_action(mywin, ser, data_file, timer, t_rt,
@@ -258,7 +258,7 @@ while overall_samples < max_samples_overall:
                                       show_frames=tw_jit(toutshow_secs[0]*fps,
                                                          toutshow_secs[1]*fps),
                                       trig_mask=trig_mask_final_outcome,
-                                      trig_show=trig_final_outcome)
+                                      trig_show=trig_show_final_outcome)
             [stim.setAutoDraw(False) for stim in fixation_stim_parts]
             overall_samples += trial_samples
 
