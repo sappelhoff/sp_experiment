@@ -10,6 +10,7 @@ import numpy as np
 from psychopy import visual
 
 import sp_psychopy
+from sp_psychopy.define_payoff_settings import get_random_payoff_dict
 
 # Frames per second. Change depending on your hardware.
 utils_fps = 60
@@ -28,6 +29,92 @@ class Fake_serial():
     def write(self, byte):
         """Take a byte and do nothing."""
         pass
+
+
+def get_passive_payoff_dict(df, trial):
+    """Get data for a replay.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        Data to be replayed
+
+    trial : int
+        Indices into the data for which to fetch actions
+
+    Returns
+    -------
+    payoff_dict : dict
+        Dictionary containing the reward distribution setting of the current
+        trial.
+
+    """
+    # get the setting and reformat it to fit with internal usage in
+    # `define_payoff_settings.py`
+    # NOTE: the settings are always at index 0 (see .loc method below) as long
+    #       as we reset the counter
+    df = df[(df['trial'] == trial)]
+    df = df.reset_index()
+    wrong_format_setting = df.loc[0, 'mag0_1':'prob1_2'].tolist()
+    setting = np.array(wrong_format_setting)[[0, 2, 1, 3, 4, 6, 5, 7]]
+    setting = np.expand_dims(setting, 0)
+    # quick sanity check that we have proper roundings, for example 0.3 instead
+    # of 0.29999999 ... 1., 2., 3., etc. would be fine (as magnitudes)
+    for entry in setting[0]:
+        assert len(str(entry)) in [2, 3]  # 2 for magnitudes, 3 for probs
+    payoff_dict, payoff_settings = get_random_payoff_dict(setting)
+    return payoff_dict
+
+
+def get_passive_action(df, trial, sample):
+    """Get data for a replay.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        Data to be replayed
+
+    trial, sample : int
+        Indices into the data for which to fetch actions
+
+    Returns
+    -------
+    keys_rts : list of tuples
+        each entry in the list contains a tuple of the pressed key and the
+        reaction time associated with the keypress.
+
+    """
+    admissible_actions = ['sample', 'stop', 'forced_stop', 'premature_stop']
+    df = df[(df['trial'] == trial) &
+            (df['action_type'].isin(admissible_actions))]
+    key = int(df['action'].tolist()[int(sample)])
+    rt = float(df['response_time'].tolist()[int(sample)])
+    key = {0: 'left', 1: 'right', 2: 'down'}[key]
+    keys_rts = [(key, rt)]
+    return keys_rts
+
+
+def get_passive_outcome(df, trial, sample):
+    """Get data for a replay.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        Data to be replayed
+
+    trial, sample : int
+        Indices into the data for which to fetch actions
+
+    Returns
+    -------
+    outcome : int
+        magnitude of the outcome to be obtained in the passive condition
+
+    """
+    df = df[(df['trial'] == trial)]
+    outcomes = df[(df['trial'] == trial)]['outcome'].dropna()
+    outcome = int(outcomes.tolist()[sample])
+    return outcome
 
 
 def tw_jit(min_wait, max_wait, fps=utils_fps):
@@ -91,7 +178,7 @@ def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
         the TTL trigger value (=EEG marker value) associated with an event
 
     payoff_dict : dict | 'n/a'
-        Dictionary containint the reward distribution setting of the current
+        Dictionary containing the reward distribution setting of the current
         trial.
 
     fps : int

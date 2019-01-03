@@ -2,7 +2,9 @@
 
 TODO:
 - incorporate eye tracking (gaze-contingent fixation cross)
-- allow for "passive replay"
+- testing passive replay
+- think about method to get passive replays if it is the starting condition
+- check how to implement fixed horizon SP
 - update variable names and perhaps shorten
 
 """
@@ -13,6 +15,7 @@ import json
 from collections import OrderedDict
 
 import numpy as np
+import pandas as pd
 from psychopy import visual, event, core
 
 import sp_psychopy
@@ -21,7 +24,10 @@ from sp_psychopy.utils import (utils_fps,
                                set_fixstim_color,
                                tw_jit,
                                log_data,
-                               Fake_serial
+                               Fake_serial,
+                               get_passive_payoff_dict,
+                               get_passive_action,
+                               get_passive_outcome
                                )
 from sp_psychopy.define_payoff_settings import (get_payoff_settings,
                                                 get_random_payoff_dict)
@@ -130,8 +136,8 @@ toutmask_ms = (600, 800)  # time for masking an outcome
 toutshow_ms = (500, 750)  # time for showing an outcome
 tdisplay_ms = (900, 1100)  # delay if "new trial", "error", "final choice"
 
-maxwait_samples = 10  # Maximum seconds we wait for a sample
-maxwait_finchoice = 10  # can also be float('inf') to wait forever
+maxwait_samples = float('inf')  # Maximum seconds we wait for a sample
+maxwait_finchoice = float('inf')  # can also be float('inf') to wait forever
 
 keylist_samples = ['left', 'right', 'down', 'x']  # press x to quit
 keylist_finchoice = ['left', 'right']
@@ -165,12 +171,22 @@ payoff_settings = get_payoff_settings(expected_value_diff)
 # Start a clock for measuring reaction times
 rt_clock = core.Clock()
 
+# If we are in the passive condition, load pre-recorded data to replay
+fname = 'sub-{}_task-spactive_events.tsv'.format(args.sub_id)
+fpath = op.join(data_dir, fname)
+df = pd.read_csv(fpath, sep='\t')
+df = df[pd.notnull(df['trial'])]
+
 current_ntrls = 0
 while current_ntrls < max_ntrls:
 
     # For each trial, take a new payoff setting
     if condition == 'active':
         payoff_dict, payoff_settings = get_random_payoff_dict(payoff_settings)
+        log_data(data_file, onset=exp_timer.getTime(), trial=current_ntrls,
+                 payoff_dict=payoff_dict)
+    else:  # condition == 'passive'
+        payoff_dict = get_passive_payoff_dict(df, current_ntrls)
         log_data(data_file, onset=exp_timer.getTime(), trial=current_ntrls,
                  payoff_dict=payoff_dict)
 
@@ -201,8 +217,10 @@ while current_ntrls < max_ntrls:
             keys_rts = event.waitKeys(maxWait=maxwait_samples,
                                       keyList=keylist_samples,
                                       timeStamped=rt_clock)
-        else:  # condition == 'pastrig_sample_onsetsive'
-            keys_rts = [[None]]  # load them from recorded data
+        else:  # condition == 'passive'
+            # Load action from recorded data
+            keys_rts = get_passive_action(df, current_ntrls, current_nsamples)
+            core.wait(keys_rts[0][-1])  # wait for the time that was the RT
 
         if not keys_rts:
             # No keypress in due time: raise error
@@ -252,7 +270,13 @@ while current_ntrls < max_ntrls:
         # Proceed depending on action
         if action in [0, 1] and current_nsamples <= max_nsamples:
             # Display the outcome
-            outcome = np.random.choice(payoff_dict[action])
+            if condition == 'active':
+                outcome = np.random.choice(payoff_dict[action])
+            else:  # condition == 'passive'
+                # note: deduct one off current_nsamples because we already
+                # added one (see above) which is to early for this line of code
+                outcome = get_passive_outcome(df, current_ntrls,
+                                              current_nsamples-1)
             pos = (-5, 0) if action == 0 else (5, 0)
             circ_stim.pos = pos
             txt_stim.pos = pos
@@ -282,6 +306,7 @@ while current_ntrls < max_ntrls:
 
         else:  # action == 2 or current_nsamples == max_nsamples
             # First need to check that a minimum of samples has been taken
+            # otherwise, it's an error
             if current_nsamples <= 1:
                 set_fixstim_color(inner, color_error)
                 win.callOnFlip(ser.write, trig_error)
@@ -294,8 +319,27 @@ while current_ntrls < max_ntrls:
                         log_data(data_file, onset=exp_timer.getTime(),
                                  trial=current_ntrls, value=trig_error,
                                  duration=frames, reset=True)
-                # start a new trial without incrementing the trial counter
-                break
+                if condition == 'active':
+                    # start a new trial without incrementing the trial counter
+                    break
+                else:  # condition == 'passive'
+                    # if a premature stop happens in passive condition, we need
+                    # to drop if from the df in order not to enter an endless
+                    # loop
+                    # # NOTE: We also drop all trials previous to this one ...
+                    # They have been replayed, so it should be fine.
+                    df = df[df['trial'] >= current_ntrls]
+                    # drop rows before and including the *first* encountered
+                    # premature stop ... also drop first following event which
+                    # indicates the error coloring of the fixation stim ...
+                    # retain all other events
+                    mask = np.ones(df.shape[0])
+                    i = np.where(df['action_type'] == 'premature_stop')[0][0]
+                    mask[:i+2] = 0
+                    mask = (mask == 1)
+                    df = df[mask]
+                    print(df)
+                    break
             # We survived the minimum samples check ...
             # Now get ready for final choice
             set_fixstim_color(inner, color_finchoice)

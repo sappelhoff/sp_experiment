@@ -163,5 +163,4 @@ def get_random_payoff_dict(payoff_settings):
 
     # Remore the selected setting from all settings (no replacement)
     payoff_settings = np.delete(payoff_settings, [selected_row], axis=0)
-
     return payoff_dict, payoff_settings
