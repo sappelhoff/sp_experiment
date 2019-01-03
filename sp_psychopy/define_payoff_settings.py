@@ -108,6 +108,24 @@ def get_payoff_settings(ev_diff):
                                                   np.expand_dims(row, 0)),
                                                  axis=0)
 
+    # Take another subset of payoff distributions: no "dominated options"
+    # ===================================================================
+    # remove settings where one distribution has both options with higher
+    # outcomes, for example: 6 and 7 versus 8 and 9
+    # NOTE: For a low enough `ev_diff` parameter, there should be no "dominated
+    #       options" anyways, according to how we computed the settings
+    deletion_mask = np.ones(payoff_settings.shape[0])
+    for idx, row in enumerate(payoff_settings):
+        if row[0] > row[4] and row[0] > row[5]:
+            if row[1] > row[4] and row[1] > row[5]:
+                deletion_mask[idx] = 1
+        elif row[0] < row[4] and row[0] < row[5]:
+            if row[1] < row[4] and row[1] < row[5]:
+                deletion_mask[idx] = 1
+
+    deletion_mask = deletion_mask == 1
+    payoff_settings = payoff_settings[deletion_mask, :]
+
     return payoff_settings
 
 
