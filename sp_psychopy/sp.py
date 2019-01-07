@@ -92,7 +92,7 @@ with open(data_file, 'w') as fout:
 # ==========================
 # Define monitor specific window object
 win = visual.Window(color=(0, 0, 0),  # Background color: RGB [-1,1]
-                    fullscr=False,  # Fullscreen for better timing
+                    fullscr=True,  # Fullscreen for better timing
                     monitor='latitude7490',  # see monitor_definition.py
                     units='deg',
                     winType='pyglet')
@@ -108,17 +108,19 @@ outer, inner, horz, vert = get_fixation_stim(win)
 fixation_stim_parts = [outer, horz, vert, inner]
 
 # Mask and text for outcomes, properties will be set and reset below
+circ_color = [-0.5] * 3
 circ_stim = visual.Circle(win,
                           pos=(0, 0),
                           units='deg',
-                          fillColor=(-1., -1., -1.),
-                          lineColor=(-1., -1., -1.),
+                          fillColor=circ_color,
+                          lineColor=circ_color,
                           radius=2.5,
                           edges=128)
 
+txt_color = [0.5] * 3
 txt_stim = visual.TextStim(win,
                            units='deg',
-                           color=(1., 1., 1.))
+                           color=txt_color)
 
 
 # Start communicating with the serial port
@@ -130,8 +132,8 @@ ser = Fake_serial()
 # ===================
 condition = args.condition
 
-max_ntrls = 2
-max_nsamples = 3
+max_ntrls = 100
+max_nsamples = 30
 
 font = 'Liberation Sans'  # Looks like Arial, but it's free!
 
@@ -139,8 +141,8 @@ toutmask_ms = (600, 800)  # time for masking an outcome
 toutshow_ms = (500, 750)  # time for showing an outcome
 tdisplay_ms = (900, 1100)  # delay if "new trial", "error", "final choice"
 
-maxwait_samples = float('inf')  # Maximum seconds we wait for a sample
-maxwait_finchoice = float('inf')  # can also be float('inf') to wait forever
+maxwait_samples = 5  # Maximum seconds we wait for a sample
+maxwait_finchoice = 5  # can also be float('inf') to wait forever
 
 keylist_samples = ['left', 'right', 'down', 'x']  # press x to quit
 keylist_finchoice = ['left', 'right']
@@ -166,7 +168,7 @@ event.waitKeys()
 ser.write(trig_begin_experiment)
 exp_timer = core.MonotonicClock()
 log_data(data_file, onset=exp_timer.getTime(), value=trig_begin_experiment)
-txt_stim.height = 5  # set height for stimuli to be shown below
+txt_stim.height = 4  # set height for stimuli to be shown below
 
 # Get general payoff settings
 payoff_settings = get_payoff_settings(expected_value_diff)
@@ -226,20 +228,26 @@ while current_ntrls < max_ntrls:
             core.wait(keys_rts[0][-1])  # wait for the time that was the RT
 
         if not keys_rts:
-            # No keypress in due time: raise error
-            set_fixstim_color(inner, color_error)
-            win.callOnFlip(ser.write, trig_error)
-            frames = get_jittered_waitframes(*tdisplay_ms)
-            for frame in range(frames):
-                win.flip()
-                if frame == 0:
-                    # Log an event that we have to disregard all prior
-                    # events in this trial
-                    log_data(data_file, onset=exp_timer.getTime(),
-                             trial=current_ntrls, value=trig_error,
-                             duration=frames, reset=True)
-            # start a new trial without incrementing the trial counter
-            break
+            if current_nsamples == 0:
+                # No keypress in due time: Is this the first sample in the
+                # trial? If yes, forgive them and wait for a response forever
+                keys_rts = event.waitKeys(maxWait=float('inf'),
+                                          keyList=keylist_samples,
+                                          timeStamped=rt_clock)
+            else:  # Else: raise an error and start new trial
+                set_fixstim_color(inner, color_error)
+                win.callOnFlip(ser.write, trig_error)
+                frames = get_jittered_waitframes(*tdisplay_ms)
+                for frame in range(frames):
+                    win.flip()
+                    if frame == 0:
+                        # Log an event that we have to disregard all prior
+                        # events in this trial
+                        log_data(data_file, onset=exp_timer.getTime(),
+                                 trial=current_ntrls, value=trig_error,
+                                 duration=frames, reset=True)
+                # start a new trial without incrementing the trial counter
+                break
 
         # Send trigger
         key, rt = keys_rts[0]
@@ -368,20 +376,27 @@ while current_ntrls < max_ntrls:
                                       timeStamped=rt_clock)
 
             if not keys_rts:
-                # No keypress in due time: raise error
-                set_fixstim_color(inner, color_error)
-                win.callOnFlip(ser.write, trig_error)
-                frames = get_jittered_waitframes(*tdisplay_ms)
-                for frame in range(frames):
-                    win.flip()
-                    if frame == 0:
-                        # Log an event that we have to disregard all prior
-                        # events in this trial
-                        log_data(data_file, onset=exp_timer.getTime(),
-                                 trial=current_ntrls, value=trig_error,
-                                 duration=frames, reset=True)
-                # start a new trial without incrementing the trial counter
-                break
+                if current_nsamples == 0:
+                    # No keypress in due time: Is this the first sample in the
+                    # trial? If yes, forgive them and wait for a response
+                    # forever
+                    keys_rts = event.waitKeys(maxWait=float('inf'),
+                                              keyList=keylist_samples,
+                                              timeStamped=rt_clock)
+                else:  # Else: raise an error and start new trial
+                    set_fixstim_color(inner, color_error)
+                    win.callOnFlip(ser.write, trig_error)
+                    frames = get_jittered_waitframes(*tdisplay_ms)
+                    for frame in range(frames):
+                        win.flip()
+                        if frame == 0:
+                            # Log an event that we have to disregard all prior
+                            # events in this trial
+                            log_data(data_file, onset=exp_timer.getTime(),
+                                     trial=current_ntrls, value=trig_error,
+                                     duration=frames, reset=True)
+                    # start a new trial without incrementing the trial counter
+                    break
 
             key, rt = keys_rts[0]
             action = keylist_samples.index(key)
