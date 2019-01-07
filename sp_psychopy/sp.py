@@ -1,11 +1,12 @@
 """Simplified experimental flow.
 
+For fixed horizon SP, simply "forbid" the "down" key, which would otherwise be
+used to trigger a final choice.
+
 TODO:
 - incorporate eye tracking (gaze-contingent fixation cross)
 - testing passive replay
 - think about method to get passive replays if it is the starting condition
-- check how to implement fixed horizon SP
-- update variable names and perhaps shorten
 
 """
 import os
@@ -22,7 +23,7 @@ import sp_psychopy
 from sp_psychopy.utils import (utils_fps,
                                get_fixation_stim,
                                set_fixstim_color,
-                               tw_jit,
+                               get_jittered_waitframes,
                                log_data,
                                Fake_serial,
                                get_passive_payoff_dict,
@@ -30,7 +31,8 @@ from sp_psychopy.utils import (utils_fps,
                                get_passive_outcome
                                )
 from sp_psychopy.define_payoff_settings import (get_payoff_settings,
-                                                get_random_payoff_dict)
+                                                get_random_payoff_dict
+                                                )
 from sp_psychopy.define_ttl_triggers import (trig_begin_experiment,
                                              trig_new_trl,
                                              trig_sample_onset,
@@ -48,7 +50,8 @@ from sp_psychopy.define_ttl_triggers import (trig_begin_experiment,
                                              trig_end_experiment,
                                              trig_error,
                                              trig_forced_stop,
-                                             trig_premature_stop)
+                                             trig_premature_stop
+                                             )
 
 
 # Participant information
@@ -90,9 +93,9 @@ with open(data_file, 'w') as fout:
 # Define monitor specific window object
 win = visual.Window(color=(0, 0, 0),  # Background color: RGB [-1,1]
                     fullscr=False,  # Fullscreen for better timing
-                    monitor='p51',  # see monitor_definition.py
+                    monitor='latitude7490',  # see monitor_definition.py
                     units='deg',
-                    winType='pyglet')  # Units being used for stimuli
+                    winType='pyglet')
 
 # On which frame rate are we operating?
 fps = int(round(win.getActualFrameRate()))
@@ -194,7 +197,7 @@ while current_ntrls < max_ntrls:
     [stim.setAutoDraw(True) for stim in fixation_stim_parts]
     set_fixstim_color(inner, color_newtrl)
     win.callOnFlip(ser.write, trig_new_trl)
-    frames = tw_jit(*tdisplay_ms)
+    frames = get_jittered_waitframes(*tdisplay_ms)
     for frame in range(frames):
         win.flip()
         if frame == 0:
@@ -226,7 +229,7 @@ while current_ntrls < max_ntrls:
             # No keypress in due time: raise error
             set_fixstim_color(inner, color_error)
             win.callOnFlip(ser.write, trig_error)
-            frames = tw_jit(*tdisplay_ms)
+            frames = get_jittered_waitframes(*tdisplay_ms)
             for frame in range(frames):
                 win.flip()
                 if frame == 0:
@@ -284,7 +287,7 @@ while current_ntrls < max_ntrls:
             txt_stim.pos += (0, 0.3)  # manually push text to center of circle
 
             win.callOnFlip(ser.write, trig_mask_outcome)
-            frames = tw_jit(*toutmask_ms)
+            frames = get_jittered_waitframes(*toutmask_ms)
             for frame in range(frames):
                 circ_stim.draw()
                 win.flip()
@@ -294,7 +297,7 @@ while current_ntrls < max_ntrls:
                              value=trig_mask_outcome)
 
             win.callOnFlip(ser.write, trig_show_outcome)
-            frames = tw_jit(*toutshow_ms)
+            frames = get_jittered_waitframes(*toutshow_ms)
             for frame in range(frames):
                 circ_stim.draw()
                 txt_stim.draw()
@@ -310,7 +313,7 @@ while current_ntrls < max_ntrls:
             if current_nsamples <= 1:
                 set_fixstim_color(inner, color_error)
                 win.callOnFlip(ser.write, trig_error)
-                frames = tw_jit(*tdisplay_ms)
+                frames = get_jittered_waitframes(*tdisplay_ms)
                 for frame in range(frames):
                     win.flip()
                     if frame == 0:
@@ -338,13 +341,12 @@ while current_ntrls < max_ntrls:
                     mask[:i+2] = 0
                     mask = (mask == 1)
                     df = df[mask]
-                    print(df)
                     break
             # We survived the minimum samples check ...
             # Now get ready for final choice
             set_fixstim_color(inner, color_finchoice)
             win.callOnFlip(ser.write, trig_new_final_choice)
-            frames = tw_jit(*tdisplay_ms)
+            frames = get_jittered_waitframes(*tdisplay_ms)
             for frame in range(frames):
                 win.flip()
                 if frame == 0:
@@ -369,7 +371,7 @@ while current_ntrls < max_ntrls:
                 # No keypress in due time: raise error
                 set_fixstim_color(inner, color_error)
                 win.callOnFlip(ser.write, trig_error)
-                frames = tw_jit(*tdisplay_ms)
+                frames = get_jittered_waitframes(*tdisplay_ms)
                 for frame in range(frames):
                     win.flip()
                     if frame == 0:
@@ -404,7 +406,7 @@ while current_ntrls < max_ntrls:
             txt_stim.pos += (0, 0.3)  # manually push text to center of circle
 
             win.callOnFlip(ser.write, trig_mask_final_outcome)
-            frames = tw_jit(*toutmask_ms)
+            frames = get_jittered_waitframes(*toutmask_ms)
             for frame in range(frames):
                 circ_stim.draw()
                 win.flip()
@@ -414,7 +416,7 @@ while current_ntrls < max_ntrls:
                              value=trig_mask_final_outcome)
 
             win.callOnFlip(ser.write, trig_show_final_outcome)
-            frames = tw_jit(*toutshow_ms)
+            frames = get_jittered_waitframes(*toutshow_ms)
             for frame in range(frames):
                 circ_stim.draw()
                 txt_stim.draw()

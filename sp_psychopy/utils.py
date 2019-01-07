@@ -117,7 +117,7 @@ def get_passive_outcome(df, trial, sample):
     return outcome
 
 
-def tw_jit(min_wait, max_wait, fps=utils_fps):
+def get_jittered_waitframes(min_wait, max_wait, fps=utils_fps):
     """From a uniform distribution, determine a waiting time within an interval.
 
     Parameters
