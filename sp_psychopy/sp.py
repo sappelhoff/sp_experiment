@@ -132,7 +132,7 @@ ser = Fake_serial()
 # ===================
 condition = args.condition
 
-max_ntrls = 100
+max_ntrls = 35
 max_nsamples = 30
 
 font = 'Liberation Sans'  # Looks like Arial, but it's free!

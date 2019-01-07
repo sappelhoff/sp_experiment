@@ -31,6 +31,40 @@ class Fake_serial():
         pass
 
 
+def get_omniscent_payoff(df):
+    """Go through block and simulate earnings of an omniscent player.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        Data that was collected in this block
+
+    Returns
+    -------
+    payoff : int
+        Simulation of the payoff of an omniscent player in this block
+
+    """
+    ntrials = int(df['trial'].max()+1)
+    outcomes = np.zeros(ntrials)
+    for trial in range(ntrials):
+        payoff_dict = get_passive_payoff_dict(df, trial)
+        # For the present setting, calculate expected values for each of
+        # the options
+        evs = list()
+        for option, distr in payoff_dict.items():
+            ev_list = [i*(distr.count(i)/len(distr)) for i in set(distr)]
+            evs.append(np.array(ev_list).sum())
+        # The omniscent player then picks a random draw from the objectively
+        # better option
+        outcome = np.random.choice(payoff_dict[evs.index(max(evs))])
+        outcomes[trial] = outcome
+
+    # The payoff is the sum of outcomes
+    payoff = outcomes.sum()
+    return payoff
+
+
 def get_passive_payoff_dict(df, trial):
     """Get data for a replay.
 
@@ -46,16 +80,18 @@ def get_passive_payoff_dict(df, trial):
     -------
     payoff_dict : dict
         Dictionary containing the reward distribution setting of the current
-        trial.
+        trial. NOTE: returns the "final" payoff_dict that was used for
+        drawing the reward
 
     """
     # get the setting and reformat it to fit with internal usage in
     # `define_payoff_settings.py`
-    # NOTE: the settings are always at index 0 (see .loc method below) as long
-    #       as we reset the counter
-    df = df[(df['trial'] == trial)]
-    df = df.reset_index()
-    wrong_format_setting = df.loc[0, 'mag0_1':'prob1_2'].tolist()
+    # NOTE: always take the last available setting, because the previous ones
+    #       (if there are any) have been dropped due to an error (if there was
+    #       one)
+    tmp_df = df[(df['trial'] == trial)]
+    tmp_df = tmp_df.loc[:,  'mag0_1':'prob1_2'].dropna()
+    wrong_format_setting = tmp_df.iloc[-1].tolist()
     setting = np.array(wrong_format_setting)[[0, 2, 1, 3, 4, 6, 5, 7]]
     setting = np.expand_dims(setting, 0)
     # quick sanity check that we have proper roundings, for example 0.3 instead
