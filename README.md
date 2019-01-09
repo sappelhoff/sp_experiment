@@ -19,16 +19,36 @@ of the multi-armed bandit task.
 # Usage
 
 you can start the experiment from the command line. There are two required
-arguments: `--condition` (can be active, or passive), and `--sub_id` (should be
-a number).
+arguments:
+
+- `--condition` (can be active, or passive)
+- `--sub_id` (should be a number)
+
+There is one optional argument:
+
+- `--yoke_to` (should point to a previous sub_id, defaults to `--sub_id`)
 
 ```bash
 # from the project root
+# active condition of participant 1
 python sp_psychopy/sp.py --condition active --sub_id 1
 
-# or use the [Makefile](./Makefile) for a test run:
+# passive condition of participant 1, seeing the replay of participant 1
+# NOTE: you can use abbreviations -c and -s, ...
+python sp_psychopy/sp.py -c active -s 1
+
+# passive condition of participant 2, seeing a replay of participant 1
+# NOTE: can also use -y instead of --yoke_to
+python sp_psychopy/sp.py -c passive -s 2 --yoke_to 1
+
+# or use the Makefile for a test run:
+make active-test-run
+
+# passive test run only works, if data from active test run is present
+make passive-test-run
+
+# Clean up test data
 make clean-test-experiment-data
-make start-test-experiment
 ```
 
 # Instructions to participants

@@ -6,7 +6,6 @@ used to trigger a final choice.
 TODO:
 - incorporate eye tracking (gaze-contingent fixation cross)
 - testing passive replay
-- think about method to get passive replays if it is the starting condition
 
 """
 import os
@@ -59,8 +58,13 @@ from sp_psychopy.define_ttl_triggers import (trig_begin_experiment,
 # Participant information
 # =======================
 parser = argparse.ArgumentParser()
-parser.add_argument('--sub_id', '-s', type=str, required=True)
-parser.add_argument('--condition', '-c', type=str, required=True)
+parser.add_argument('--sub_id', '-s', type=str, required=True,
+                    help='The subject identifier. Preferably a number.')
+parser.add_argument('--condition', '-c', type=str, required=True,
+                    help='The task condition. "active" or "passive"')
+parser.add_argument('--yoke_to', '-y', type=str, required=False,
+                    help=('Which participant to yoke this current passive run '
+                          'to. Ignored in "active" condition. '))
 args = parser.parse_args()
 
 
@@ -182,10 +186,15 @@ payoff_settings = get_payoff_settings(expected_value_diff)
 rt_clock = core.Clock()
 
 # If we are in the passive condition, load pre-recorded data to replay
-fname = 'sub-{}_task-spactive_events.tsv'.format(args.sub_id)
-fpath = op.join(data_dir, fname)
-df = pd.read_csv(fpath, sep='\t')
-df = df[pd.notnull(df['trial'])]
+if args.condition == 'passive':
+    if args.yoke_to:
+        yoke_sub = args.yoke_to
+    else:
+        yoke_sub = args.sub_id
+    fname = 'sub-{}_task-spactive_events.tsv'.format(yoke_sub)
+    fpath = op.join(data_dir, fname)
+    df = pd.read_csv(fpath, sep='\t')
+    df = df[pd.notnull(df['trial'])]
 
 current_nblocks = 0
 current_ntrls = 0
