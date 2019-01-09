@@ -39,9 +39,10 @@ def get_payoff(df, omniscent=False):
         payoff in this df
 
     """
+    mintrial = int(df['trial'].min())
     ntrials = int(df['trial'].max()+1)
     outcomes = np.zeros(ntrials)
-    for trial in range(ntrials):
+    for trial in range(mintrial, ntrials):
 
         if omniscent:
             payoff_dict = get_passive_payoff_dict(df, trial)
