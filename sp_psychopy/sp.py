@@ -458,7 +458,7 @@ while current_ntrls < max_ntrls:
 
             # Is a block finished? If yes, display block feedback and provide
             # a short break
-            if current_ntrls % block_size == 0:
+            if current_ntrls % block_size == 0 and current_ntrls > 0:
                 current_nblocks += 1
 
                 df_tmp = pd.read_csv(data_file, sep='\t')
