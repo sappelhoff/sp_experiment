@@ -1,12 +1,15 @@
 """Simplified experimental flow.
 
-For fixed horizon SP, simply "forbid" the "down" key, which would otherwise be
-used to trigger a final choice.
+NOTE: For implementing fixed horizon SP:
+1. make a branch off this project called "open-horizon"
+2. "master" will be turned into "fixed-horizon"
+3. For fixed horizon SP, simply "forbid" the "down" key, which would
+   otherwise be used to trigger a final choice.
+4. That means simplyfing the part where actions are checked
 
 TODO:
 - incorporate eye tracking (gaze-contingent fixation cross)
-- testing passive replay
-
+- pre-pilot-testing
 """
 import os
 import os.path as op
@@ -273,16 +276,16 @@ while current_ntrls < max_ntrls:
         key, rt = keys_rts[0]
         current_nsamples += 1
         action = keylist_samples.index(key)
-        if action == 0 and current_nsamples < max_nsamples:
+        if action == 0 and current_nsamples <= max_nsamples:
             ser.write(trig_left_choice)
             value = trig_left_choice
-        elif action == 1 and current_nsamples < max_nsamples:
+        elif action == 1 and current_nsamples <= max_nsamples:
             ser.write(trig_right_choice)
             value = trig_right_choice
         elif action == 2 and current_nsamples > 1:
             ser.write(trig_final_choice)
             value = trig_final_choice
-        elif action in [0, 1] and current_nsamples == max_nsamples:
+        elif action in [0, 1] and current_nsamples > max_nsamples:
             # sampling too much, final choice is being forced
             ser.write(trig_forced_stop)
             value = trig_forced_stop
@@ -335,7 +338,7 @@ while current_ntrls < max_ntrls:
                              trial=current_ntrls, duration=frames,
                              outcome=outcome, value=trig_show_outcome)
 
-        else:  # action == 2 or current_nsamples == max_nsamples
+        else:  # action == 2 or current_nsamples > max_nsamples
             # First need to check that a minimum of samples has been taken
             # otherwise, it's an error
             if current_nsamples <= 1:
