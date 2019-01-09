@@ -240,7 +240,12 @@ while current_ntrls < max_ntrls:
         else:  # condition == 'passive'
             # Load action from recorded data
             keys_rts = get_passive_action(df, current_ntrls, current_nsamples)
-            core.wait(keys_rts[0][-1])  # wait for the time that was the RT
+            rt = keys_rts[0][-1]
+            # safeguard to never wait for more than maxwait_samples seconds,
+            # which is otherwise possible in the first sample of a trial
+            if rt >= maxwait_samples:
+                rt = np.random.randint(0, maxwait_samples)
+            core.wait(rt)  # wait for the time that was the RT
 
         if not keys_rts:
             if current_nsamples == 0:
