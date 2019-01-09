@@ -3,9 +3,6 @@
 main file: sp.py
 
 """
-import os
-import os.path as op
-
 import numpy as np
 from psychopy import visual
 
@@ -14,13 +11,6 @@ from sp_psychopy.define_payoff_settings import get_random_payoff_dict
 
 # Frames per second. Change depending on your hardware.
 utils_fps = 60
-
-# Define font to be used in this experiment
-init_dir = op.dirname(sp_psychopy.__file__)
-font = 'courier'
-# If it is a special font, add the .ttf file to be on the path defined below
-font_fpath = font + '.ttf'
-font_path = op.join(os.sep.join(init_dir.split(os.sep)[:-1]), font_fpath)
 
 
 class Fake_serial():
@@ -31,37 +21,47 @@ class Fake_serial():
         pass
 
 
-def get_omniscent_payoff(df):
-    """Go through block and simulate earnings of an omniscent player.
+def get_payoff(df, omniscent=False):
+    """Go through df and calculate earnings of participant.
 
     Parameters
     ----------
     df : pandas.DataFrame
         Data that was collected in this block
 
+    omniscent : bool
+        Whether or not to simulate the earnings of an omniscent participant
+        instead
+
     Returns
     -------
     payoff : int
-        Simulation of the payoff of an omniscent player in this block
+        payoff in this df
 
     """
     ntrials = int(df['trial'].max()+1)
     outcomes = np.zeros(ntrials)
     for trial in range(ntrials):
-        payoff_dict = get_passive_payoff_dict(df, trial)
-        # For the present setting, calculate expected values for each of
-        # the options
-        evs = list()
-        for option, distr in payoff_dict.items():
-            ev_list = [i*(distr.count(i)/len(distr)) for i in set(distr)]
-            evs.append(np.array(ev_list).sum())
-        # The omniscent player then picks a random draw from the objectively
-        # better option
-        outcome = np.random.choice(payoff_dict[evs.index(max(evs))])
-        outcomes[trial] = outcome
 
+        if omniscent:
+            payoff_dict = get_passive_payoff_dict(df, trial)
+            # For the present setting, calculate expected values for each of
+            # the options
+            evs = list()
+            for option, distr in payoff_dict.items():
+                ev_list = [i*(distr.count(i)/len(distr)) for i in set(distr)]
+                evs.append(np.array(ev_list).sum())
+            # The omniscent player picks a random draw from the objectively
+            # better option
+            outcome = np.random.choice(payoff_dict[evs.index(max(evs))])
+        else:
+            tmp_df = df[df['trial'] == trial]
+            # The last outcome recorded in a trial is final choice outcome
+            outcome = tmp_df['outcome'].dropna().tolist()[-1]
+
+        outcomes[trial] = outcome
     # The payoff is the sum of outcomes
-    payoff = outcomes.sum()
+    payoff = int(np.sum(outcomes))
     return payoff
 
 

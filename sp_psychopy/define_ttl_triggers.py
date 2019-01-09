@@ -52,3 +52,6 @@ trig_forced_stop = bytes([17])
 
 # If subject tried to make a final choice before taking at least one sample
 trig_premature_stop = bytes([18])
+
+# Display the block feedback
+trig_block_feedback = bytes([19])

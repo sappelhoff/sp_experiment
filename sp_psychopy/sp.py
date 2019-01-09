@@ -28,7 +28,8 @@ from sp_psychopy.utils import (utils_fps,
                                Fake_serial,
                                get_passive_payoff_dict,
                                get_passive_action,
-                               get_passive_outcome
+                               get_passive_outcome,
+                               get_payoff
                                )
 from sp_psychopy.define_payoff_settings import (get_payoff_settings,
                                                 get_random_payoff_dict
@@ -50,7 +51,8 @@ from sp_psychopy.define_ttl_triggers import (trig_begin_experiment,
                                              trig_end_experiment,
                                              trig_error,
                                              trig_forced_stop,
-                                             trig_premature_stop
+                                             trig_premature_stop,
+                                             trig_block_feedback
                                              )
 
 
@@ -93,7 +95,7 @@ with open(data_file, 'w') as fout:
 # Define monitor specific window object
 win = visual.Window(color=(0, 0, 0),  # Background color: RGB [-1,1]
                     fullscr=True,  # Fullscreen for better timing
-                    monitor='latitude7490',  # see monitor_definition.py
+                    monitor='p51',  # see monitor_definition.py
                     units='deg',
                     winType='pyglet')
 
@@ -132,8 +134,10 @@ ser = Fake_serial()
 # ===================
 condition = args.condition
 
-max_ntrls = 35
-max_nsamples = 30
+max_ntrls = 150  # for the whole experiment
+max_nsamples = 30  # per trial
+block_size = 30  # number of trials after which to offer a break and feedback
+assert max_ntrls % block_size == 0  # need to evenly divide trials into blocks
 
 font = 'Liberation Sans'  # Looks like Arial, but it's free!
 
@@ -174,6 +178,7 @@ txt_stim.height = 4  # set height for stimuli to be shown below
 payoff_settings = get_payoff_settings(expected_value_diff)
 
 # Start a clock for measuring reaction times
+# NOTE: Will be reset to 0 right before recording a button press
 rt_clock = core.Clock()
 
 # If we are in the passive condition, load pre-recorded data to replay
@@ -182,6 +187,7 @@ fpath = op.join(data_dir, fname)
 df = pd.read_csv(fpath, sep='\t')
 df = df[pd.notnull(df['trial'])]
 
+current_nblocks = 0
 current_ntrls = 0
 while current_ntrls < max_ntrls:
 
@@ -441,7 +447,37 @@ while current_ntrls < max_ntrls:
                              trial=current_ntrls, duration=frames,
                              outcome=outcome, value=trig_show_final_outcome)
 
-            # This trial is done, start the next one
+            # Is a block finished? If yes, display block feedback and provide
+            # a short break
+            if current_ntrls % block_size == 0:
+                current_nblocks += 1
+
+                df_tmp = pd.read_csv(data_file, sep='\t')
+                n_prev_trials = (current_nblocks-1) * block_size
+                df_block = df_tmp[df_tmp['trial'] >= n_prev_trials]
+                participant_payoff = get_payoff(df_block)
+                omniscent_payoff = get_payoff(df_block, omniscent=True)
+                [stim.setAutoDraw(False) for stim in fixation_stim_parts]
+                txt_stim.text = ('Block {}/{} done! You earned {}. A perfect '
+                                 'computer player earned {}. Press any key to '
+                                 'continue.'
+                                 .format(current_nblocks,
+                                         int(max_ntrls/block_size),
+                                         participant_payoff, omniscent_payoff))
+                txt_stim.pos = (0, 0)
+                txt_stim.height = 1
+                txt_stim.draw()
+                win.callOnFlip(ser.write, trig_end_experiment)
+                win.flip()
+                log_data(data_file, onset=exp_timer.getTime(),
+                         value=trig_block_feedback)
+                event.waitKeys()
+
+                # Reset stim settings for next block
+                [stim.setAutoDraw(True) for stim in fixation_stim_parts]
+                txt_stim.height = 4  # set height for stimuli to be shown below
+
+            # start the next trial
             current_ntrls += 1
             break
 

@@ -59,7 +59,8 @@
             "15": "a masked outcome is revealed after final choice",
             "16": "color of fixcross is changed to indicate an error (ignore all markers prior to this marker within this trial)",
             "17": "subject took the maximum number of samples and wanted to take yet another one",
-            "18": "subject tried to make a final choice before taking at least one sample"
+            "18": "subject tried to make a final choice before taking at least one sample",
+            "19": "block feedback is displayed"
         }
     },
     "mag0_1": {
