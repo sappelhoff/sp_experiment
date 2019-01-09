@@ -12,7 +12,7 @@ if __name__ == '__main__':
 
     # My Lenovo P51 monitor
     my_monitor = monitors.Monitor(name='p51')
-    my_monitor.setSizePix((1920, 1080))
+    my_monitor.setSizePix((3840, 2160))
     my_monitor.setWidth(34.6)  # width of display in cm
     my_monitor.setDistance(50)  # distance of eyes from screen in cm
     my_monitor.saveMon()
