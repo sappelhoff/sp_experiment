@@ -483,6 +483,7 @@ while current_ntrls < max_ntrls:
                 win.flip()
                 log_data(data_file, onset=exp_timer.getTime(),
                          value=trig_block_feedback)
+                core.wait(1)  # wait for a bit so that this is not skipped
                 event.waitKeys()
 
                 # Reset stim settings for next block
