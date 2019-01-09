@@ -153,7 +153,7 @@ maxwait_samples = 5  # Maximum seconds we wait for a sample
 maxwait_finchoice = 5  # can also be float('inf') to wait forever
 
 keylist_samples = ['left', 'right', 'down', 'x']  # press x to quit
-keylist_finchoice = ['left', 'right']
+keylist_finchoice = ['left', 'right', 'x']
 
 expected_value_diff = 0.1  # For payoff settings to be used
 
@@ -396,36 +396,31 @@ while current_ntrls < max_ntrls:
                                       timeStamped=rt_clock)
 
             if not keys_rts:
-                if current_nsamples == 0:
-                    # No keypress in due time: Is this the first sample in the
-                    # trial? If yes, forgive them and wait for a response
-                    # forever
-                    keys_rts = event.waitKeys(maxWait=float('inf'),
-                                              keyList=keylist_samples,
-                                              timeStamped=rt_clock)
-                else:  # Else: raise an error and start new trial
-                    set_fixstim_color(inner, color_error)
-                    win.callOnFlip(ser.write, trig_error)
-                    frames = get_jittered_waitframes(*tdisplay_ms)
-                    for frame in range(frames):
-                        win.flip()
-                        if frame == 0:
-                            # Log an event that we have to disregard all prior
-                            # events in this trial
-                            log_data(data_file, onset=exp_timer.getTime(),
-                                     trial=current_ntrls, value=trig_error,
-                                     duration=frames, reset=True)
-                    # start a new trial without incrementing the trial counter
-                    break
+                # No keypress in due time: raise an error and start new trial
+                set_fixstim_color(inner, color_error)
+                win.callOnFlip(ser.write, trig_error)
+                frames = get_jittered_waitframes(*tdisplay_ms)
+                for frame in range(frames):
+                    win.flip()
+                    if frame == 0:
+                        # Log an event that we have to disregard all prior
+                        # events in this trial
+                        log_data(data_file, onset=exp_timer.getTime(),
+                                 trial=current_ntrls, value=trig_error,
+                                 duration=frames, reset=True)
+                # start a new trial without incrementing the trial counter
+                break
 
             key, rt = keys_rts[0]
-            action = keylist_samples.index(key)
+            action = keylist_finchoice.index(key)
             if action == 0:
                 ser.write(trig_left_final_choice)
                 value = trig_left_final_choice
             elif action == 1:
                 ser.write(trig_right_final_choice)
                 value = trig_right_final_choice
+            elif action == 2:
+                core.quit()
 
             # NOTE: add 3 to "action" to distinguish final choice from sampling
             log_data(data_file, onset=exp_timer.getTime(), trial=current_ntrls,
