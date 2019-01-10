@@ -21,6 +21,42 @@ class Fake_serial():
         pass
 
 
+def get_performance(df):
+    """Get percentage option with higher expected value chosen.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        Data that was collected in this block
+
+    Returns
+    -------
+    perf : float
+        performance in percent for this df.
+
+    """
+    mintrial = int(df['trial'].min())
+    ntrials = int(df['trial'].max()+1)
+    outcomes = list()
+    for trial in range(mintrial, ntrials):
+
+        payoff_dict = get_passive_payoff_dict(df, trial)
+        # For the present setting, calculate expected values for each of
+        # the options ... better option has a higher EV
+        evs = list()
+        for option, distr in payoff_dict.items():
+            ev_list = [i*(distr.count(i)/len(distr)) for i in set(distr)]
+            evs.append(np.array(ev_list).sum())
+        better_option = evs.index(max(evs))
+
+        # Chosen option is the last action of the current trial
+        chosen_option = df[df['trial'] == trial]['action'].dropna().iloc[-1]
+        outcomes.append(chosen_option == better_option)
+
+    perf = np.round(np.array(outcomes).mean() * 100, 2)
+    return perf
+
+
 def get_payoff(df, omniscent=False):
     """Go through df and calculate earnings of participant.
 

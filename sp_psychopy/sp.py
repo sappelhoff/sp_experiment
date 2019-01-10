@@ -31,7 +31,7 @@ from sp_psychopy.utils import (utils_fps,
                                get_passive_payoff_dict,
                                get_passive_action,
                                get_passive_outcome,
-                               get_payoff
+                               get_performance
                                )
 from sp_psychopy.define_payoff_settings import (get_payoff_settings,
                                                 get_random_payoff_dict
@@ -101,6 +101,7 @@ with open(data_file, 'w') as fout:
 # ==========================
 # Define monitor specific window object
 win = visual.Window(color=(0, 0, 0),  # Background color: RGB [-1,1]
+                    noGUI=True,  # so that cursor is set to invisible
                     fullscr=True,  # Fullscreen for better timing
                     monitor='p51',  # see monitor_definition.py
                     units='deg',
@@ -467,15 +468,16 @@ while current_ntrls < max_ntrls:
                 df_tmp = pd.read_csv(data_file, sep='\t')
                 n_prev_trials = (current_nblocks-1) * block_size
                 df_block = df_tmp[df_tmp['trial'] >= n_prev_trials]
-                participant_payoff = get_payoff(df_block)
-                omniscent_payoff = get_payoff(df_block, omniscent=True)
+                perf = get_performance(df_block)
                 [stim.setAutoDraw(False) for stim in fixation_stim_parts]
-                txt_stim.text = ('Block {}/{} done! You earned {}. A perfect '
-                                 'computer player earned {}. Press any key to '
-                                 'continue.'
+                txt_stim.text = ('Block {}/{} done! Your performance level was'
+                                 ' at {} % of an optimal performance.'
+                                 ' Remember that your performance '
+                                 ' has a direct impact on your payoff.'
+                                 ' Press any key to continue.'
                                  .format(current_nblocks,
                                          int(max_ntrls/block_size),
-                                         participant_payoff, omniscent_payoff))
+                                         perf))
                 txt_stim.pos = (0, 0)
                 txt_stim.height = 1
                 txt_stim.draw()
