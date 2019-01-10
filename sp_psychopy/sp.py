@@ -156,6 +156,7 @@ tdisplay_ms = (900, 1100)  # delay if "new trial", "error", "final choice"
 maxwait_samples = 5  # Maximum seconds we wait for a sample
 maxwait_finchoice = 5  # can also be float('inf') to wait forever
 
+# use 's', 'd', 'f' instead of left, right, down for the button box at MPIB
 keylist_samples = ['left', 'right', 'down', 'x']  # press x to quit
 keylist_finchoice = ['left', 'right', 'x']
 
