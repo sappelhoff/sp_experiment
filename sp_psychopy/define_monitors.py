@@ -24,6 +24,13 @@ if __name__ == '__main__':
     my_monitor.setDistance(50)  # distance of eyes from screen in cm
     my_monitor.saveMon()
 
+    # Eizo Foris monitor in the lab
+    my_monitor = monitors.Monitor(name='eizoforis')
+    my_monitor.setSizePix((2560, 1440))
+    my_monitor.setWidth(60)
+    my_monitor.setDistance(50)  # distance of eyes from screen in cm
+    my_monitor.saveMon()
+
     # Add new monitor below
 
     # Print all available monitors
