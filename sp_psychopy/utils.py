@@ -57,7 +57,7 @@ def get_performance(df):
     return perf
 
 
-def get_payoff(df, omniscent=False):
+def get_payoff(df, play_style='participant'):
     """Go through df and calculate earnings of participant.
 
     Parameters
@@ -65,23 +65,33 @@ def get_payoff(df, omniscent=False):
     df : pandas.DataFrame
         Data that was collected in this block
 
-    omniscent : bool
-        Whether or not to simulate the earnings of an omniscent participant
-        instead
+    play_style : str, one of ['participant', 'best', 'omniscent']
+        Which payoff to simulate, defaults to 'participant'.
+        'participant' = Actual payoff
+        'best' = Best possible payoff
+        'omniscent' = Simulated payoff if only high EV options picked
 
     Returns
     -------
     payoff : int
-        payoff in this df
+        payoff in this df (SUM of all outcomes)
 
     """
+    assert play_style in ['participant', 'best', 'omniscent']
     mintrial = int(df['trial'].min())
     ntrials = int(df['trial'].max()+1)
     outcomes = np.zeros(ntrials)
     for trial in range(mintrial, ntrials):
 
-        if omniscent:
+        if play_style == 'best':
             payoff_dict = get_passive_payoff_dict(df, trial)
+
+            # A lucky player always gets the best possible outcome
+            outcome = max([i for j in payoff_dict.values() for i in j])
+
+        elif play_style == 'omniscent':
+            payoff_dict = get_passive_payoff_dict(df, trial)
+
             # For the present setting, calculate expected values for each of
             # the options
             evs = list()
@@ -91,7 +101,8 @@ def get_payoff(df, omniscent=False):
             # The omniscent player picks a random draw from the objectively
             # better option
             outcome = np.random.choice(payoff_dict[evs.index(max(evs))])
-        else:
+
+        else:  # play_style == 'participant'
             tmp_df = df[df['trial'] == trial]
             # The last outcome recorded in a trial is final choice outcome
             outcome = tmp_df['outcome'].dropna().tolist()[-1]

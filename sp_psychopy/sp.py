@@ -31,7 +31,7 @@ from sp_psychopy.utils import (utils_fps,
                                get_passive_payoff_dict,
                                get_passive_action,
                                get_passive_outcome,
-                               get_performance
+                               get_payoff
                                )
 from sp_psychopy.define_payoff_settings import (get_payoff_settings,
                                                 get_random_payoff_dict
@@ -142,23 +142,22 @@ ser = Fake_serial()
 # ===================
 condition = args.condition
 
-max_ntrls = 150  # for the whole experiment
+max_ntrls = 100  # for the whole experiment
 max_nsamples = 30  # per trial
-block_size = 30  # number of trials after which to offer a break and feedback
+block_size = 20  # number of trials after which to offer a break and feedback
 assert max_ntrls % block_size == 0  # need to evenly divide trials into blocks
 
 font = 'Liberation Sans'  # Looks like Arial, but it's free!
 
-toutmask_ms = (600, 800)  # time for masking an outcome
-toutshow_ms = (500, 750)  # time for showing an outcome
+toutmask_ms = (600, 1100)  # time for masking an outcome
+toutshow_ms = (600, 1100)  # time for showing an outcome
 tdisplay_ms = (900, 1100)  # delay if "new trial", "error", "final choice"
 
 maxwait_samples = 5  # Maximum seconds we wait for a sample
 maxwait_finchoice = 5  # can also be float('inf') to wait forever
 
-# use 's', 'd', 'f' instead of left, right, down for the button box at MPIB
-keylist_samples = ['left', 'right', 'down', 'x']  # press x to quit
-keylist_finchoice = ['left', 'right', 'x']
+keylist_samples = ['s', 'd', 'f', 'x']  # press x to quit
+keylist_finchoice = ['s', 'd', 'x']
 
 expected_value_diff = 0.1  # For payoff settings to be used
 
@@ -469,16 +468,18 @@ while current_ntrls < max_ntrls:
                 df_tmp = pd.read_csv(data_file, sep='\t')
                 n_prev_trials = (current_nblocks-1) * block_size
                 df_block = df_tmp[df_tmp['trial'] >= n_prev_trials]
-                perf = get_performance(df_block)
+                payoff_participant = get_payoff(df_block)
+                payoff_best = get_payoff(df_block, play_style='best')
                 [stim.setAutoDraw(False) for stim in fixation_stim_parts]
-                txt_stim.text = ('Block {}/{} done! Your performance level was'
-                                 ' at {} % of an optimal performance.'
+                txt_stim.text = ('Block {}/{} done! You earned {} of {}'
+                                 ' possible points.'
                                  ' Remember that your performance '
                                  ' has a direct impact on your payoff.'
                                  ' Press any key to continue.'
                                  .format(current_nblocks,
                                          int(max_ntrls/block_size),
-                                         perf))
+                                         payoff_participant,
+                                         payoff_best))
                 txt_stim.pos = (0, 0)
                 txt_stim.height = 1
                 txt_stim.draw()
