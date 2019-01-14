@@ -21,6 +21,36 @@ class Fake_serial():
         pass
 
 
+def get_most_common_outcome(df):
+    """Get the currently most commonly received outcome in final choices.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        Data that was collected in this block
+
+    Returns
+    -------
+    most_common : int in range(1, 10)
+        most commonly received outcome in final choices.
+
+    """
+    ntrials = int(df['trial'].max()+1)
+    outcomes = list()
+    for trial in range(ntrials):
+        tmp_df = df[df['trial'] == trial]
+        # The last outcome recorded in a trial is final choice outcome
+        outcome = tmp_df['outcome'].dropna().tolist()[-1]
+        outcomes.append(outcome)
+
+    sorted_unique_outcomes = sorted(set(outcomes))
+    hist = [outcomes.count(i) for i in sorted_unique_outcomes]
+    # NOTE: If there are several equally common outcomes, this will return
+    # the lowest of them
+    most_common = int(sorted_unique_outcomes[hist.index(max(hist))])
+    return most_common
+
+
 def get_performance(df):
     """Get percentage option with higher expected value chosen.
 

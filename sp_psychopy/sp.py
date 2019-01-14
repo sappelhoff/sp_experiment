@@ -31,7 +31,7 @@ from sp_psychopy.utils import (utils_fps,
                                get_passive_payoff_dict,
                                get_passive_action,
                                get_passive_outcome,
-                               get_payoff
+                               get_most_common_outcome
                                )
 from sp_psychopy.define_payoff_settings import (get_payoff_settings,
                                                 get_random_payoff_dict
@@ -466,20 +466,16 @@ while current_ntrls < max_ntrls:
                 current_nblocks += 1
 
                 df_tmp = pd.read_csv(data_file, sep='\t')
-                n_prev_trials = (current_nblocks-1) * block_size
-                df_block = df_tmp[df_tmp['trial'] >= n_prev_trials]
-                payoff_participant = get_payoff(df_block)
-                payoff_best = get_payoff(df_block, play_style='best')
+                most_common = get_most_common_outcome(df_tmp)
                 [stim.setAutoDraw(False) for stim in fixation_stim_parts]
-                txt_stim.text = ('Block {}/{} done! You earned {} of {}'
-                                 ' possible points.'
-                                 ' Remember that your performance '
-                                 ' has a direct impact on your payoff.'
+                txt_stim.text = ('Block {}/{} done! Your most commonly '
+                                 ' earned outcome so far is {}.'
+                                 ' Remember that from all your outcomes,'
+                                 ' a final draw will be paid to you in Euros.'
                                  ' Press any key to continue.'
                                  .format(current_nblocks,
                                          int(max_ntrls/block_size),
-                                         payoff_participant,
-                                         payoff_best))
+                                         most_common))
                 txt_stim.pos = (0, 0)
                 txt_stim.height = 1
                 txt_stim.draw()
