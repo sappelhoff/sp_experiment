@@ -28,7 +28,7 @@ from sp_psychopy.utils import (utils_fps,
                                get_jittered_waitframes,
                                log_data,
                                Fake_serial,
-                               get_passive_payoff_dict,
+                               get_payoff_dict,
                                get_passive_action,
                                get_passive_outcome,
                                get_most_common_outcome
@@ -210,7 +210,7 @@ while current_ntrls < max_ntrls:
         log_data(data_file, onset=exp_timer.getTime(), trial=current_ntrls,
                  payoff_dict=payoff_dict)
     else:  # condition == 'passive'
-        payoff_dict = get_passive_payoff_dict(df, current_ntrls)
+        payoff_dict = get_payoff_dict(df, current_ntrls)
         log_data(data_file, onset=exp_timer.getTime(), trial=current_ntrls,
                  payoff_dict=payoff_dict)
 

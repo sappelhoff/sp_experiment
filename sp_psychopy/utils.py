@@ -70,7 +70,7 @@ def get_performance(df):
     outcomes = list()
     for trial in range(mintrial, ntrials):
 
-        payoff_dict = get_passive_payoff_dict(df, trial)
+        payoff_dict = get_payoff_dict(df, trial)
         # For the present setting, calculate expected values for each of
         # the options ... better option has a higher EV
         evs = list()
@@ -114,13 +114,13 @@ def get_payoff(df, play_style='participant'):
     for trial in range(mintrial, ntrials):
 
         if play_style == 'best':
-            payoff_dict = get_passive_payoff_dict(df, trial)
+            payoff_dict = get_payoff_dict(df, trial)
 
             # A lucky player always gets the best possible outcome
             outcome = max([i for j in payoff_dict.values() for i in j])
 
         elif play_style == 'omniscent':
-            payoff_dict = get_passive_payoff_dict(df, trial)
+            payoff_dict = get_payoff_dict(df, trial)
 
             # For the present setting, calculate expected values for each of
             # the options
@@ -143,16 +143,16 @@ def get_payoff(df, play_style='participant'):
     return payoff
 
 
-def get_passive_payoff_dict(df, trial):
-    """Get data for a replay.
+def get_payoff_dict(df, trial):
+    """Get the payoff dict at a trial within the data.
 
     Parameters
     ----------
     df : pandas.DataFrame
-        Data to be replayed
+        Data from where to get the payoff dict
 
     trial : int
-        Indices into the data for which to fetch actions
+        Index into the data for which to fetch the payoff setting
 
     Returns
     -------
