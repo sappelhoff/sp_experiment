@@ -152,7 +152,7 @@ def get_payoff_dict(df, trial):
         Data from where to get the payoff dict
 
     trial : int
-        Index into the data for which to fetch the payoff setting
+        Index into the data for which to fetch the payoff dict
 
     Returns
     -------

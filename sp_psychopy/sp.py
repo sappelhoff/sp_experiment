@@ -101,11 +101,13 @@ with open(data_file, 'w') as fout:
 # ==========================
 # Define monitor specific window object
 win = visual.Window(color=(0, 0, 0),  # Background color: RGB [-1,1]
-                    noGUI=True,  # so that cursor is set to invisible
                     fullscr=True,  # Fullscreen for better timing
                     monitor='eizoforis',  # see monitor_definition.py
                     units='deg',
                     winType='pyglet')
+
+# Hide the cursor
+win.mouseVisible = False
 
 # On which frame rate are we operating?
 fps = int(round(win.getActualFrameRate()))
