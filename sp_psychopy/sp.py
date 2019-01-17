@@ -31,7 +31,7 @@ from sp_psychopy.utils import (utils_fps,
                                get_payoff_dict,
                                get_passive_action,
                                get_passive_outcome,
-                               get_most_common_outcome
+                               get_mean_outcome
                                )
 from sp_psychopy.define_payoff_settings import (get_payoff_settings,
                                                 get_random_payoff_dict
@@ -468,16 +468,16 @@ while current_ntrls < max_ntrls:
                 current_nblocks += 1
 
                 df_tmp = pd.read_csv(data_file, sep='\t')
-                most_common = get_most_common_outcome(df_tmp)
+                mean_outcome = get_mean_outcome(df_tmp)
                 [stim.setAutoDraw(False) for stim in fixation_stim_parts]
-                txt_stim.text = ('Block {}/{} done! Your most commonly '
+                txt_stim.text = ('Block {}/{} done! Your average '
                                  ' earned outcome so far is {}.'
                                  ' Remember that from all your outcomes,'
                                  ' a final draw will be paid to you in Euros.'
                                  ' Press any key to continue.'
                                  .format(current_nblocks,
                                          int(max_ntrls/block_size),
-                                         most_common))
+                                         mean_outcome))
                 txt_stim.pos = (0, 0)
                 txt_stim.height = 1
                 txt_stim.draw()

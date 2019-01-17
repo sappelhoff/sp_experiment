@@ -21,8 +21,8 @@ class Fake_serial():
         pass
 
 
-def get_most_common_outcome(df):
-    """Get the currently most commonly received outcome in final choices.
+def get_mean_outcome(df):
+    """Get the mean received outcome in final choices.
 
     Parameters
     ----------
@@ -31,116 +31,19 @@ def get_most_common_outcome(df):
 
     Returns
     -------
-    most_common : int in range(1, 10)
-        most commonly received outcome in final choices.
+    mean_outcome : int
+        mean received outcome in final choices rounded to next int.
 
     """
     ntrials = int(df['trial'].max()+1)
-    outcomes = list()
+    outcomes = np.zeros(ntrials) * np.nan
     for trial in range(ntrials):
         tmp_df = df[df['trial'] == trial]
         # The last outcome recorded in a trial is final choice outcome
-        outcome = tmp_df['outcome'].dropna().tolist()[-1]
-        outcomes.append(outcome)
+        outcomes[trial] = tmp_df['outcome'].dropna().tolist()[-1]
 
-    sorted_unique_outcomes = sorted(set(outcomes))
-    hist = [outcomes.count(i) for i in sorted_unique_outcomes]
-    # NOTE: If there are several equally common outcomes, this will return
-    # the lowest of them
-    most_common = int(sorted_unique_outcomes[hist.index(max(hist))])
-    return most_common
-
-
-def get_performance(df):
-    """Get percentage option with higher expected value chosen.
-
-    Parameters
-    ----------
-    df : pandas.DataFrame
-        Data that was collected in this block
-
-    Returns
-    -------
-    perf : float
-        performance in percent for this df.
-
-    """
-    mintrial = int(df['trial'].min())
-    ntrials = int(df['trial'].max()+1)
-    outcomes = list()
-    for trial in range(mintrial, ntrials):
-
-        payoff_dict = get_payoff_dict(df, trial)
-        # For the present setting, calculate expected values for each of
-        # the options ... better option has a higher EV
-        evs = list()
-        for option, distr in payoff_dict.items():
-            ev_list = [i*(distr.count(i)/len(distr)) for i in set(distr)]
-            evs.append(np.array(ev_list).sum())
-        better_option = evs.index(max(evs))
-
-        # Chosen option is the last action of the current trial
-        chosen_option = df[df['trial'] == trial]['action'].dropna().iloc[-1]
-        outcomes.append(chosen_option == better_option)
-
-    perf = np.round(np.array(outcomes).mean() * 100, 2)
-    return perf
-
-
-def get_payoff(df, play_style='participant'):
-    """Go through df and calculate earnings of participant.
-
-    Parameters
-    ----------
-    df : pandas.DataFrame
-        Data that was collected in this block
-
-    play_style : str, one of ['participant', 'best', 'omniscent']
-        Which payoff to simulate, defaults to 'participant'.
-        'participant' = Actual payoff
-        'best' = Best possible payoff
-        'omniscent' = Simulated payoff if only high EV options picked
-
-    Returns
-    -------
-    payoff : int
-        payoff in this df (SUM of all outcomes)
-
-    """
-    assert play_style in ['participant', 'best', 'omniscent']
-    mintrial = int(df['trial'].min())
-    ntrials = int(df['trial'].max()+1)
-    outcomes = np.zeros(ntrials)
-    for trial in range(mintrial, ntrials):
-
-        if play_style == 'best':
-            payoff_dict = get_payoff_dict(df, trial)
-
-            # A lucky player always gets the best possible outcome
-            outcome = max([i for j in payoff_dict.values() for i in j])
-
-        elif play_style == 'omniscent':
-            payoff_dict = get_payoff_dict(df, trial)
-
-            # For the present setting, calculate expected values for each of
-            # the options
-            evs = list()
-            for option, distr in payoff_dict.items():
-                ev_list = [i*(distr.count(i)/len(distr)) for i in set(distr)]
-                evs.append(np.array(ev_list).sum())
-            # The omniscent player picks a random draw from the objectively
-            # better option
-            outcome = np.random.choice(payoff_dict[evs.index(max(evs))])
-
-        else:  # play_style == 'participant'
-            tmp_df = df[df['trial'] == trial]
-            # The last outcome recorded in a trial is final choice outcome
-            outcome = tmp_df['outcome'].dropna().tolist()[-1]
-
-        outcomes[trial] = outcome
-    # The payoff is the sum of outcomes
-    payoff = int(np.sum(outcomes))
-    return payoff
+    mean_outcome = int(np.ceil(np.mean(outcomes)))
+    return mean_outcome
 
 
 def get_payoff_dict(df, trial):
