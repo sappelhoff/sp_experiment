@@ -21,18 +21,18 @@ class Fake_serial():
         pass
 
 
-def get_mean_outcome(df):
-    """Get the mean received outcome in final choices.
+def get_final_choice_outcomes(df):
+    """Get a vector of the final choice outcomes.
 
     Parameters
     ----------
     df : pandas.DataFrame
-        Data that was collected in this block
+        Data that was collected
 
     Returns
     -------
-    mean_outcome : int
-        mean received outcome in final choices rounded to next int.
+    outcomes : int
+        vector of outcomes final choices.
 
     """
     ntrials = int(df['trial'].max()+1)
@@ -42,8 +42,7 @@ def get_mean_outcome(df):
         # The last outcome recorded in a trial is final choice outcome
         outcomes[trial] = tmp_df['outcome'].dropna().tolist()[-1]
 
-    mean_outcome = int(np.ceil(np.mean(outcomes)))
-    return mean_outcome
+    return outcomes
 
 
 def get_payoff_dict(df, trial):

@@ -31,7 +31,7 @@ from sp_psychopy.utils import (utils_fps,
                                get_payoff_dict,
                                get_passive_action,
                                get_passive_outcome,
-                               get_mean_outcome
+                               get_final_choice_outcomes
                                )
 from sp_psychopy.define_payoff_settings import (get_payoff_settings,
                                                 get_random_payoff_dict
@@ -468,7 +468,8 @@ while current_ntrls < max_ntrls:
                 current_nblocks += 1
 
                 df_tmp = pd.read_csv(data_file, sep='\t')
-                mean_outcome = get_mean_outcome(df_tmp)
+                outcomes = get_final_choice_outcomes(df_tmp)
+                mean_outcome = mean_outcome = int(np.ceil(np.mean(outcomes)))
                 [stim.setAutoDraw(False) for stim in fixation_stim_parts]
                 txt_stim.text = ('Block {}/{} done! Your average '
                                  ' earned outcome so far is {}.'
