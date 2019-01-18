@@ -7,3 +7,6 @@ active-test-run:
 
 passive-test-run:
 	python sp_experiment/sp.py --sub_id a415b473 --condition passive
+
+test:
+	pytest --verbose --cov=sp_experiment
