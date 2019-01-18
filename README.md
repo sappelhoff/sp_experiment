@@ -59,11 +59,7 @@ make clean-test-experiment-data
 All participants should read this instruction text and should also be allowed
 to perform some test trials until they have fully understood the paradigm.
 
-## German
-TBD
-
-## English
-TBD
+see [participant_instructions](./participant_instuctions)
 
 ---
 # Background Literature on the Sampling Paradigm:

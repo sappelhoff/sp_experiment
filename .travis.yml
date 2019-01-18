@@ -13,6 +13,7 @@ before_install:
 install:
     - conda env create -f environment.yml
     - source activate psypy3
+    - pip install -e .
 
 script:
     - pytest --cov --verbose

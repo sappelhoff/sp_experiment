@@ -23,39 +23,39 @@ from psychopy import visual, event, core
 
 import sp_experiment
 from sp_experiment.utils import (utils_fps,
-                               get_fixation_stim,
-                               set_fixstim_color,
-                               get_jittered_waitframes,
-                               log_data,
-                               Fake_serial,
-                               get_payoff_dict,
-                               get_passive_action,
-                               get_passive_outcome,
-                               get_final_choice_outcomes
-                               )
+                                 get_fixation_stim,
+                                 set_fixstim_color,
+                                 get_jittered_waitframes,
+                                 log_data,
+                                 Fake_serial,
+                                 get_payoff_dict,
+                                 get_passive_action,
+                                 get_passive_outcome,
+                                 get_final_choice_outcomes
+                                 )
 from sp_experiment.define_payoff_settings import (get_payoff_settings,
-                                                get_random_payoff_dict
-                                                )
+                                                  get_random_payoff_dict
+                                                  )
 from sp_experiment.define_ttl_triggers import (trig_begin_experiment,
-                                             trig_new_trl,
-                                             trig_sample_onset,
-                                             trig_left_choice,
-                                             trig_right_choice,
-                                             trig_final_choice,
-                                             trig_mask_outcome,
-                                             trig_show_outcome,
-                                             trig_new_final_choice,
-                                             trig_final_choice_onset,
-                                             trig_left_final_choice,
-                                             trig_right_final_choice,
-                                             trig_mask_final_outcome,
-                                             trig_show_final_outcome,
-                                             trig_end_experiment,
-                                             trig_error,
-                                             trig_forced_stop,
-                                             trig_premature_stop,
-                                             trig_block_feedback
-                                             )
+                                               trig_new_trl,
+                                               trig_sample_onset,
+                                               trig_left_choice,
+                                               trig_right_choice,
+                                               trig_final_choice,
+                                               trig_mask_outcome,
+                                               trig_show_outcome,
+                                               trig_new_final_choice,
+                                               trig_final_choice_onset,
+                                               trig_left_final_choice,
+                                               trig_right_final_choice,
+                                               trig_mask_final_outcome,
+                                               trig_show_final_outcome,
+                                               trig_end_experiment,
+                                               trig_error,
+                                               trig_forced_stop,
+                                               trig_premature_stop,
+                                               trig_block_feedback
+                                               )
 
 
 # Participant information
