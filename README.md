@@ -31,15 +31,15 @@ There is one optional argument:
 ```bash
 # from the project root
 # active condition of participant 1
-python sp_psychopy/sp.py --condition active --sub_id 1
+python sp_experiment/sp.py --condition active --sub_id 1
 
 # passive condition of participant 1, seeing the replay of participant 1
 # NOTE: you can use abbreviations -c and -s, ...
-python sp_psychopy/sp.py -c active -s 1
+python sp_experiment/sp.py -c active -s 1
 
 # passive condition of participant 2, seeing a replay of participant 1
 # NOTE: can also use -y instead of --yoke_to
-python sp_psychopy/sp.py -c passive -s 2 --yoke_to 1
+python sp_experiment/sp.py -c passive -s 2 --yoke_to 1
 
 # or use the Makefile for a test run:
 make active-test-run

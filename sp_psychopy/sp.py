@@ -21,8 +21,8 @@ import numpy as np
 import pandas as pd
 from psychopy import visual, event, core
 
-import sp_psychopy
-from sp_psychopy.utils import (utils_fps,
+import sp_experiment
+from sp_experiment.utils import (utils_fps,
                                get_fixation_stim,
                                set_fixstim_color,
                                get_jittered_waitframes,
@@ -33,10 +33,10 @@ from sp_psychopy.utils import (utils_fps,
                                get_passive_outcome,
                                get_final_choice_outcomes
                                )
-from sp_psychopy.define_payoff_settings import (get_payoff_settings,
+from sp_experiment.define_payoff_settings import (get_payoff_settings,
                                                 get_random_payoff_dict
                                                 )
-from sp_psychopy.define_ttl_triggers import (trig_begin_experiment,
+from sp_experiment.define_ttl_triggers import (trig_begin_experiment,
                                              trig_new_trl,
                                              trig_sample_onset,
                                              trig_left_choice,
@@ -76,7 +76,7 @@ args = parser.parse_args()
 fname = 'sub-{}_task-sp{}_events.tsv'.format(args.sub_id, args.condition)
 
 # Check directory is present and file name not yet used
-init_dir = op.dirname(sp_psychopy.__file__)
+init_dir = op.dirname(sp_experiment.__file__)
 data_dir = op.join(init_dir, 'experiment_data')
 if not op.exists(data_dir):
     os.mkdir(data_dir)
