@@ -23,7 +23,6 @@ from psychopy import visual, event, core
 
 import sp_experiment
 from sp_experiment.utils import (utils_fps,
-                                 get_fixation_stim,
                                  set_fixstim_color,
                                  get_jittered_waitframes,
                                  log_data,
@@ -33,6 +32,7 @@ from sp_experiment.utils import (utils_fps,
                                  get_passive_outcome,
                                  get_final_choice_outcomes
                                  )
+from sp_experiment.psychopy_utils import (get_fixation_stim)
 from sp_experiment.define_payoff_settings import (get_payoff_settings,
                                                   get_random_payoff_dict
                                                   )

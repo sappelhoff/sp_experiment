@@ -7,7 +7,8 @@ language: python
 matrix:
   include:
       - os:linux
-        env: PYTHON_VERSION=3.6 DISPLAY=:99.0 AUDIODEV=null
+        # add under env? --> DISPLAY=:99.0 AUDIODEV=null
+        env: PYTHON_VERSION=3.6
 
 before_install:
   - wget -q http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
