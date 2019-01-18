@@ -18,3 +18,4 @@ dependencies:
   - openpyxl
   - configobj
   - psychopy==3.0.0
+  - pytest

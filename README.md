@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/sappelhoff/sp_experiment.svg?branch=master)](https://travis-ci.org/sappelhoff/sp_experiment)
+
 # Implementing the Sampling Paradigm in PsychoPy
 
 The sampling paradigm is an experimental paradigm in which participants are
