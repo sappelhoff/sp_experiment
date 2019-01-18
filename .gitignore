@@ -1,5 +1,7 @@
 experiment_data/
 
+# libreoffice files
+.~lock.*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
