@@ -19,3 +19,4 @@ dependencies:
   - configobj
   - psychopy==3.0.0
   - pytest
+  - pytest-cov

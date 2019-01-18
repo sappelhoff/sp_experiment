@@ -15,7 +15,7 @@ install:
     - source activate psypy3
 
 script:
-    - pytest --verbose
+    - pytest --cov --verbose
 
 after_success:
 - bash <(curl -s https://codecov.io/bash)

@@ -158,8 +158,8 @@ def get_jittered_waitframes(min_wait, max_wait, fps=utils_fps):
 
 def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
              outcome='n/a', response_time='n/a', value='n/a',
-             payoff_dict='n/a', fps=utils_fps, version=sp_experiment.__version__,
-             reset=False):
+             payoff_dict='n/a', fps=utils_fps,
+             version=sp_experiment.__version__, reset=False):
     """Write data to the log file.
 
     All inputs except the file path default to 'n/a'.
