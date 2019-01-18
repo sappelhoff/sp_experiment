@@ -34,7 +34,7 @@ def get_final_choice_outcomes(df):
 
     Returns
     -------
-    outcomes : int
+    outcomes : ndarray
         vector of outcomes final choices.
 
     """

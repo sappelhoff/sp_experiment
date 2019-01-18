@@ -144,15 +144,15 @@ ser = Fake_serial()
 # ===================
 condition = args.condition
 
-max_ntrls = 100  # for the whole experiment
+max_ntrls = 2  # for the whole experiment
 max_nsamples = 30  # per trial
-block_size = 20  # number of trials after which to offer a break and feedback
+block_size = 1  # number of trials after which to offer a break and feedback
 assert max_ntrls % block_size == 0  # need to evenly divide trials into blocks
 
 font = 'Liberation Sans'  # Looks like Arial, but it's free!
 
-toutmask_ms = (600, 1100)  # time for masking an outcome
-toutshow_ms = (600, 1100)  # time for showing an outcome
+toutmask_ms = (1000, 1500)  # time for masking an outcome
+toutshow_ms = (1000, 1500)  # time for showing an outcome
 tdisplay_ms = (900, 1100)  # delay if "new trial", "error", "final choice"
 
 maxwait_samples = 5  # Maximum seconds we wait for a sample
