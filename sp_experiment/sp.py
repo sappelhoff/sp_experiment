@@ -155,8 +155,8 @@ toutmask_ms = (1000, 1500)  # time for masking an outcome
 toutshow_ms = (1000, 1500)  # time for showing an outcome
 tdisplay_ms = (900, 1100)  # delay if "new trial", "error", "final choice"
 
-maxwait_samples = 5  # Maximum seconds we wait for a sample
-maxwait_finchoice = 5  # can also be float('inf') to wait forever
+maxwait_samples = 3  # Maximum seconds we wait for a sample
+maxwait_finchoice = 3  # can also be float('inf') to wait forever
 
 keylist_samples = ['s', 'd', 'f', 'x']  # press x to quit
 keylist_finchoice = ['s', 'd', 'x']
