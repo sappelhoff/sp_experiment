@@ -1,5 +1,5 @@
 
-name: psypy3
+name: sp_experiment
 channels:
 - conda-forge
 - defaults
