@@ -1,4 +1,4 @@
-cleanReInstall:
+clean-and-reinstall:
 	rm -rf .pytest_cache
 	rm -rf sp_experiment/tests/__pycache__
 	rm .coverage

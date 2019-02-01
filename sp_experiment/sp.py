@@ -469,16 +469,15 @@ while current_ntrls < max_ntrls:
 
                 df_tmp = pd.read_csv(data_file, sep='\t')
                 outcomes = get_final_choice_outcomes(df_tmp)
-                mean_outcome = mean_outcome = int(np.ceil(np.mean(outcomes)))
                 [stim.setAutoDraw(False) for stim in fixation_stim_parts]
-                txt_stim.text = ('Block {}/{} done! Your average '
-                                 ' earned outcome so far is {}.'
-                                 ' Remember that from all your outcomes,'
-                                 ' a final draw will be paid to you in Euros.'
-                                 ' Press any key to continue.'
+                txt_stim.text = ('Block {}/{} done! You earned {} points '
+                                 'so far. Remember that your points will be '
+                                 'converted to Euros and paid to you at the '
+                                 'end of the experiment. '
+                                 'Press any key to continue.'
                                  .format(current_nblocks,
                                          int(max_ntrls/block_size),
-                                         mean_outcome))
+                                         int(np.sum(outcomes))))
                 txt_stim.pos = (0, 0)
                 txt_stim.height = 1
                 txt_stim.draw()
