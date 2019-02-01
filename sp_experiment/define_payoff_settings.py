@@ -63,10 +63,11 @@ def get_payoff_settings(ev_diff):
 
     # Get all possible settings for two distributions
     # ===============================================
-    # Get all possible combinations for two urns
+    # Get all possible combinations for two payoff distributions
     # (36*9)**2 ... i.e., 36 magnitudes*9 probabilites
     # to the power of two
-    two_distrs = np.empty(((36*9)**2, 8)) * np.nan
+    two_distrs = np.empty(((36*9)**2, 8))
+    two_distrs[:] = np.nan
     for i in range(len(single_distr)):
         __ = np.roll(single_distr, shift=i, axis=0)
         data = list(zip(__, single_distr))
@@ -75,9 +76,9 @@ def get_payoff_settings(ev_diff):
 
     # Select a subset of distributions from all those that are possible
     # =================================================================
-    # Calculate the expected value of each urn
-    # then select urn settings based on difference
-    # between EVs ... for example, only equal urn settings
+    # Calculate the expected value of each payoff distribution
+    # then select payoff distribution settings based on difference
+    # between EVs ... for example, only equal payoff distribution settings
     # Or where the difference is >0, but <1
     evs = list()
     for row in two_distrs:
