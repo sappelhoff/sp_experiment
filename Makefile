@@ -18,3 +18,6 @@ passive-test-run:
 
 test:
 	pytest --verbose --cov=sp_experiment
+
+package:
+	pyinstaller build.spec

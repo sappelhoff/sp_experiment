@@ -13,7 +13,7 @@ if version is None:
     raise RuntimeError('Could not determine version')
 
 dependencies = [
-    'numpy',
+    'numpy~=1.16.1',
     'scipy',
     'matplotlib',
     'pandas',
@@ -27,6 +27,7 @@ dependencies = [
     'psychopy==3.0.0',
     'pytest',
     'pytest-cov',
+    'pyinstaller',
 ]
 
 
@@ -39,6 +40,7 @@ setup(name='sp_experiment',
       license='BSD 3-Clause License',
       classifiers=[
           'Programming Language :: Python :: 3.6',
+          'Programming Language :: Python :: 3.7',
           'Operating System :: Microsoft :: Windows',
       ],
       packages=find_packages(),
