@@ -13,6 +13,7 @@ if version is None:
     raise RuntimeError('Could not determine version')
 
 dependencies = [
+    'sip',
     'numpy~=1.16.1',
     'scipy',
     'matplotlib',
