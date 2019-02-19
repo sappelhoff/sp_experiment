@@ -16,7 +16,7 @@ before_install:
 
 install:
     - conda env create -f environment.yml
-    - source activate psypy3
+    - source activate sp_experiment
     - pip install -e .
 
 script:
