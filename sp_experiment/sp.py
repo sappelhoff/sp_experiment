@@ -62,7 +62,7 @@ fname = 'sub-{}_task-sp{}_events.tsv'.format(args.sub_id, args.condition)
 
 # Check directory is present and file name not yet used
 init_dir = op.dirname(sp_experiment.__file__)
-data_dir = op.join(init_dir, 'experiment_data')
+data_dir = op.join(os.getcwd(), 'experiment_data')
 if not op.exists(data_dir):
     os.mkdir(data_dir)
     # Write a json of variable descriptions
