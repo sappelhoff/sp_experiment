@@ -17,6 +17,6 @@ dependencies:
   - lxml
   - openpyxl
   - configobj
-  - psychopy==3.0.0
+  - psychopy==3.0.4
   - pytest
   - pytest-cov
