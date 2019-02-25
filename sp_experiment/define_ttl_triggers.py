@@ -3,7 +3,7 @@
 main file: sp.py
 
 For more information, see also the "event_value" key within the
-"task-sp_events.json" file.
+define_variable_meanings.make_events_json_dict.
 
 """
 

@@ -15,13 +15,13 @@ import os
 import os.path as op
 import argparse
 import json
-from collections import OrderedDict
 
 import numpy as np
 import pandas as pd
 from psychopy import visual, event, core
 
 import sp_experiment
+from sp_experiment.define_variable_meanings import make_events_json_dict
 from sp_experiment.utils import (utils_fps,
                                  set_fixstim_color,
                                  get_jittered_waitframes,
@@ -32,15 +32,16 @@ from sp_experiment.utils import (utils_fps,
                                  get_passive_outcome,
                                  get_final_choice_outcomes
                                  )
-from sp_experiment.psychopy_utils import (get_fixation_stim)
+from sp_experiment.psychopy_utils import get_fixation_stim
 from sp_experiment.define_payoff_settings import (get_payoff_settings,
                                                   get_random_payoff_dict
                                                   )
 from sp_experiment.define_ttl_triggers import provide_trigger_dict
 
-# TTL triggers
-# ============
+# TTL triggers and variable meanings
+# ==================================
 trigger_dict = provide_trigger_dict()
+variable_meanings_dict = make_events_json_dict()
 
 # Participant information
 # =======================
@@ -64,6 +65,10 @@ init_dir = op.dirname(sp_experiment.__file__)
 data_dir = op.join(init_dir, 'experiment_data')
 if not op.exists(data_dir):
     os.mkdir(data_dir)
+    # Write a json of variable descriptions
+    with open(op.join(data_dir, 'task-sp_events.json'), 'w') as fout:
+        json.dump(obj=variable_meanings_dict, fp=fout,
+                  sort_keys=False, indent=4)
 
 data_file = op.join(data_dir, fname)
 if op.exists(data_file):
@@ -71,10 +76,7 @@ if op.exists(data_file):
                   'already exists: {}'.format(args.sub_id, data_file))
 
 # Write header to the tab separated log file
-events_json = op.join(init_dir, 'task-sp_events.json')
-with open(events_json, 'r') as fin:
-    json_contents = json.load(fin, object_pairs_hook=OrderedDict)
-variables = list(json_contents.keys())
+variables = list(variable_meanings_dict.keys())
 
 with open(data_file, 'w') as fout:
     header = '\t'.join(variables)

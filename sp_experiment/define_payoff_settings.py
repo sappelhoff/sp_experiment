@@ -2,8 +2,8 @@
 
 main file: sp.py
 
-For more information, see also the following keys within the
-"task-sp_events.json" file: action_type, action, outcome
+For more information, see also the following keys within
+define_variable_meanings.make_events_json_dict: action_type, action, outcome
 
 """
 import itertools

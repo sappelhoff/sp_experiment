@@ -167,8 +167,6 @@ def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
 
     All inputs except the file path default to 'n/a'.
 
-    See also the 'task-sp_events.json' file.
-
     Parameters
     ----------
     fpath : str
@@ -209,6 +207,10 @@ def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
     reset : bool
         if True, discard all prior events in the current trial because of
         an error of the participant. If False, ignore it
+
+    See also
+    --------
+    define_variable_meanings.make_events_json_dict
 
     """
     # Infer action type
