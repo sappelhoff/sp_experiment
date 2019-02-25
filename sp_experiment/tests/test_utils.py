@@ -1,5 +1,9 @@
 """Testing the utility functions."""
+import os
 import os.path as op
+from tempfile import gettempdir
+from shutil import rmtree
+
 
 import pytest
 import numpy as np
@@ -10,9 +14,14 @@ from sp_experiment.utils import (Fake_serial,
                                  get_final_choice_outcomes,
                                  get_payoff_dict,
                                  get_passive_action,
-                                 get_passive_outcome
+                                 get_passive_outcome,
+                                 get_jittered_waitframes,
+                                 utils_fps,
+                                 log_data
                                  )
-
+from sp_experiment.define_payoff_settings import (get_payoff_settings,
+                                                  get_random_payoff_dict
+                                                  )
 init_dir = op.dirname(sp_experiment.__file__)
 test_data_dir = op.join(init_dir, 'tests', 'data')
 
@@ -97,6 +106,14 @@ def test_get_passive_outcome():
         assert out == expected
 
 
+def test_get_jittered_waitframes():
+    """Test the waitframes func."""
+    n = 100
+    for i in range(n):
+        wait_frames = get_jittered_waitframes(1000, 2000)
+        assert wait_frames >= utils_fps and wait_frames <= utils_fps*2
+
+
 def test_log_data():
     """Sanity check the data logging."""
     fname = '2_trials_no_errors.tsv'
@@ -107,3 +124,45 @@ def test_log_data():
     action_types = df['action_type'].dropna().unique().tolist()
     np.testing.assert_array_equal(action_types,
                                   ['sample', 'stop', 'final_choice'])
+
+    # Create a temporary logging file
+    data_dir = op.join(gettempdir(), '.{}'.format(hash(os.times())))
+    os.makedirs(data_dir)
+    fname = 'tmp_data_file.tsv'
+    fpath = op.join(data_dir, fname)
+
+    # Log some data
+    log_data(fpath)
+
+    with open(fpath, 'r') as fin:
+        for i, line in enumerate(fin.readlines()):
+            # spot check some known data in the line
+            assert line.strip().split('\t')[-1] == '0'
+
+        # There should have been only one line
+        assert i == 0
+
+    # Log more data
+    log_data(fpath, action=5)
+    log_data(fpath, action=2)
+    log_data(fpath, action=3)
+    log_data(fpath, action=7)
+
+    df = pd.read_csv(fpath, sep='\t', header=None)
+
+    action_types = df[3].tolist()
+    action_vals = df[4].tolist()
+    assert len(action_types) == 5 and len(action_vals) == 5
+    assert np.isnan(action_types[0]) and np.isnan(action_vals[0])
+    assert action_types[1] == 'forced_stop' and action_vals[1] == 0
+    assert action_types[2] == 'stop' and action_vals[2] == 2
+    assert action_types[3] == 'final_choice' and action_vals[3] == 0
+    assert action_types[4] == 'premature_stop' and action_vals[4] == 2
+
+    # And even more data logging
+    payoff_settings = get_payoff_settings(0.1)
+    payoff_dict, payoff_settings = get_random_payoff_dict(payoff_settings)
+    log_data(fpath, payoff_dict=payoff_dict)
+
+    # Remove the temporary dir and all its contents
+    rmtree(data_dir, ignore_errors=True)

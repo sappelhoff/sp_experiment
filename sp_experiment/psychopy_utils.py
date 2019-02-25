@@ -9,7 +9,7 @@ from psychopy import visual
 
 
 def get_fixation_stim(win):
-    u"""Provide objects to represent a fixation stimulus as in [1].
+    u"""Provide objects to represent a fixation stimulus as in [1]_.
 
     Parameters
     ----------
