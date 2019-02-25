@@ -1,4 +1,5 @@
 """Test the variable meanings dictionary."""
+import os
 import os.path as op
 import json
 
@@ -25,9 +26,10 @@ def test_json():
 
     # In json does not exist, write it.
     if not op.exists(fpath):
+        os.makedirs(op.join(init_dir, 'experiment_data'))
         events_json_dict = make_events_json_dict()
         with open(fpath, 'w') as fout:
-            json.dump(obj=events_json_dict, fp=fpath,
+            json.dump(obj=events_json_dict, fp=fout,
                       sort_keys=False, indent=4)
 
     # Load json and check for integrity
