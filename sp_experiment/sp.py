@@ -34,7 +34,8 @@ from sp_experiment.utils import (utils_fps,
                                  )
 from sp_experiment.psychopy_utils import get_fixation_stim
 from sp_experiment.define_payoff_settings import (get_payoff_settings,
-                                                  get_random_payoff_dict
+                                                  get_random_payoff_dict,
+                                                  shuffle_left_right
                                                   )
 from sp_experiment.define_ttl_triggers import provide_trigger_dict
 
@@ -196,6 +197,9 @@ while current_ntrls < max_ntrls:
     # For each trial, take a new payoff setting
     if condition == 'active':
         payoff_dict, payoff_settings = get_random_payoff_dict(payoff_settings)
+        # shuffle the payoff dict so distributions can occurr left or right
+        payoff_dict = shuffle_left_right(payoff_dict)
+
         log_data(data_file, onset=exp_timer.getTime(), trial=current_ntrls,
                  payoff_dict=payoff_dict)
     else:  # condition == 'passive'

@@ -165,3 +165,11 @@ def get_random_payoff_dict(payoff_settings):
     # Remore the selected setting from all settings (no replacement)
     payoff_settings = np.delete(payoff_settings, [selected_row], axis=0)
     return payoff_dict, payoff_settings
+
+
+def shuffle_left_right(payoff_dict):
+    """Given a payoff dict, randomly change the keys."""
+    keys = list(payoff_dict.keys())
+    vals_idx = np.random.permutation(keys)
+    payoff_dict = {key: payoff_dict[val] for key, val in zip(keys, vals_idx)}
+    return payoff_dict
