@@ -34,7 +34,6 @@ from sp_experiment.utils import (utils_fps,
 from sp_experiment.psychopy_utils import get_fixation_stim
 from sp_experiment.define_payoff_settings import (get_payoff_settings,
                                                   get_random_payoff_dict,
-                                                  shuffle_left_right
                                                   )
 from sp_experiment.define_ttl_triggers import provide_trigger_dict
 
@@ -186,11 +185,16 @@ current_nblocks = 0
 current_ntrls = 0
 while current_ntrls < max_ntrls:
 
-    # For each trial, take a new payoff setting
+    # For each trial, take a new payoff setting.
+    # When active condition, read the current data to make a pseudorandom draw
+    # of a payoff setting. This is to guarantee that also stimuli that have
+    # been sampled the least so far will be included more often.
     if condition == 'active':
-        payoff_dict, payoff_settings = get_random_payoff_dict(payoff_settings)
-        # shuffle the payoff dict so distributions can occurr left or right
-        payoff_dict = shuffle_left_right(payoff_dict)
+        df_pseudorand = pd.read_csv(data_file, sep='\t')
+        payoff_dict, payoff_settings = get_random_payoff_dict(payoff_settings,
+                                                              pseudorand=True,
+                                                              df=df_pseudorand
+                                                              )
 
         log_data(data_file, onset=exp_timer.getTime(), trial=current_ntrls,
                  payoff_dict=payoff_dict)
