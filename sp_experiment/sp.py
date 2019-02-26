@@ -11,17 +11,16 @@ TODO:
 - incorporate eye tracking (gaze-contingent fixation cross)
 - pre-pilot-testing
 """
-import os
 import os.path as op
 import argparse
-import json
 
 import numpy as np
 import pandas as pd
 from psychopy import visual, event, core
 
-import sp_experiment
-from sp_experiment.define_variable_meanings import make_events_json_dict
+from sp_experiment.define_variable_meanings import (make_events_json_dict,
+                                                    make_data_dir
+                                                    )
 from sp_experiment.utils import (utils_fps,
                                  set_fixstim_color,
                                  get_jittered_waitframes,
@@ -62,14 +61,7 @@ args = parser.parse_args()
 fname = 'sub-{}_task-sp{}_events.tsv'.format(args.sub_id, args.condition)
 
 # Check directory is present and file name not yet used
-init_dir = op.dirname(sp_experiment.__file__)
-data_dir = op.join(os.getcwd(), 'experiment_data')
-if not op.exists(data_dir):
-    os.mkdir(data_dir)
-    # Write a json of variable descriptions
-    with open(op.join(data_dir, 'task-sp_events.json'), 'w') as fout:
-        json.dump(obj=variable_meanings_dict, fp=fout,
-                  sort_keys=False, indent=4)
+init_dir, data_dir = make_data_dir()
 
 data_file = op.join(data_dir, fname)
 if op.exists(data_file):

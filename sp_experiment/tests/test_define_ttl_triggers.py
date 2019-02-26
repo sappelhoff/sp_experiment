@@ -3,7 +3,7 @@
 from sp_experiment.define_ttl_triggers import provide_trigger_dict
 
 
-def test_provde_trigger_dict():
+def test_provide_trigger_dict():
     """Test that values in dict are unique."""
     trigger_dict = provide_trigger_dict()
 

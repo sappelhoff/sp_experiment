@@ -37,5 +37,5 @@ def test_json():
         try:
             assert json.load(fin)
         except ValueError as e:
-            print(f'invalid json: {e}')
+            print(f'invalid json: {e}')  # noqa: E999
             raise

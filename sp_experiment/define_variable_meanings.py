@@ -1,4 +1,9 @@
 """Functions to provide variable documentation."""
+import os
+import os.path as op
+import json
+
+import sp_experiment
 from sp_experiment.define_ttl_triggers import provide_trigger_dict
 
 
@@ -190,3 +195,34 @@ def make_events_json_dict():
 
     # return
     return events_json_dict
+
+
+def make_data_dir():
+    """Make a data directory and write the events.json if it does not exist.
+
+    This will also write the "task-sp_events.json" file to the data directory.
+
+    Returns
+    -------
+    init_dir : str
+        Path of the directory that contains the __init__.py file of the
+        package.
+
+    data_dir : str
+        Path to the data directory called "experiment_data". Located in the
+        directory of the __init__.py file of the package.
+
+    """
+    init_dir = op.dirname(sp_experiment.__file__)
+    data_dir = op.join(init_dir, 'experiment_data')
+    if not op.exists(data_dir):
+        os.mkdir(data_dir)
+
+    # Write a json of variable descriptions - we can always write this
+    # and overwrite without potential issues.
+    variable_meanings_dict = make_events_json_dict()
+    with open(op.join(data_dir, 'task-sp_events.json'), 'w') as fout:
+        json.dump(obj=variable_meanings_dict, fp=fout,
+                  sort_keys=False, indent=4)
+
+    return init_dir, data_dir
