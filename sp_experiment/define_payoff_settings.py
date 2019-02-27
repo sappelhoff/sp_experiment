@@ -2,13 +2,14 @@
 
 main file: sp.py
 
-For more information, see also the following keys within the
-"task-sp_events.json" file: action_type, action, outcome
+For more information, see also the following keys within
+define_variable_meanings.make_events_json_dict: action_type, action, outcome
 
 """
 import itertools
 
 import numpy as np
+import pandas as pd
 
 
 def get_payoff_settings(ev_diff):
@@ -130,13 +131,21 @@ def get_payoff_settings(ev_diff):
     return payoff_settings
 
 
-def get_random_payoff_dict(payoff_settings):
+def get_random_payoff_dict(payoff_settings, pseudorand=False, df=None):
     """Given an array of possible payoff settings, get a random setting.
 
     Parameters
     ----------
     payoff_settings : ndarray, shape (n, 8)
         Subset of all possible payoff distribution settings.
+
+    pseudorand : bool
+        If True, make a random pick of payoff settings, where the currently
+        least presented outcome is present. You must specify the df argument
+        if True. Defauls to False.
+
+    df : pd.DataFrame | None
+        The data to be supplied if pseudorand is True. Defaults to None.
 
     Returns
     -------
@@ -151,11 +160,15 @@ def get_random_payoff_dict(payoff_settings):
         removed.
 
     """
-    n, __ = payoff_settings.shape
-    selected_row = np.random.randint(0, n)
+    if pseudorand:
+        assert isinstance(df, pd.DataFrame)
+        selected_row_idx = provide_balancing_selection(df, payoff_settings)
+    else:
+        n, __ = payoff_settings.shape
+        selected_row_idx = np.random.randint(0, n)
 
     # Form a payoff dictionary from the selected setting
-    payoff_setting = payoff_settings[selected_row, :]
+    payoff_setting = payoff_settings[selected_row_idx, :]
     payoff_dict = dict()
     payoff_dict[0] = [int(payoff_setting[0])] * int(payoff_setting[2]*10)
     payoff_dict[0] += [int(payoff_setting[1])] * int(payoff_setting[3]*10)
@@ -163,5 +176,98 @@ def get_random_payoff_dict(payoff_settings):
     payoff_dict[1] += [int(payoff_setting[5])] * int(payoff_setting[7]*10)
 
     # Remore the selected setting from all settings (no replacement)
-    payoff_settings = np.delete(payoff_settings, [selected_row], axis=0)
+    payoff_settings = np.delete(payoff_settings, [selected_row_idx], axis=0)
     return payoff_dict, payoff_settings
+
+
+def provide_balancing_selection(df, payoff_settings):
+    """Provide index for setting containing little sampled stimuli.
+
+    Given the previously recorded data, find which stimuli have been presented
+    only few times and then return an index into payoff_settings that will
+    resolve to a setting containing such a little sampled stimulus. Here,
+    stimuli are the numbers 1 to 9, as well as the side they appear on, so
+    18 distinct stimulus classes.
+
+    Parameters
+    ----------
+    payoff_settings : ndarray, shape (n, 8)
+        Subset of all possible payoff distribution settings.
+
+    df : pd.DataFrame | None
+        The data collected until this point.
+
+    Returns
+    -------
+    selected_row_idx : int
+        The row index of the payoff_settings that should be picked to balance
+        the currently presented stimuli.
+
+    """
+    # Get sampling actions and corresponding outcomes so far
+    actions = df[df['value'].isin([5, 6])]['action'].to_numpy(copy=True,
+                                                              dtype=int)
+    outcomes = df[df['value'] == 9]['outcome'].to_numpy(copy=True, dtype=int)
+
+    # combine actions and outcomes to code outcomes on the left with negative
+    # sign outcomes on the right with positive sign ... will end up with stim
+    # classes
+    stim_classes = outcomes * (actions*2-1)
+
+    # Make a histogram of which stimulus_classes we have collected so far
+    bins = np.hstack((np.arange(-9, 0), np.arange(1, 11)))
+    stim_class_hist = np.histogram(stim_classes, bins)
+
+    # Make an array from the hist and sort it
+    stim_class_arr = np.vstack((stim_class_hist[0], stim_class_hist[1][:-1])).T
+    stim_class_arr_sorted = stim_class_arr[stim_class_arr[:, 0].argsort()]
+
+    # From what we have seen so far, take the stim_classes we have seen least
+    # as priotities to be shown
+    stim_to_show_i = 0
+    stim_to_show = stim_class_arr_sorted[stim_to_show_i, 1]
+
+    # Now start to look in our payoff settings, which potential settings
+    # contain the stimulus class to be shown
+    while True:
+        number = np.abs(stim_to_show)
+        side = np.sign(stim_to_show)
+
+        # Select only payoff settings that contain the specific number
+        num_select = payoff_settings[(payoff_settings ==
+                                      number).any(axis=1), :]
+
+        # From the number specific selection, select only where the number is
+        # on a specific side
+        if side == -1:
+            num_side_select = num_select[np.where(num_select ==
+                                                  number)[1] <= 1, :]
+        else:
+            num_side_select = num_select[np.where(num_select ==
+                                                  number)[1] > 1, :]
+
+        # If we found some candidates, return the selection for a random pick
+        # from it
+        if num_side_select.shape[0] > 0:
+            break
+
+        # Else, take the next simulus to be shown in line and try to find a
+        # selection
+        stim_to_show_i += 1
+        if stim_to_show_i == stim_to_show.shape[0]:
+            # This should never happen ...
+            raise RuntimeError('We have run out of potential stimuli to show.')
+        else:
+            stim_to_show = stim_class_arr_sorted[stim_to_show_i, 1]
+
+    # Now we have the selection of payoff_settings and we can pick a random
+    # row from our selection
+    n, __ = num_side_select.shape
+    num_side_select_idx = np.random.randint(0, n)
+    selected_row = num_side_select[num_side_select_idx]
+
+    # And find the index into the payoff_settings
+    selected_row_idx = np.where((payoff_settings ==
+                                 selected_row).all(axis=1))[0][0]
+
+    return selected_row_idx

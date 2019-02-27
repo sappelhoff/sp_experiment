@@ -18,3 +18,6 @@ passive-test-run:
 
 test:
 	pytest --verbose --cov=sp_experiment
+
+define-monitors:
+	python sp_experiment/define_monitors.py

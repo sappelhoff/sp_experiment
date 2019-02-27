@@ -64,8 +64,13 @@ see [participant_instructions](./participant_instuctions)
 ---
 # Background Literature on the Sampling Paradigm:
 
-1. recent meta-analysis:
-   > Wulff, D. U., Mergenthaler-Canseco, M., & Hertwig, R. (2018). A meta-analytic review of two modes of learning and the description-experience gap. Psychological Bulletin, 144(2), 140-176. http://dx.doi.org/10.1037/bul0000115
+1. Recent meta-analysis:
+   > Wulff, D. U., Mergenthaler-Canseco, M., & Hertwig, R. (2018). A
+   meta-analytic review of two modes of learning and the description-experience
+   gap. Psychological Bulletin, 144(2), 140-176.
+   [http://dx.doi.org/10.1037/bul0000115](http://dx.doi.org/10.1037/bul0000115)
 
-2. original paper introducing it:
-   > Hertwig, R., Barron, G., Weber, E. U., & Erev, I. (2004). Decisions from experience and the effect of rare events in risky choice. Psychological science, 15(8), 534-539. https://doi.org/10.1111%2Fj.0956-7976.2004.00715.x
+2. One of the original papers introducing it:
+   > Hertwig, R., Barron, G., Weber, E. U., & Erev, I. (2004). Decisions from
+   experience and the effect of rare events in risky choice. Psychological
+   science, 15(8), 534-539. [https://doi.org/10.1111%2Fj.0956-7976.2004.00715.x](https://doi.org/10.1111%2Fj.0956-7976.2004.00715.x)

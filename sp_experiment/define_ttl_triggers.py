@@ -3,55 +3,63 @@
 main file: sp.py
 
 For more information, see also the "event_value" key within the
-"task-sp_events.json" file.
+define_variable_meanings.make_events_json_dict.
 
 """
 
-# At the beginning and end of the experiment ... take these triggers to crop
-# the meaningful EEG data. Make sure to include some time BEFORE and AFTER the
-# triggers so that filtering does not introduce artifacts into important parts.
-trig_begin_experiment = bytes([1])
-trig_end_experiment = bytes([2])
 
-# Indication when a new trial is started
-trig_new_trl = bytes([3])
+def provide_trigger_dict():
+    """Provide a dictionnary mapping str names to byte values."""
+    trigger_dict = dict()
 
-# Wenever a new sample within a trial is started (fixation stim)
-trig_sample_onset = bytes([4])
+    # At the beginning and end of the experiment ... take these triggers to
+    # crop the meaningful EEG data. Make sure to include some time BEFORE and
+    # AFTER the triggers so that filtering does not introduce artifacts into
+    # important parts.
+    trigger_dict['trig_begin_experiment'] = bytes([1])
+    trigger_dict['trig_end_experiment'] = bytes([2])
 
-# Whenever a choice is being inquired during sampling
-trig_left_choice = bytes([5])
-trig_right_choice = bytes([6])
-trig_final_choice = bytes([7])
+    # Indication when a new trial is started
+    trigger_dict['trig_new_trl'] = bytes([3])
 
-# When displaying outcomes during sampling
-trig_mask_outcome = bytes([8])
-trig_show_outcome = bytes([9])
+    # Wenever a new sample within a trial is started (fixation stim)
+    trigger_dict['trig_sample_onset'] = bytes([4])
 
-# Indication when a final choice is started
-trig_new_final_choice = bytes([10])
+    # Whenever a choice is being inquired during sampling
+    trigger_dict['trig_left_choice'] = bytes([5])
+    trigger_dict['trig_right_choice'] = bytes([6])
+    trigger_dict['trig_final_choice'] = bytes([7])
 
-# Whenever a final choice is started (fixation stim)
-trig_final_choice_onset = bytes([11])
+    # When displaying outcomes during sampling
+    trigger_dict['trig_mask_outcome'] = bytes([8])
+    trigger_dict['trig_show_outcome'] = bytes([9])
 
-# Inquiring actions during CHOICE
-trig_left_final_choice = bytes([12])
-trig_right_final_choice = bytes([13])
+    # Indication when a final choice is started
+    trigger_dict['trig_new_final_choice'] = bytes([10])
 
-# Displaying outcomes during CHOICE
-trig_mask_final_outcome = bytes([14])
-trig_show_final_outcome = bytes([15])
+    # Whenever a final choice is started (fixation stim)
+    trigger_dict['trig_final_choice_onset'] = bytes([11])
 
-# trigger for ERROR, when a trial has to be reset
-# (ignore all markers prior to this marker within this trial)
-trig_error = bytes([16])
+    # Inquiring actions during CHOICE
+    trigger_dict['trig_left_final_choice'] = bytes([12])
+    trigger_dict['trig_right_final_choice'] = bytes([13])
 
-# If the subject sampled a maximum of steps and now wants to take yet another
-# one, we force stop and initiate a final choice
-trig_forced_stop = bytes([17])
+    # Displaying outcomes during CHOICE
+    trigger_dict['trig_mask_final_outcome'] = bytes([14])
+    trigger_dict['trig_show_final_outcome'] = bytes([15])
 
-# If subject tried to make a final choice before taking at least one sample
-trig_premature_stop = bytes([18])
+    # trigger for ERROR, when a trial has to be reset
+    # (ignore all markers prior to this marker within this trial)
+    trigger_dict['trig_error'] = bytes([16])
 
-# Display the block feedback
-trig_block_feedback = bytes([19])
+    # If the subject sampled a maximum of steps and now wants to take yet
+    # another one, we force stop and initiate a final choice
+    trigger_dict['trig_forced_stop'] = bytes([17])
+
+    # If subject tried to make a final choice before taking at least one sample
+    trigger_dict['trig_premature_stop'] = bytes([18])
+
+    # Display the block feedback
+    trigger_dict['trig_block_feedback'] = bytes([19])
+
+    return trigger_dict

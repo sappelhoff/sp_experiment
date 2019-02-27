@@ -81,6 +81,9 @@ def get_payoff_dict(df, trial):
     # of 0.29999999 ... 1., 2., 3., etc. would be fine (as magnitudes)
     for entry in setting[0]:
         assert len(str(entry)) in [2, 3]  # 2 for magnitudes, 3 for probs
+    # NOTE: we use get_random_payoff_dict simply for putting the structure
+    # into the right order. With a setting of length 1, there is no randomness
+    # as to which setting gets drawn.
     payoff_dict, payoff_settings = get_random_payoff_dict(setting)
     return payoff_dict
 
@@ -167,8 +170,6 @@ def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
 
     All inputs except the file path default to 'n/a'.
 
-    See also the 'task-sp_events.json' file.
-
     Parameters
     ----------
     fpath : str
@@ -210,6 +211,10 @@ def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
         if True, discard all prior events in the current trial because of
         an error of the participant. If False, ignore it
 
+    See also
+    --------
+    define_variable_meanings.make_events_json_dict
+
     """
     # Infer action type
     action_type_dict = dict()
@@ -236,6 +241,8 @@ def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
         assert len(payoff_dict) == 2
         setting = list()
         for i in range(2):
+            # NOTE: the use of "set" discards the ordering of values in the
+            # payoff distributions
             for out_i in list(set(payoff_dict[i])):
                 prob_i = payoff_dict[i].count(out_i) / len(payoff_dict[i])
                 setting.append(out_i)
