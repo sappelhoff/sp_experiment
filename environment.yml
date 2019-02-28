@@ -9,6 +9,7 @@ dependencies:
 - scipy
 - matplotlib
 - pandas
+- wxpython
 - pip:
   - pyopengl
   - pyglet

@@ -1,22 +1,24 @@
-"""Simplified experimental flow.
+"""Implement the experimental flow of the sampling paradigm.
 
-NOTE: For implementing fixed horizon SP:
-1. make a branch off this project called "open-horizon"
-2. "master" will be turned into "fixed-horizon"
-3. For fixed horizon SP, simply "forbid" the "down" key, which would
-   otherwise be used to trigger a final choice.
-4. That means simplyfing the part where actions are checked
+Version information
+-------------------
+0.1.0-dev: Experiment with fixed horizon, basically the "final choice" key
+           is not part of the accepted keys anymore and the maximum number of
+           samples is set to the fixed horizon. Participants then sample and
+           upon reaching the horizon and attempting to take one more sample,
+           they are informed that the next sample will be a final choice.
+0.1.0: The experiment with an open horizon
 
-TODO:
+To do
+-----
 - incorporate eye tracking (gaze-contingent fixation cross)
-- pre-pilot-testing
+
 """
 import os.path as op
-import argparse
 
 import numpy as np
 import pandas as pd
-from psychopy import visual, event, core
+from psychopy import visual, event, core, gui
 
 from sp_experiment.define_variable_meanings import (make_events_json_dict,
                                                     make_data_dir
@@ -44,20 +46,29 @@ variable_meanings_dict = make_events_json_dict()
 
 # Participant information
 # =======================
-parser = argparse.ArgumentParser()
-parser.add_argument('--sub_id', '-s', type=str, required=True,
-                    help='The subject identifier. Preferably a number.')
-parser.add_argument('--condition', '-c', type=str, required=True,
-                    help='The task condition. "active" or "passive"')
-parser.add_argument('--yoke_to', '-y', type=str, required=False,
-                    help=('Which participant to yoke this current passive run '
-                          'to. Ignored in "active" condition. '))
-args = parser.parse_args()
+# Collect the ID, age, sex, condition
+myDlg = gui.Dlg(title='Sampling Paradigm Experiment')
+myDlg.addField('ID:', choices=list(range(1, 100)))
+myDlg.addField('Age:', choices=list(range(18, 100)))
+myDlg.addField('Sex:', choices=['Male', 'Female'])
 
+myDlg.addField('Condition:', choices=['active', 'passive'])
+
+# show dialog and wait for OK or Cancel
+ok_data = myDlg.show()
+if myDlg.OK:  # or if ok_data is not None
+    sub_id = int(ok_data[0])
+    age = int(ok_data[1])
+    sex = ok_data[2]
+    condition = ok_data[3]
+    yoke_to = None
+else:
+    print('user cancelled GUI input')
+    core.quit()
 
 # Data logging
 # ============
-fname = 'sub-{}_task-sp{}_events.tsv'.format(args.sub_id, args.condition)
+fname = 'sub-{}_task-sp{}_events.tsv'.format(sub_id, condition)
 
 # Check directory is present and file name not yet used
 init_dir, data_dir = make_data_dir()
@@ -65,7 +76,7 @@ init_dir, data_dir = make_data_dir()
 data_file = op.join(data_dir, fname)
 if op.exists(data_file):
     raise OSError('A data file for {} '
-                  'already exists: {}'.format(args.sub_id, data_file))
+                  'already exists: {}'.format(sub_id, data_file))
 
 # Write header to the tab separated log file
 variables = list(variable_meanings_dict.keys())
@@ -74,6 +85,13 @@ with open(data_file, 'w') as fout:
     header = '\t'.join(variables)
     fout.write(header + '\n')
 
+# Write a brief log file for this participant
+fname = f'log_{sub_id}_{condition}.txt'  # noqa E999
+log_path = op.join(data_dir, fname)
+with open(log_path, 'w') as fout:
+    for line in [sub_id, age, sex, condition, yoke_to]:
+        fout.write(f'{line}')  # noqa E999
+        fout.write('\n')
 
 # Get PsychoPy stimuli ready
 # ==========================
@@ -120,11 +138,9 @@ ser = Fake_serial()
 
 # Experiment settings
 # ===================
-condition = args.condition
-
-max_ntrls = 2  # for the whole experiment
-max_nsamples = 30  # per trial
-block_size = 1  # number of trials after which to offer a break and feedback
+max_ntrls = 20  # for the whole experiment
+max_nsamples = 12  # per trial
+block_size = 10  # number of trials after which to offer a break and feedback
 assert max_ntrls % block_size == 0  # need to evenly divide trials into blocks
 
 font = 'Liberation Sans'  # Looks like Arial, but it's free!
@@ -136,7 +152,8 @@ tdisplay_ms = (900, 1100)  # delay if "new trial", "error", "final choice"
 maxwait_samples = 3  # Maximum seconds we wait for a sample
 maxwait_finchoice = 3  # can also be float('inf') to wait forever
 
-keylist_samples = ['s', 'd', 'f', 'x']  # press x to quit
+# replace "__" with "f" to allow final choices
+keylist_samples = ['s', 'd', '__', 'x']  # press x to quit
 keylist_finchoice = ['s', 'd', 'x']
 
 expected_value_diff = 0.1  # For payoff settings to be used
@@ -171,11 +188,11 @@ payoff_settings = get_payoff_settings(expected_value_diff)
 rt_clock = core.Clock()
 
 # If we are in the passive condition, load pre-recorded data to replay
-if args.condition == 'passive':
-    if args.yoke_to:
-        yoke_sub = args.yoke_to
+if condition == 'passive':
+    if yoke_to:
+        yoke_sub = yoke_to
     else:
-        yoke_sub = args.sub_id
+        yoke_sub = sub_id
     fname = 'sub-{}_task-spactive_events.tsv'.format(yoke_sub)
     fpath = op.join(data_dir, fname)
     df = pd.read_csv(fpath, sep='\t')
