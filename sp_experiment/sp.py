@@ -39,6 +39,15 @@ from sp_experiment.define_payoff_settings import (get_payoff_settings,
                                                   )
 from sp_experiment.define_ttl_triggers import provide_trigger_dict
 
+# Yoking map
+# ==========
+# To determine, which participant gets yoked to which.
+# First 10 subjs are mapped to themselves
+yoke_map = dict(zip(list(range(1, 11)), list(range(1, 11))))
+# Next 10 are mapped to first ten
+for i, j in zip(list(range(11, 21)), list(range(1, 11))):
+    yoke_map[i] = j
+
 # TTL triggers and variable meanings
 # ==================================
 trigger_dict = provide_trigger_dict()
@@ -48,10 +57,9 @@ variable_meanings_dict = make_events_json_dict()
 # =======================
 # Collect the ID, age, sex, condition
 myDlg = gui.Dlg(title='Sampling Paradigm Experiment')
-myDlg.addField('ID:', choices=list(range(1, 100)))
+myDlg.addField('ID:', choices=list(range(1, 21)))
 myDlg.addField('Age:', choices=list(range(18, 100)))
 myDlg.addField('Sex:', choices=['Male', 'Female'])
-
 myDlg.addField('Condition:', choices=['active', 'passive'])
 
 # show dialog and wait for OK or Cancel
@@ -61,7 +69,7 @@ if myDlg.OK:  # or if ok_data is not None
     age = int(ok_data[1])
     sex = ok_data[2]
     condition = ok_data[3]
-    yoke_to = None
+    yoke_to = yoke_map[sub_id]
 else:
     print('user cancelled GUI input')
     core.quit()
@@ -189,11 +197,7 @@ rt_clock = core.Clock()
 
 # If we are in the passive condition, load pre-recorded data to replay
 if condition == 'passive':
-    if yoke_to:
-        yoke_sub = yoke_to
-    else:
-        yoke_sub = sub_id
-    fname = 'sub-{}_task-spactive_events.tsv'.format(yoke_sub)
+    fname = 'sub-{}_task-spactive_events.tsv'.format(yoke_to)
     fpath = op.join(data_dir, fname)
     df = pd.read_csv(fpath, sep='\t')
     df = df[pd.notnull(df['trial'])]
