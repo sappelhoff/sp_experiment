@@ -76,7 +76,7 @@ else:
 
 # Data logging
 # ============
-fname = 'sub-{}_task-sp{}_events.tsv'.format(sub_id, condition)
+fname = 'sub-{:02}_task-sp{}_events.tsv'.format(sub_id, condition)
 
 # Check directory is present and file name not yet used
 init_dir, data_dir = make_data_dir()
