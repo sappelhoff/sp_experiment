@@ -2,7 +2,7 @@
 import os
 import os.path as op
 from tempfile import gettempdir
-from shutil import rmtree
+from shutil import rmtree, copyfile
 
 
 import pytest
@@ -24,7 +24,10 @@ from sp_experiment.define_payoff_settings import (get_payoff_settings,
                                                   get_random_payoff_dict
                                                   )
 init_dir = op.dirname(sp_experiment.__file__)
+data_dir = op.join(init_dir, 'experiment_data')
 test_data_dir = op.join(init_dir, 'tests', 'data')
+
+no_errors_file = op.join(test_data_dir, '2_trials_no_errors.tsv')
 
 
 def test_Fake_serial():
@@ -36,15 +39,28 @@ def test_Fake_serial():
 
 def test_calc_bonus_payoff():
     """Test bonus calculation."""
+    # Check for non-present data
     bonus = calc_bonus_payoff(999)
     assert bonus == 'did not complete "{}" condition yet.'.format('active')
+
+    # present data ... temporarily copy over a test file
+    tmp_fpath1 = op.join(data_dir, 'sub-999_task-spactive_events.tsv')
+    tmp_fpath2 = op.join(data_dir, 'sub-999_task-sppassive_events.tsv')
+    copyfile(no_errors_file, tmp_fpath1)
+    copyfile(no_errors_file, tmp_fpath2)
+
+    bonus = calc_bonus_payoff(999)
+
+    # remove tmp files
+    os.remove(tmp_fpath1)
+    os.remove(tmp_fpath2)
+
+    assert bonus == 'earned 1 Euros as bonus.'
 
 
 def test_get_final_choice_outcomes():
     """Test getting final choice outcomes."""
-    fname = '2_trials_no_errors.tsv'
-    fpath = op.join(test_data_dir, fname)
-    df = pd.read_csv(fpath, sep='\t')
+    df = pd.read_csv(no_errors_file, sep='\t')
     outcomes = get_final_choice_outcomes(df)
     expected_outcomes = [8, 6]  # as can be read in the data file
     np.testing.assert_array_equal(outcomes, expected_outcomes)
@@ -52,9 +68,7 @@ def test_get_final_choice_outcomes():
 
 def test_get_payoff_dict():
     """Test getting payoff_dicts."""
-    fname = '2_trials_no_errors.tsv'
-    fpath = op.join(test_data_dir, fname)
-    df = pd.read_csv(fpath, sep='\t')
+    df = pd.read_csv(no_errors_file, sep='\t')
 
     # The trial argument is 0-indexed
     payoff_dict = get_payoff_dict(df, 0)
@@ -79,9 +93,7 @@ def test_get_payoff_dict():
 
 def test_get_passive_action():
     """Test getting an action for replay in passive condition."""
-    fname = '2_trials_no_errors.tsv'
-    fpath = op.join(test_data_dir, fname)
-    df = pd.read_csv(fpath, sep='\t')
+    df = pd.read_csv(no_errors_file, sep='\t')
 
     keys_rts = get_passive_action(df, 0, 0)
 
@@ -97,9 +109,7 @@ def test_get_passive_action():
 
 def test_get_passive_outcome():
     """Test getting an outcome for replay in passive condition."""
-    fname = '2_trials_no_errors.tsv'
-    fpath = op.join(test_data_dir, fname)
-    df = pd.read_csv(fpath, sep='\t')
+    df = pd.read_csv(no_errors_file, sep='\t')
 
     # If we pass the "last sample", we get the final choice outcome
     outcome = get_passive_outcome(df, 0, -1)
@@ -123,9 +133,7 @@ def test_get_jittered_waitframes():
 
 def test_log_data():
     """Sanity check the data logging."""
-    fname = '2_trials_no_errors.tsv'
-    fpath = op.join(test_data_dir, fname)
-    df = pd.read_csv(fpath, sep='\t')
+    df = pd.read_csv(no_errors_file, sep='\t')
 
     # Check that action_types are as expected
     action_types = df['action_type'].dropna().unique().tolist()

@@ -45,8 +45,7 @@ def calc_bonus_payoff(sub_id, conversion_factor=0.01):
         been completed.
 
     """
-    head, __ = op.split(sp_experiment.__file__)
-    data_dir = op.join(head, 'experiment_data')
+    data_dir = op.join(op.dirname(sp_experiment.__file__), 'experiment_data')
     points = 0
     for condition in ['active', 'passive']:
         fname = 'sub-{:02}_task-sp{}_events.tsv'.format(sub_id, condition)
