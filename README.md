@@ -28,7 +28,7 @@ will open a GUI that asks for the following information
   participant
 - `Age`: A dropdown menu of the participant's potential age
 - `Sex`: Dropdown menu to indicate the biological sex of the participant
-- `Condition`: Dropdown menu: "Acitve" or "Passive"
+- `Condition`: Dropdown menu: "Active" or "Passive"
 
  The experiment is setup as such that the inputs in the GUI are restricted.
  Feel free to adjust.
