@@ -11,6 +11,7 @@ import pandas as pd
 
 import sp_experiment
 from sp_experiment.utils import (Fake_serial,
+                                 calc_bonus_payoff,
                                  get_final_choice_outcomes,
                                  get_payoff_dict,
                                  get_passive_action,
@@ -31,6 +32,12 @@ def test_Fake_serial():
     ser = Fake_serial()
     ser.write(1)
     assert True
+
+
+def test_calc_bonus_payoff():
+    """Test bonus calculation."""
+    bonus = calc_bonus_payoff(999)
+    assert bonus == 'did not complete "{}" condition yet.'.format('active')
 
 
 def test_get_final_choice_outcomes():

@@ -7,7 +7,10 @@ main file: sp.py
 other utilities: psychopy_utils.py
 
 """
+import os.path as op
+
 import numpy as np
+import pandas as pd
 
 import sp_experiment
 from sp_experiment.define_payoff_settings import get_random_payoff_dict
@@ -22,6 +25,42 @@ class Fake_serial():
     def write(self, byte):
         """Take a byte and do nothing."""
         pass
+
+
+def calc_bonus_payoff(sub_id, conversion_factor=0.01):
+    """Calculate the bonus money a participant has earned.
+
+    Parameters
+    ----------
+    sub_id : int
+        The subject ID
+
+    conversion_factor : float
+        Converting points to Euros
+
+    Returns
+    -------
+    bonus : str
+        A String stating the bonus in Euros, or that a condition has not yet
+        been completed.
+
+    """
+    head, __ = op.split(sp_experiment.__file__)
+    data_dir = op.join(head, 'experiment_data')
+    points = 0
+    for condition in ['active', 'passive']:
+        fname = 'sub-{:02}_task-sp{}_events.tsv'.format(sub_id, condition)
+        fpath = op.join(data_dir, fname)
+        if not op.exists(fpath):
+            bonus = 'did not complete "{}" condition yet.'.format(condition)
+            return bonus
+        else:
+            df = pd.read_csv(fpath, sep='\t')
+            points += np.sum(df[df['value'] == 15]['outcome'].to_numpy())
+
+    money = int(np.ceil(points * conversion_factor))
+    bonus = 'earned {} Euros as bonus.'.format(money)
+    return bonus
 
 
 def get_final_choice_outcomes(df):
