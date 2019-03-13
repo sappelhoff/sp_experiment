@@ -21,38 +21,34 @@ of the multi-armed bandit task.
 
 # Usage
 
-you can start the experiment from the command line. There are two required
-arguments:
+You can start the experiment by calling `python sp_experiment/sp.py`. This
+will open a GUI that asks for the following information
 
-- `--condition` (can be active, or passive)
-- `--sub_id` (should be a number)
+- `ID`: A dropdown menu of integers to select as the unique identifier of a
+  participant
+- `Age`: A dropdown menu of the participant's potential age
+- `Sex`: Dropdown menu to indicate the biological sex of the participant
+- `Condition`: Dropdown menu: "Acitve" or "Passive"
 
-There is one optional argument:
+ The experiment is setup as such that the inputs in the GUI are restricted.
+ Feel free to adjust.
 
-- `--yoke_to` (should point to a previous sub_id, defaults to `--sub_id`)
+ Importantly, you have to set the `yoke_map` in the `sp.py` file. This is a
+ dictionary that determines which replay of an active condition a participant
+ sees when they are in the passive condition.
 
-```bash
-# from the project root
-# active condition of participant 1
-python sp_experiment/sp.py --condition active --sub_id 1
+ Example:
+ ```python
+yoke_map = {1:1, 2:1}
 
-# passive condition of participant 1, seeing the replay of participant 1
-# NOTE: you can use abbreviations -c and -s, ...
-python sp_experiment/sp.py -c active -s 1
+ ```
 
-# passive condition of participant 2, seeing a replay of participant 1
-# NOTE: can also use -y instead of --yoke_to
-python sp_experiment/sp.py -c passive -s 2 --yoke_to 1
-
-# or use the Makefile for a test run:
-make active-test-run
-
-# passive test run only works, if data from active test run is present
-make passive-test-run
-
-# Clean up test data
-make clean-test-experiment-data
-```
+Here, the first participant will see a replay of their own active condition
+when they perform the passive condition. The second participant will see a
+replay of the first participant's active condition. Note that for this to work,
+participant 1 HAS to perform the active condition first and the respective data
+needs to be present in `sp_experiment/experiment_data` **as saved by the
+logger**.
 
 # Instructions to participants
 
@@ -60,7 +56,6 @@ All participants should read this instruction text and should also be allowed
 to perform some test trials until they have fully understood the paradigm.
 
 see [participant_instructions](./participant_instuctions)
-
 ---
 # Background Literature on the Sampling Paradigm:
 
