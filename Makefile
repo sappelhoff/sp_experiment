@@ -6,5 +6,8 @@ clean-and-reinstall:
 	rm -rf sp_experiment.egg-info
 	pip install -e .
 
+run:
+	python sp_experiment/sp.py
+	
 test:
 	pytest --verbose --cov=sp_experiment

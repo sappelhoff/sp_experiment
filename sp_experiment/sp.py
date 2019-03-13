@@ -24,6 +24,7 @@ from sp_experiment.define_variable_meanings import (make_events_json_dict,
                                                     make_data_dir
                                                     )
 from sp_experiment.utils import (utils_fps,
+                                 calc_bonus_payoff,
                                  set_fixstim_color,
                                  get_jittered_waitframes,
                                  log_data,
@@ -52,6 +53,45 @@ for i, j in zip(list(range(11, 21)), list(range(1, 11))):
 # ==================================
 trigger_dict = provide_trigger_dict()
 variable_meanings_dict = make_events_json_dict()
+
+# Navigation GUI
+# ==============
+nav = 'initial'
+while not nav == 'finished':
+    # Prepare GUI
+    myDlg = gui.Dlg(title='Sampling Paradigm Experiment')
+    if nav == 'initial':
+        myDlg.addField('What to do?:', choices=['run experiment',
+                                                'make test trials',
+                                                'calculate bonus money'])
+    elif nav == 'calc_bonus':
+        myDlg.addField('ID:', choices=list(range(1, 21)))
+
+    elif nav == 'show_bonus':
+        myDlg.addFixedField('Bonus:', bonus)
+        nav = 'quit'
+
+    # Get data
+    ok_data = myDlg.show()
+    if myDlg.OK:
+        if ok_data[0] == 'run experiment':
+            print('running experiment now')
+            nav = 'finished'  # quit navigattion and run experiment
+        elif ok_data[0] == 'make test trials':
+            print('preparing test trials now')
+            pass  # run test trials, then quit program
+            core.quit()
+        elif ok_data[0] == 'calculate bonus money':
+            nav = 'calc_bonus'  # ask for ID
+        elif nav == 'calc_bonus':
+            bonus = calc_bonus_payoff(int(ok_data[0]))  # We got ID: Calc now
+            nav = 'show_bonus'
+        elif nav == 'quit':
+            core.quit()  # We have shown the bonus. Now quit program
+    else:
+        print('user cancelled GUI input')
+        core.quit()
+
 
 # Participant information
 # =======================

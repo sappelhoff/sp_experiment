@@ -21,8 +21,16 @@ of the multi-armed bandit task.
 
 # Usage
 
-You can start the experiment by calling `python sp_experiment/sp.py`. This
-will open a GUI that asks for the following information
+You can start the experiment by calling `python sp_experiment/sp.py`.
+
+First, there will be a general navigation to:
+
+1. run the experiment
+2. do some test trials
+3. calculate bonus money given a participant ID 
+
+For the general flow, select `run_experiment`. This will open a GUI that asks
+for the following information:
 
 - `ID`: A dropdown menu of integers to select as the unique identifier of a
   participant
