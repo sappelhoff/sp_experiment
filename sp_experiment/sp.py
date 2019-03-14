@@ -39,6 +39,7 @@ from sp_experiment.define_payoff_settings import (get_payoff_settings,
                                                   get_random_payoff_dict,
                                                   )
 from sp_experiment.define_ttl_triggers import provide_trigger_dict
+from sp_experiment.sp_test_trials import run_test_trials
 
 # Yoking map
 # ==========
@@ -62,7 +63,7 @@ while not nav == 'finished':
     myDlg = gui.Dlg(title='Sampling Paradigm Experiment')
     if nav == 'initial':
         myDlg.addField('What to do?:', choices=['run experiment',
-                                                'make test trials',
+                                                'run test trials',
                                                 'calculate bonus money'])
     elif nav == 'calc_bonus':
         myDlg.addField('ID:', choices=list(range(1, 21)))
@@ -77,9 +78,9 @@ while not nav == 'finished':
         if ok_data[0] == 'run experiment':
             print('running experiment now')
             nav = 'finished'  # quit navigattion and run experiment
-        elif ok_data[0] == 'make test trials':
+        elif ok_data[0] == 'run test trials':
             print('preparing test trials now')
-            pass  # run test trials, then quit program
+            run_test_trials()  # run test trials, then quit program
             core.quit()
         elif ok_data[0] == 'calculate bonus money':
             nav = 'calc_bonus'  # ask for ID
@@ -536,7 +537,7 @@ while current_ntrls < max_ntrls:
                 txt_stim.pos = (0, 0)
                 txt_stim.height = 1
                 txt_stim.draw()
-                win.callOnFlip(ser.write, trigger_dict['trig_end_experiment'])
+                win.callOnFlip(ser.write, trigger_dict['trig_block_feedback'])
                 win.flip()
                 log_data(data_file, onset=exp_timer.getTime(),
                          value=trigger_dict['trig_block_feedback'])
