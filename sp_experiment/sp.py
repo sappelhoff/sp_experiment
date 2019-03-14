@@ -217,7 +217,8 @@ color_error = (1, 0, 0)  # wait: you did an error ... we have to restart
 # Start the experimental flow
 # ===========================
 # Get ready to start the experiment. Start timing from next button press.
-txt_stim.text = 'Press any key to start.'
+txt_stim.text = ('Starting the experiment in {} condition! Press any key to '
+                 'start.'.format(condition))
 txt_stim.height = 1
 txt_stim.font = font
 txt_stim.draw()
