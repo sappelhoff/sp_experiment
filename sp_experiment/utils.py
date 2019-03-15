@@ -48,17 +48,17 @@ def calc_bonus_payoff(sub_id, conversion_factor=0.01):
     data_dir = op.join(op.dirname(sp_experiment.__file__), 'experiment_data')
     points = 0
     for condition in ['active', 'passive']:
-        fname = 'sub-{:02}_task-sp{}_events.tsv'.format(sub_id, condition)
+        fname = f'sub-{sub_id:02d}_task-sp{condition}_events.tsv'
         fpath = op.join(data_dir, fname)
         if not op.exists(fpath):
-            bonus = 'did not complete "{}" condition yet.'.format(condition)
+            bonus = f'did not complete "{condition}" condition yet.'
             return bonus
         else:
             df = pd.read_csv(fpath, sep='\t')
             points += np.sum(df[df['value'] == 15]['outcome'].to_numpy())
 
     money = int(np.ceil(points * conversion_factor))
-    bonus = 'earned {} Euros as bonus.'.format(money)
+    bonus = f'earned {money} Euros as bonus.'
     return bonus
 
 

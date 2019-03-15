@@ -118,15 +118,15 @@ else:
 
 # Data logging
 # ============
-fname = 'sub-{:02}_task-sp{}_events.tsv'.format(sub_id, condition)
+fname = f'sub-{sub_id:02d}_task-sp{condition}_events.tsv'
 
 # Check directory is present and file name not yet used
 init_dir, data_dir = make_data_dir()
 
 data_file = op.join(data_dir, fname)
 if op.exists(data_file):
-    raise OSError('A data file for {} '
-                  'already exists: {}'.format(sub_id, data_file))
+    raise OSError(f'A data file for {sub_id} '
+                  f'already exists: {data_file}')
 
 # Write header to the tab separated log file
 variables = list(variable_meanings_dict.keys())
@@ -192,6 +192,7 @@ max_ntrls = 20  # for the whole experiment
 max_nsamples = 12  # per trial
 block_size = 10  # number of trials after which to offer a break and feedback
 assert max_ntrls % block_size == 0  # need to evenly divide trials into blocks
+nblocks = int(max_ntrls/block_size)
 
 font = 'Liberation Sans'  # Looks like Arial, but it's free!
 
@@ -218,8 +219,8 @@ color_error = (1, 0, 0)  # wait: you did an error ... we have to restart
 # Start the experimental flow
 # ===========================
 # Get ready to start the experiment. Start timing from next button press.
-txt_stim.text = ('Starting the experiment in {} condition! Press any key to '
-                 'start.'.format(condition))
+txt_stim.text = (f'Starting the experiment in {condition} condition! Press '
+                 'any key to start.')
 txt_stim.height = 1
 txt_stim.font = font
 txt_stim.draw()
@@ -240,7 +241,7 @@ rt_clock = core.Clock()
 
 # If we are in the passive condition, load pre-recorded data to replay
 if condition == 'passive':
-    fname = 'sub-{}_task-spactive_events.tsv'.format(yoke_to)
+    fname = f'sub-{yoke_to}_task-spactive_events.tsv'
     fpath = op.join(data_dir, fname)
     df = pd.read_csv(fpath, sep='\t')
     df = df[pd.notnull(df['trial'])]
@@ -527,15 +528,15 @@ while current_ntrls < max_ntrls:
 
                 df_tmp = pd.read_csv(data_file, sep='\t')
                 outcomes = get_final_choice_outcomes(df_tmp)
+                points = int(np.sum(outcomes))
                 [stim.setAutoDraw(False) for stim in fixation_stim_parts]
-                txt_stim.text = ('Block {}/{} done! You earned {} points '
-                                 'so far. Remember that your points will be '
+                txt_stim.text = (f'Block {current_nblocks}/{nblocks} done! '
+                                 f'You earned {points} points so far. '
+                                 'Remember that your points will be '
                                  'converted to Euros and paid to you at the '
-                                 'end of the experiment. '
-                                 'Press any key to continue.'
-                                 .format(current_nblocks,
-                                         int(max_ntrls/block_size),
-                                         int(np.sum(outcomes))))
+                                 'end of the experiment as a bonus. '
+                                 'Take a short break now. '
+                                 'Then press any key to continue.')
                 txt_stim.pos = (0, 0)
                 txt_stim.height = 1
                 txt_stim.draw()

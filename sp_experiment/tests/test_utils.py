@@ -41,7 +41,7 @@ def test_calc_bonus_payoff():
     """Test bonus calculation."""
     # Check for non-present data
     bonus = calc_bonus_payoff(999)
-    assert bonus == 'did not complete "{}" condition yet.'.format('active')
+    assert bonus == 'did not complete "active" condition yet.'
 
     # present data ... temporarily copy over a test file
     tmp_fpath1 = op.join(data_dir, 'sub-999_task-spactive_events.tsv')
@@ -141,7 +141,8 @@ def test_log_data():
                                   ['sample', 'stop', 'final_choice'])
 
     # Create a temporary logging file
-    data_dir = op.join(gettempdir(), '.{}'.format(hash(os.times())))
+    myhash = str(hash(os.times()))
+    data_dir = op.join(gettempdir(), myhash)
     os.makedirs(data_dir)
     fname = 'tmp_data_file.tsv'
     fpath = op.join(data_dir, fname)
