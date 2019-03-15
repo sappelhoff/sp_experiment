@@ -24,6 +24,7 @@ from sp_experiment.define_variable_meanings import (make_events_json_dict,
                                                     make_data_dir
                                                     )
 from sp_experiment.utils import (utils_fps,
+                                 get_fixation_stim,
                                  calc_bonus_payoff,
                                  set_fixstim_color,
                                  get_jittered_waitframes,
@@ -34,7 +35,6 @@ from sp_experiment.utils import (utils_fps,
                                  get_passive_outcome,
                                  get_final_choice_outcomes
                                  )
-from sp_experiment.psychopy_utils import get_fixation_stim
 from sp_experiment.define_payoff_settings import (get_payoff_settings,
                                                   get_random_payoff_dict,
                                                   )

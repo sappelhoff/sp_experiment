@@ -3,10 +3,10 @@ import numpy as np
 from psychopy import visual, event, core
 
 from sp_experiment.utils import (set_fixstim_color,
-                                 get_jittered_waitframes)
+                                 get_jittered_waitframes,
+                                 get_fixation_stim)
 from sp_experiment.define_payoff_settings import (get_payoff_settings,
                                                   get_random_payoff_dict)
-from sp_experiment.psychopy_utils import get_fixation_stim
 
 # Experiment settings
 font = 'Liberation Sans'  # Looks like Arial, but it's free!
@@ -204,3 +204,13 @@ def run_test_trials():
                 # start the next trial
                 current_ntrls += 1
                 break
+
+    # Interim feedback before passive trls
+    [stim.setAutoDraw(False) for stim in fixation_stim_parts]
+    txt_stim.text = ('That was one trial in the "active" condition.')
+    txt_stim.pos = (0, 0)
+    txt_stim.height = 1
+
+    txt_stim.draw()
+    win.flip()
+    event.waitKeys()
