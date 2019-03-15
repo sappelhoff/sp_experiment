@@ -1,4 +1,8 @@
-"""Test importing the monitors."""
+"""Test importing the monitors.
+
+By calling this test, you will define the monitors as in define_monitors.py
+
+"""
 import subprocess
 
 from psychopy import monitors
