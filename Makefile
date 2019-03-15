@@ -8,6 +8,7 @@ clean-and-reinstall:
 
 run:
 	python sp_experiment/sp.py
-	
+
 test:
 	pytest --verbose --cov=sp_experiment
+	flake8 .

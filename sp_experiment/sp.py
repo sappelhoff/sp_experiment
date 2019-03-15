@@ -58,6 +58,7 @@ variable_meanings_dict = make_events_json_dict()
 # Navigation GUI
 # ==============
 nav = 'initial'
+bonus = ''
 while not nav == 'finished':
     # Prepare GUI
     myDlg = gui.Dlg(title='Sampling Paradigm Experiment')
@@ -135,7 +136,7 @@ with open(data_file, 'w') as fout:
     fout.write(header + '\n')
 
 # Write a brief log file for this participant
-fname = f'log_{sub_id}_{condition}.txt'  # noqa E999
+fname = f'log_{sub_id}_{condition}.txt'
 log_path = op.join(data_dir, fname)
 with open(log_path, 'w') as fout:
     for line in [sub_id, age, sex, condition, yoke_to]:
