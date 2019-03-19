@@ -4,7 +4,8 @@ import os.path as op
 import json
 
 import sp_experiment
-from sp_experiment.define_variable_meanings import make_events_json_dict
+from sp_experiment.define_variable_meanings import (make_events_json_dict,
+                                                    make_data_dir)
 
 
 def test_make_events_json_dict():
@@ -39,3 +40,11 @@ def test_json():
         except ValueError as e:
             print(f'invalid json: {e}')  # noqa: E999
             raise
+
+
+def test_make_data_dir():
+    """Test making of datadir and copying over of relevant files."""
+    init_dir, data_dir = make_data_dir()
+    assert op.exists(data_dir)
+    assert op.exists(op.join(data_dir, 'task-sp_events.json'))
+    assert op.exists(op.join(data_dir, 'sub-999_task-spactive_events.tsv'))

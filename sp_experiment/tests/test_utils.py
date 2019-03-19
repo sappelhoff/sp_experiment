@@ -40,16 +40,19 @@ def test_Fake_serial():
 def test_calc_bonus_payoff():
     """Test bonus calculation."""
     # Check for non-present data
-    bonus = calc_bonus_payoff(999)
+    bonus = calc_bonus_payoff(998)
     assert bonus == 'did not complete "active" condition yet.'
 
+    bonus = calc_bonus_payoff(999)
+    assert bonus == 'did not complete "passive" condition yet.'
+
     # present data ... temporarily copy over a test file
-    tmp_fpath1 = op.join(data_dir, 'sub-999_task-spactive_events.tsv')
-    tmp_fpath2 = op.join(data_dir, 'sub-999_task-sppassive_events.tsv')
+    tmp_fpath1 = op.join(data_dir, 'sub-998_task-spactive_events.tsv')
+    tmp_fpath2 = op.join(data_dir, 'sub-998_task-sppassive_events.tsv')
     copyfile(no_errors_file, tmp_fpath1)
     copyfile(no_errors_file, tmp_fpath2)
 
-    bonus = calc_bonus_payoff(999)
+    bonus = calc_bonus_payoff(998)
 
     # remove tmp files
     os.remove(tmp_fpath1)

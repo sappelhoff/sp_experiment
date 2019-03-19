@@ -14,6 +14,7 @@ To do
 - incorporate eye tracking (gaze-contingent fixation cross)
 
 """
+import os
 import os.path as op
 
 import numpy as np
@@ -39,7 +40,6 @@ from sp_experiment.define_payoff_settings import (get_payoff_settings,
                                                   get_random_payoff_dict,
                                                   )
 from sp_experiment.define_ttl_triggers import provide_trigger_dict
-from sp_experiment.sp_test_trials import run_test_trials
 
 
 def navigation():
@@ -165,7 +165,7 @@ def prep_logging(yoke_map):
 
 def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
              max_nsamples=12, block_size=10, data_file=None,
-             condition='active', yoke_to=None):
+             condition='active', yoke_to=None, is_test=False):
     """Run the experimental flow.
 
     Parameters
@@ -187,6 +187,8 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
         Condition in which to run the experiment
     yoke_to : int | None
         sub_id which to yoke a subject to in passive condition.
+    is_test : bool
+        Flag whether this is a test run.
 
     """
     if data_file is None:
@@ -267,7 +269,8 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     # Start the experimental flow
     # ===========================
     # Get ready to start the experiment. Start timing from next button press.
-    txt_stim.text = (f'Starting the experiment in {condition} condition! '
+    modstr = 'experiment' if not is_test else 'TEST'
+    txt_stim.text = (f'Starting the {modstr} in {condition} condition! '
                      'Press any key to start.')
     txt_stim.height = 1
     txt_stim.font = font
@@ -637,6 +640,34 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     core.quit()
 
 
+def run_test_trials(monitor='testMonitor'):
+    """Run the test trials."""
+    init_dir, data_dir = make_data_dir()
+
+    # Run a single active test trial
+    data_file = op.join(data_dir, 'test'+str(hash(os.times())))
+    run_flow(monitor=monitor,
+             max_ntrls=1,
+             max_nsamples=12,
+             block_size=1,  # i.e., no block feedback because never reached
+             data_file=data_file,
+             condition='active',
+             is_test=True)
+
+    # Run a single passive test trial ... using a prerecorded dataset
+    run_flow(monitor=monitor,
+             max_ntrls=1,
+             max_nsamples=12,
+             block_size=1,  # i.e., no block feedback because never reached
+             data_file=data_file,
+             condition='passive',
+             yoke_to=999,
+             is_test=True)
+
+    # Remove the test data
+    os.remove(data_file)
+
+
 if __name__ == '__main__':
     # Yoking map
     # ==========
@@ -651,4 +682,11 @@ if __name__ == '__main__':
     run = navigation()
     if run:
         data_file, condition, yoke_to = prep_logging(yoke_map)
-        run_flow(data_file=data_file, condition=condition, yoke_to=yoke_to)
+        run_flow(monitor='eizoforis',
+                 ser=Fake_serial(),
+                 max_ntrls=1,
+                 max_nsamples=12,
+                 block_size=1,
+                 data_file=data_file,
+                 condition=condition,
+                 yoke_to=yoke_to)

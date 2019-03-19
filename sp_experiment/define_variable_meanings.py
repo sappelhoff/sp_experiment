@@ -2,6 +2,7 @@
 import os
 import os.path as op
 import json
+from shutil import copyfile
 
 import sp_experiment
 from sp_experiment.define_ttl_triggers import provide_trigger_dict
@@ -201,6 +202,8 @@ def make_data_dir():
     """Make a data directory and write the events.json if it does not exist.
 
     This will also write the "task-sp_events.json" file to the data directory.
+    And it will place the "sub-999_task-spactive_events.tsv" file in the data
+    directory, which is important for the test trials.
 
     Returns
     -------
@@ -224,5 +227,10 @@ def make_data_dir():
     with open(op.join(data_dir, 'task-sp_events.json'), 'w') as fout:
         json.dump(obj=variable_meanings_dict, fp=fout,
                   sort_keys=False, indent=4)
+
+    # Copy over the testing file
+    f1 = op.join(init_dir, 'tests', 'data', 'sub-999_task-spactive_events.tsv')
+    f2 = op.join(data_dir, 'sub-999_task-spactive_events.tsv')
+    copyfile(f1, f2)
 
     return init_dir, data_dir
