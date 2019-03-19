@@ -55,93 +55,130 @@ for i, j in zip(list(range(11, 21)), list(range(1, 11))):
 trigger_dict = provide_trigger_dict()
 variable_meanings_dict = make_events_json_dict()
 
-# Navigation GUI
-# ==============
-nav = 'initial'
-bonus = ''
-while not nav == 'finished':
-    # Prepare GUI
-    myDlg = gui.Dlg(title='Sampling Paradigm Experiment')
-    if nav == 'initial':
-        myDlg.addField('What to do?:', choices=['run experiment',
-                                                'run test trials',
-                                                'calculate bonus money'])
-    elif nav == 'calc_bonus':
-        myDlg.addField('ID:', choices=list(range(1, 21)))
 
-    elif nav == 'show_bonus':
-        myDlg.addFixedField('Bonus:', bonus)
-        nav = 'quit'
+def navigation():
+    """Lead through a navigation GUI.
 
-    # Get data
-    ok_data = myDlg.show()
-    if myDlg.OK:
-        if ok_data[0] == 'run experiment':
-            print('running experiment now')
-            nav = 'finished'  # quit navigattion and run experiment
-        elif ok_data[0] == 'run test trials':
-            print('preparing test trials now')
-            run_test_trials()  # run test trials, then quit program
-            core.quit()
-        elif ok_data[0] == 'calculate bonus money':
-            nav = 'calc_bonus'  # ask for ID
+    Provides the options to run the experiment, test trials, or print out the
+    bonus money of a participant. If 'run' is selected, it returns True. Else
+    it either starts the test trials and quits, or prints the bonus money and
+    quits.
+
+    Returns
+    -------
+    run : bool
+
+    """
+    run = False
+    nav = 'initial'
+    bonus = ''
+    while not nav == 'finished':
+        # Prepare GUI
+        myDlg = gui.Dlg(title='Sampling Paradigm Experiment')
+        if nav == 'initial':
+            myDlg.addField('What to do?:', choices=['run experiment',
+                                                    'run test trials',
+                                                    'calculate bonus money'])
         elif nav == 'calc_bonus':
-            bonus = calc_bonus_payoff(int(ok_data[0]))  # We got ID: Calc now
-            nav = 'show_bonus'
-        elif nav == 'quit':
-            core.quit()  # We have shown the bonus. Now quit program
+            myDlg.addField('ID:', choices=list(range(1, 21)))
+
+        elif nav == 'show_bonus':
+            myDlg.addFixedField('Bonus:', bonus)
+            nav = 'quit'
+
+        # Get data
+        ok_data = myDlg.show()
+        if myDlg.OK:
+            if ok_data[0] == 'run experiment':
+                print('running experiment now')
+                run = True
+                nav = 'finished'  # quit navigattion and run experiment
+            elif ok_data[0] == 'run test trials':
+                print('preparing test trials now')
+                run_test_trials()  # run test trials, then quit program
+                core.quit()
+            elif ok_data[0] == 'calculate bonus money':
+                nav = 'calc_bonus'  # ask for ID
+            elif nav == 'calc_bonus':
+                bonus = calc_bonus_payoff(int(ok_data[0]))
+                nav = 'show_bonus'
+            elif nav == 'quit':
+                core.quit()  # We have shown the bonus. Now quit program
+        else:
+            print('user cancelled GUI input')
+            core.quit()
+
+        return run
+
+
+def prep_logging(yoke_map):
+    """Prepare logging for the experiment run.
+
+    Parameters
+    ----------
+    yoke_map : dict
+        dictionary mapping a sub_id to a previous sub_id that performed the
+        active task. That task will then be served as a replay to the current
+        ID.
+
+    Returns
+    -------
+    data_file : str
+        path to the data file
+    """
+    # Collect the ID, age, sex, condition
+    myDlg = gui.Dlg(title='Sampling Paradigm Experiment')
+    myDlg.addField('ID:', choices=list(range(1, 21)))
+    myDlg.addField('Age:', choices=list(range(18, 100)))
+    myDlg.addField('Sex:', choices=['Male', 'Female'])
+    myDlg.addField('Condition:', choices=['active', 'passive'])
+
+    # show dialog and wait for OK or Cancel
+    ok_data = myDlg.show()
+    if myDlg.OK:  # or if ok_data is not None
+        sub_id = int(ok_data[0])
+        age = int(ok_data[1])
+        sex = ok_data[2]
+        condition = ok_data[3]
+        yoke_to = yoke_map[sub_id]
     else:
         print('user cancelled GUI input')
         core.quit()
 
+    # Data logging
+    # ============
+    fname = f'sub-{sub_id:02d}_task-sp{condition}_events.tsv'
 
-# Participant information
-# =======================
-# Collect the ID, age, sex, condition
-myDlg = gui.Dlg(title='Sampling Paradigm Experiment')
-myDlg.addField('ID:', choices=list(range(1, 21)))
-myDlg.addField('Age:', choices=list(range(18, 100)))
-myDlg.addField('Sex:', choices=['Male', 'Female'])
-myDlg.addField('Condition:', choices=['active', 'passive'])
+    # Check directory is present and file name not yet used
+    init_dir, data_dir = make_data_dir()
 
-# show dialog and wait for OK or Cancel
-ok_data = myDlg.show()
-if myDlg.OK:  # or if ok_data is not None
-    sub_id = int(ok_data[0])
-    age = int(ok_data[1])
-    sex = ok_data[2]
-    condition = ok_data[3]
-    yoke_to = yoke_map[sub_id]
-else:
-    print('user cancelled GUI input')
-    core.quit()
+    data_file = op.join(data_dir, fname)
+    if op.exists(data_file):
+        raise OSError(f'A data file for {sub_id} '
+                      f'already exists: {data_file}')
 
-# Data logging
-# ============
-fname = f'sub-{sub_id:02d}_task-sp{condition}_events.tsv'
+    # Write header to the tab separated log file
+    variables = list(variable_meanings_dict.keys())
 
-# Check directory is present and file name not yet used
-init_dir, data_dir = make_data_dir()
+    with open(data_file, 'w') as fout:
+        header = '\t'.join(variables)
+        fout.write(header + '\n')
 
-data_file = op.join(data_dir, fname)
-if op.exists(data_file):
-    raise OSError(f'A data file for {sub_id} '
-                  f'already exists: {data_file}')
+    # Write a brief log file for this participant
+    fname = f'log_{sub_id}_{condition}.txt'
+    log_path = op.join(data_dir, fname)
+    with open(log_path, 'w') as fout:
+        for line in [sub_id, age, sex, condition, yoke_to]:
+            fout.write(f'{line}')  # noqa E999
+            fout.write('\n')
 
-# Write header to the tab separated log file
-variables = list(variable_meanings_dict.keys())
+    return data_file, condition, yoke_to
 
-with open(data_file, 'w') as fout:
-    header = '\t'.join(variables)
-    fout.write(header + '\n')
 
-# Write a brief log file for this participant
-fname = f'log_{sub_id}_{condition}.txt'
-log_path = op.join(data_dir, fname)
-with open(log_path, 'w') as fout:
-    for line in [sub_id, age, sex, condition, yoke_to]:
-        fout.write(f'{line}')  # noqa E999
-        fout.write('\n')
+# Run funcs
+run = navigation()
+print(run)
+data_file, condition, yoke_to = prep_logging(yoke_map)
 
 # Get PsychoPy stimuli ready
 # ==========================
@@ -242,7 +279,7 @@ rt_clock = core.Clock()
 # If we are in the passive condition, load pre-recorded data to replay
 if condition == 'passive':
     fname = f'sub-{yoke_to}_task-spactive_events.tsv'
-    fpath = op.join(data_dir, fname)
+    fpath = op.join(op.dirname(data_file), fname)
     df = pd.read_csv(fpath, sep='\t')
     df = df[pd.notnull(df['trial'])]
 
