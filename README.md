@@ -65,7 +65,7 @@ logger**.
 All participants should read this instruction text and should also be allowed
 to perform some test trials until they have fully understood the paradigm.
 
-see [participant_instructions](./participant_instuctions)
+see [participant_instructions](https://github.com/sappelhoff/sp_experiment/tree/master/participant_instructions)
 ---
 # Background Literature on the Sampling Paradigm:
 
