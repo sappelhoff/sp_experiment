@@ -67,6 +67,9 @@ def navigation():
             myDlg.addField('What to do?:', choices=['run experiment',
                                                     'run test trials',
                                                     'calculate bonus money'])
+        elif nav == 'testing_cond':
+            myDlg.addField('Condition:', choices=['active', 'passive'])
+
         elif nav == 'calc_bonus':
             myDlg.addField('ID:', choices=list(range(1, 21)))
 
@@ -82,8 +85,11 @@ def navigation():
                 run = True
                 nav = 'finished'  # quit navigattion and run experiment
             elif ok_data[0] == 'run test trials':
+                nav = 'testing_cond'
+            elif nav == 'testing_cond':
                 print('preparing test trials now')
-                run_test_trials()  # run test trials, then quit program
+                # run test trials, then quit program
+                run_test_trials(condition=ok_data[0])
                 core.quit()
             elif ok_data[0] == 'calculate bonus money':
                 nav = 'calc_bonus'  # ask for ID
@@ -637,8 +643,18 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     win.close()
 
 
-def run_test_trials(monitor='testMonitor'):
-    """Run the test trials."""
+def run_test_trials(monitor='testMonitor', condition='active'):
+    """Run the test trials.
+
+    Parameters
+    ----------
+    monitor : str
+        Name of the monitor to be used
+
+    condition : str
+        Condition for which to perform test trial. Can be 'active' or 'passive'
+
+    """
     init_dir, data_dir = make_data_dir()
     data_file = op.join(data_dir, 'test'+str(hash(os.times())))
 
@@ -650,24 +666,26 @@ def run_test_trials(monitor='testMonitor'):
         header = '\t'.join(variables)
         fout.write(header + '\n')
 
-    # Run a single active test trial
-    run_flow(monitor=monitor,
-             max_ntrls=1,
-             max_nsamples=12,
-             block_size=1,  # i.e., no block feedback because never reached
-             data_file=data_file,
-             condition='active',
-             is_test=True)
+    if condition == 'active':
+        # Run a single active test trial
+        run_flow(monitor=monitor,
+                 max_ntrls=1,
+                 max_nsamples=12,
+                 block_size=1,  # i.e., no block feedback because never reached
+                 data_file=data_file,
+                 condition='active',
+                 is_test=True)
 
-    # Run a single passive test trial ... using a prerecorded dataset
-    run_flow(monitor=monitor,
-             max_ntrls=1,
-             max_nsamples=12,
-             block_size=1,  # i.e., no block feedback because never reached
-             data_file=data_file,
-             condition='passive',
-             yoke_to=999,
-             is_test=True)
+    elif condition == 'passive':
+        # Run a single passive test trial ... using a prerecorded dataset
+        run_flow(monitor=monitor,
+                 max_ntrls=1,
+                 max_nsamples=12,
+                 block_size=1,  # i.e., no block feedback because never reached
+                 data_file=data_file,
+                 condition='passive',
+                 yoke_to=999,
+                 is_test=True)
 
     # Remove the test data
     os.remove(data_file)
@@ -689,9 +707,9 @@ if __name__ == '__main__':
         data_file, condition, yoke_to = prep_logging(yoke_map)
         run_flow(monitor='eizoforis',
                  ser=Fake_serial(),
-                 max_ntrls=10,
+                 max_ntrls=75,
                  max_nsamples=12,
-                 block_size=10,
+                 block_size=25,
                  data_file=data_file,
                  condition=condition,
                  yoke_to=yoke_to)
