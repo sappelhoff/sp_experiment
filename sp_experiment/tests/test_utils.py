@@ -106,7 +106,7 @@ def test_get_passive_action():
     assert isinstance(keys_rts[0], tuple)
 
     # did we read the correct numbers
-    assert keys_rts[0][0] == 'right'
+    assert keys_rts[0][0] == 'd'
     np.testing.assert_allclose(keys_rts[0][1], 0.328, rtol=0.01)
 
 

@@ -48,7 +48,7 @@ def calc_bonus_payoff(sub_id, conversion_factor=0.01):
     data_dir = op.join(op.dirname(sp_experiment.__file__), 'experiment_data')
     points = 0
     for condition in ['active', 'passive']:
-        fname = f'sub-{sub_id:02d}_task-sp{condition}_events.tsv'
+        fname = f'sub-{sub_id:02d}_task-sp{condition}_events.tsv'  # noqa: E999
         fpath = op.join(data_dir, fname)
         if not op.exists(fpath):
             bonus = f'did not complete "{condition}" condition yet.'
@@ -149,7 +149,7 @@ def get_passive_action(df, trial, sample):
             (df['action_type'].isin(admissible_actions))]
     key = int(df['action'].tolist()[int(sample)])
     rt = float(df['response_time'].tolist()[int(sample)])
-    key = {0: 'left', 1: 'right', 2: 'down'}[key]
+    key = {0: 's', 1: 'd', 2: 'f'}[key]
     keys_rts = [(key, rt)]
     return keys_rts
 

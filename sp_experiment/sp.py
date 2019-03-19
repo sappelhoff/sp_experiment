@@ -134,7 +134,7 @@ def prep_logging(yoke_map):
 
     # Data logging
     # ============
-    fname = f'sub-{sub_id:02d}_task-sp{condition}_events.tsv'
+    fname = f'sub-{sub_id:02d}_task-sp{condition}_events.tsv'  # noqa: E999
 
     # Check directory is present and file name not yet used
     init_dir, data_dir = make_data_dir()
@@ -255,6 +255,8 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     maxwait_finchoice = 3  # can also be float('inf') to wait forever
 
     # replace "__" with "f" to allow final choices
+    # NOTE: if you change these, you also need to change `get_passive_action`
+    # in utils.py
     keylist_samples = ['s', 'd', '__', 'x']  # press x to quit
     keylist_finchoice = ['s', 'd', 'x']
 
@@ -269,7 +271,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     # Start the experimental flow
     # ===========================
     # Get ready to start the experiment. Start timing from next button press.
-    modstr = 'experiment' if not is_test else 'TEST'
+    modstr = 'experiment' if not is_test else 'TEST TRIAL'
     txt_stim.text = (f'Starting the {modstr} in {condition} condition! '
                      'Press any key to start.')
     txt_stim.height = 1
@@ -637,15 +639,22 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
              value=trigger_dict['trig_end_experiment'])
     event.waitKeys()
     win.close()
-    core.quit()
 
 
 def run_test_trials(monitor='testMonitor'):
     """Run the test trials."""
     init_dir, data_dir = make_data_dir()
+    data_file = op.join(data_dir, 'test'+str(hash(os.times())))
+
+    # Write header to the tab separated log file
+    variable_meanings_dict = make_events_json_dict()
+    variables = list(variable_meanings_dict.keys())
+
+    with open(data_file, 'w') as fout:
+        header = '\t'.join(variables)
+        fout.write(header + '\n')
 
     # Run a single active test trial
-    data_file = op.join(data_dir, 'test'+str(hash(os.times())))
     run_flow(monitor=monitor,
              max_ntrls=1,
              max_nsamples=12,
@@ -690,3 +699,5 @@ if __name__ == '__main__':
                  data_file=data_file,
                  condition=condition,
                  yoke_to=yoke_to)
+
+    core.quit()
