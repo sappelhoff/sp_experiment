@@ -96,7 +96,7 @@ def navigation():
             print('user cancelled GUI input')
             core.quit()
 
-        return run
+    return run
 
 
 def prep_logging(yoke_map):
