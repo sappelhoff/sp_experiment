@@ -41,20 +41,6 @@ from sp_experiment.define_payoff_settings import (get_payoff_settings,
 from sp_experiment.define_ttl_triggers import provide_trigger_dict
 from sp_experiment.sp_test_trials import run_test_trials
 
-# Yoking map
-# ==========
-# To determine, which participant gets yoked to which.
-# First 10 subjs are mapped to themselves
-yoke_map = dict(zip(list(range(1, 11)), list(range(1, 11))))
-# Next 10 are mapped to first ten
-for i, j in zip(list(range(11, 21)), list(range(1, 11))):
-    yoke_map[i] = j
-
-# TTL triggers and variable meanings
-# ==================================
-trigger_dict = provide_trigger_dict()
-variable_meanings_dict = make_events_json_dict()
-
 
 def navigation():
     """Lead through a navigation GUI.
@@ -125,6 +111,7 @@ def prep_logging(yoke_map):
     -------
     data_file : str
         path to the data file
+
     """
     # Collect the ID, age, sex, condition
     myDlg = gui.Dlg(title='Sampling Paradigm Experiment')
@@ -158,6 +145,7 @@ def prep_logging(yoke_map):
                       f'already exists: {data_file}')
 
     # Write header to the tab separated log file
+    variable_meanings_dict = make_events_json_dict()
     variables = list(variable_meanings_dict.keys())
 
     with open(data_file, 'w') as fout:
@@ -175,434 +163,492 @@ def prep_logging(yoke_map):
     return data_file, condition, yoke_to
 
 
-# Run funcs
-run = navigation()
-print(run)
-data_file, condition, yoke_to = prep_logging(yoke_map)
+def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
+             max_nsamples=12, block_size=10, data_file=None,
+             condition='active', yoke_to=None):
+    """Run the experimental flow.
 
-# Get PsychoPy stimuli ready
-# ==========================
-# Define monitor specific window object
-win = visual.Window(color=(0, 0, 0),  # Background color: RGB [-1,1]
-                    fullscr=True,  # Fullscreen for better timing
-                    monitor='eizoforis',  # see monitor_definition.py
-                    units='deg',
-                    winType='pyglet')
+    Parameters
+    ----------
+    monitor : str
+        Monitor definitionto be used, see define_monitors.py
+    ser : str | instance of Fake_serial. Defaults to None.
+        Either string address to a serial port for sending triggers, or
+        a Fake_serial object, see utils.py. Defaults to Fake_serial.
+    max_ntrls : int
+        Maximum number of trials for this run.
+    max_nsamples : int
+        Maximum number of samples per trial.
+    block_size : int
+        Number of trials after which feedback is provided
+    data_file : str | None
+        Path to the data file
+    condition : str
+        Condition in which to run the experiment
+    yoke_to : int | None
+        sub_id which to yoke a subject to in passive condition.
 
-# Hide the cursor
-win.mouseVisible = False
+    """
+    if data_file is None:
+        raise ValueError('Please provide a data_file path.')
 
-# On which frame rate are we operating?
-fps = int(round(win.getActualFrameRate()))
-assert fps == 60
-if utils_fps != fps:
-    raise ValueError('Please adjust the utils_fps variable in utils.py')
+    # Get PsychoPy stimuli ready
+    # ==========================
+    # Define monitor specific window object
+    win = visual.Window(color=(0, 0, 0),  # Background color: RGB [-1,1]
+                        fullscr=True,  # Fullscreen for better timing
+                        monitor=monitor,
+                        units='deg',
+                        winType='pyglet')
 
-# Get the objects for the fixation stim
-outer, inner, horz, vert = get_fixation_stim(win)
-fixation_stim_parts = [outer, horz, vert, inner]
+    # Hide the cursor
+    win.mouseVisible = False
 
-# Mask and text for outcomes, properties will be set and reset below
-circ_color = [-0.5] * 3
-circ_stim = visual.Circle(win,
-                          pos=(0, 0),
-                          units='deg',
-                          fillColor=circ_color,
-                          lineColor=circ_color,
-                          radius=2.5,
-                          edges=128)
+    # On which frame rate are we operating?
+    fps = int(round(win.getActualFrameRate()))
+    assert fps == 60
+    if utils_fps != fps:
+        raise ValueError('Please adjust the utils_fps variable in utils.py')
 
-txt_color = [0.5] * 3
-txt_stim = visual.TextStim(win,
-                           units='deg',
-                           color=txt_color)
+    # Get the objects for the fixation stim
+    outer, inner, horz, vert = get_fixation_stim(win)
+    fixation_stim_parts = [outer, horz, vert, inner]
 
+    # Mask and text for outcomes, properties will be set and reset below
+    circ_color = [-0.5] * 3
+    circ_stim = visual.Circle(win,
+                              pos=(0, 0),
+                              units='deg',
+                              fillColor=circ_color,
+                              lineColor=circ_color,
+                              radius=2.5,
+                              edges=128)
 
-# Start communicating with the serial port
-# ========================================
-ser = Fake_serial()
+    txt_color = [0.5] * 3
+    txt_stim = visual.TextStim(win,
+                               units='deg',
+                               color=txt_color)
 
+    # Start communicating with the serial port
+    # ========================================
+    if isinstance(ser, Fake_serial):
+        pass
 
-# Experiment settings
-# ===================
-max_ntrls = 20  # for the whole experiment
-max_nsamples = 12  # per trial
-block_size = 10  # number of trials after which to offer a break and feedback
-assert max_ntrls % block_size == 0  # need to evenly divide trials into blocks
-nblocks = int(max_ntrls/block_size)
+    # Trigger meanings and values
+    trigger_dict = provide_trigger_dict()
 
-font = 'Liberation Sans'  # Looks like Arial, but it's free!
+    # Experiment settings
+    # ===================
+    # Make sure block settings are fine
+    assert max_ntrls % block_size == 0
+    nblocks = int(max_ntrls/block_size)
 
-toutmask_ms = (1000, 1500)  # time for masking an outcome
-toutshow_ms = (1000, 1500)  # time for showing an outcome
-tdisplay_ms = (900, 1100)  # delay if "new trial", "error", "final choice"
+    font = 'Liberation Sans'  # Looks like Arial, but it's free!
 
-maxwait_samples = 3  # Maximum seconds we wait for a sample
-maxwait_finchoice = 3  # can also be float('inf') to wait forever
+    toutmask_ms = (600, 1000)  # time for masking an outcome
+    toutshow_ms = (800, 1200)  # time for showing an outcome
+    tdisplay_ms = (900, 1100)  # delay if "new trial", "error", "final choice"
 
-# replace "__" with "f" to allow final choices
-keylist_samples = ['s', 'd', '__', 'x']  # press x to quit
-keylist_finchoice = ['s', 'd', 'x']
+    maxwait_samples = 3  # Maximum seconds we wait for a sample
+    maxwait_finchoice = 3  # can also be float('inf') to wait forever
 
-expected_value_diff = 0.1  # For payoff settings to be used
+    # replace "__" with "f" to allow final choices
+    keylist_samples = ['s', 'd', '__', 'x']  # press x to quit
+    keylist_finchoice = ['s', 'd', 'x']
 
-# Set the fixation_stim colors for signalling state of the experiment
-color_standard = (1, 1, 1)  # prompt to do an action
-color_newtrl = (0, 1, 0)  # wait: a new trial is starting
-color_finchoice = (0, 0, 1)  # wait: next action will be "final choice"
-color_error = (1, 0, 0)  # wait: you did an error ... we have to restart
+    expected_value_diff = 0.1  # For payoff settings to be used
 
+    # Set the fixation_stim colors for signalling state of the experiment
+    color_standard = (1, 1, 1)  # prompt to do an action
+    color_newtrl = (0, 1, 0)  # wait: a new trial is starting
+    color_finchoice = (0, 0, 1)  # wait: next action will be "final choice"
+    color_error = (1, 0, 0)  # wait: you did an error ... we have to restart
 
-# Start the experimental flow
-# ===========================
-# Get ready to start the experiment. Start timing from next button press.
-txt_stim.text = (f'Starting the experiment in {condition} condition! Press '
-                 'any key to start.')
-txt_stim.height = 1
-txt_stim.font = font
-txt_stim.draw()
-win.flip()
-event.waitKeys()
-ser.write(trigger_dict['trig_begin_experiment'])
-exp_timer = core.MonotonicClock()
-log_data(data_file, onset=exp_timer.getTime(),
-         value=trigger_dict['trig_begin_experiment'])
-txt_stim.height = 4  # set height for stimuli to be shown below
+    # Start the experimental flow
+    # ===========================
+    # Get ready to start the experiment. Start timing from next button press.
+    txt_stim.text = (f'Starting the experiment in {condition} condition! '
+                     'Press any key to start.')
+    txt_stim.height = 1
+    txt_stim.font = font
+    txt_stim.draw()
+    win.flip()
+    event.waitKeys()
+    ser.write(trigger_dict['trig_begin_experiment'])
+    exp_timer = core.MonotonicClock()
+    log_data(data_file, onset=exp_timer.getTime(),
+             value=trigger_dict['trig_begin_experiment'])
+    txt_stim.height = 4  # set height for stimuli to be shown below
 
-# Get general payoff settings
-payoff_settings = get_payoff_settings(expected_value_diff)
+    # Get general payoff settings
+    payoff_settings = get_payoff_settings(expected_value_diff)
 
-# Start a clock for measuring reaction times
-# NOTE: Will be reset to 0 right before recording a button press
-rt_clock = core.Clock()
+    # Start a clock for measuring reaction times
+    # NOTE: Will be reset to 0 right before recording a button press
+    rt_clock = core.Clock()
 
-# If we are in the passive condition, load pre-recorded data to replay
-if condition == 'passive':
-    fname = f'sub-{yoke_to}_task-spactive_events.tsv'
-    fpath = op.join(op.dirname(data_file), fname)
-    df = pd.read_csv(fpath, sep='\t')
-    df = df[pd.notnull(df['trial'])]
+    # If we are in the passive condition, load pre-recorded data to replay
+    if condition == 'passive':
+        fname = f'sub-{yoke_to}_task-spactive_events.tsv'
+        fpath = op.join(op.dirname(data_file), fname)
+        df = pd.read_csv(fpath, sep='\t')
+        df = df[pd.notnull(df['trial'])]
 
-current_nblocks = 0
-current_ntrls = 0
-while current_ntrls < max_ntrls:
+    current_nblocks = 0
+    current_ntrls = 0
+    while current_ntrls < max_ntrls:
 
-    # For each trial, take a new payoff setting.
-    # When active condition, read the current data to make a pseudorandom draw
-    # of a payoff setting. This is to guarantee that also stimuli that have
-    # been sampled the least so far will be included more often.
-    if condition == 'active':
-        df_pseudorand = pd.read_csv(data_file, sep='\t')
-        payoff_dict, payoff_settings = get_random_payoff_dict(payoff_settings,
-                                                              pseudorand=True,
-                                                              df=df_pseudorand
-                                                              )
-
-        log_data(data_file, onset=exp_timer.getTime(), trial=current_ntrls,
-                 payoff_dict=payoff_dict)
-    else:  # condition == 'passive'
-        payoff_dict = get_payoff_dict(df, current_ntrls)
-        log_data(data_file, onset=exp_timer.getTime(), trial=current_ntrls,
-                 payoff_dict=payoff_dict)
-
-    # Starting a new trial
-    [stim.setAutoDraw(True) for stim in fixation_stim_parts]
-    set_fixstim_color(inner, color_newtrl)
-    win.callOnFlip(ser.write, trigger_dict['trig_new_trl'])
-    frames = get_jittered_waitframes(*tdisplay_ms)
-    for frame in range(frames):
-        win.flip()
-        if frame == 0:
-            log_data(data_file, onset=exp_timer.getTime(), trial=current_ntrls,
-                     value=trigger_dict['trig_new_trl'], duration=frames)
-
-    # Within this trial, allow sampling
-    current_nsamples = 0
-    while True:
-        # Starting a new sample by setting the fix stim to standard color
-        set_fixstim_color(inner, color_standard)
-        win.callOnFlip(ser.write, trigger_dict['trig_sample_onset'])
-        win.flip()
-        rt_clock.reset()
-        log_data(data_file, onset=exp_timer.getTime(), trial=current_ntrls,
-                 value=trigger_dict['trig_sample_onset'])
-
+        # For each trial, take a new payoff setting.
+        # When active condition, read current data to make pseudorandom draw
+        # of a payoff setting. This is to guarantee that also stimuli that have
+        # been sampled the least so far will be included more often.
         if condition == 'active':
-            # Wait for an action of the participant
-            keys_rts = event.waitKeys(maxWait=maxwait_samples,
-                                      keyList=keylist_samples,
-                                      timeStamped=rt_clock)
+            df_pseudorand = pd.read_csv(data_file, sep='\t')
+            (payoff_dict,
+             payoff_settings) = get_random_payoff_dict(payoff_settings,
+                                                       pseudorand=True,
+                                                       df=df_pseudorand
+                                                       )
+
+            log_data(data_file, onset=exp_timer.getTime(), trial=current_ntrls,
+                     payoff_dict=payoff_dict)
         else:  # condition == 'passive'
-            # Load action from recorded data
-            keys_rts = get_passive_action(df, current_ntrls, current_nsamples)
-            rt = keys_rts[0][-1]
-            # safeguard to never wait for more than maxwait_samples seconds,
-            # which is otherwise possible in the first sample of a trial
-            if rt >= maxwait_samples:
-                rt = np.random.randint(0, maxwait_samples)
-            core.wait(rt)  # wait for the time that was the RT
+            payoff_dict = get_payoff_dict(df, current_ntrls)
+            log_data(data_file, onset=exp_timer.getTime(), trial=current_ntrls,
+                     payoff_dict=payoff_dict)
 
-        if not keys_rts:
-            if current_nsamples == 0:
-                # No keypress in due time: Is this the first sample in the
-                # trial? If yes, forgive them and wait for a response forever
-                keys_rts = event.waitKeys(maxWait=float('inf'),
-                                          keyList=keylist_samples,
-                                          timeStamped=rt_clock)
-            else:  # Else: raise an error and start new trial
-                set_fixstim_color(inner, color_error)
-                win.callOnFlip(ser.write, trigger_dict['trig_error'])
-                frames = get_jittered_waitframes(*tdisplay_ms)
-                for frame in range(frames):
-                    win.flip()
-                    if frame == 0:
-                        # Log an event that we have to disregard all prior
-                        # events in this trial
-                        log_data(data_file, onset=exp_timer.getTime(),
-                                 trial=current_ntrls,
-                                 value=trigger_dict['trig_error'],
-                                 duration=frames, reset=True)
-                # start a new trial without incrementing the trial counter
-                break
+        # Starting a new trial
+        [stim.setAutoDraw(True) for stim in fixation_stim_parts]
+        set_fixstim_color(inner, color_newtrl)
+        win.callOnFlip(ser.write, trigger_dict['trig_new_trl'])
+        frames = get_jittered_waitframes(*tdisplay_ms)
+        for frame in range(frames):
+            win.flip()
+            if frame == 0:
+                log_data(data_file, onset=exp_timer.getTime(),
+                         trial=current_ntrls,
+                         value=trigger_dict['trig_new_trl'], duration=frames)
 
-        # Send trigger
-        key, rt = keys_rts[0]
-        current_nsamples += 1
-        action = keylist_samples.index(key)
-        if action == 0 and current_nsamples <= max_nsamples:
-            ser.write(trigger_dict['trig_left_choice'])
-            value = trigger_dict['trig_left_choice']
-        elif action == 1 and current_nsamples <= max_nsamples:
-            ser.write(trigger_dict['trig_right_choice'])
-            value = trigger_dict['trig_right_choice']
-        elif action == 2 and current_nsamples > 1:
-            ser.write(trigger_dict['trig_final_choice'])
-            value = trigger_dict['trig_final_choice']
-        elif action in [0, 1] and current_nsamples > max_nsamples:
-            # sampling too much, final choice is being forced
-            ser.write(trigger_dict['trig_forced_stop'])
-            value = trigger_dict['trig_forced_stop']
-            action = 5 if action == 0 else 6
-        elif action == 2 and current_nsamples <= 1:
-            # premature final choice. will lead to error
-            ser.write(trigger_dict['trig_premature_stop'])
-            value = trigger_dict['trig_premature_stop']
-            action = 7
-        elif action == 3:
-            core.quit()
-
-        log_data(data_file, onset=exp_timer.getTime(), trial=current_ntrls,
-                 action=action, response_time=rt, value=value)
-
-        # Proceed depending on action
-        if action in [0, 1] and current_nsamples <= max_nsamples:
-            # Display the outcome
-            if condition == 'active':
-                outcome = np.random.choice(payoff_dict[action])
-            else:  # condition == 'passive'
-                # note: deduct one off current_nsamples because we already
-                # added one (see above) which is to early for this line of code
-                outcome = get_passive_outcome(df, current_ntrls,
-                                              current_nsamples-1)
-            pos = (-5, 0) if action == 0 else (5, 0)
-            circ_stim.pos = pos
-            txt_stim.pos = pos
-            txt_stim.text = str(outcome)
-            txt_stim.pos += (0, 0.3)  # manually push text to center of circle
-
-            win.callOnFlip(ser.write, trigger_dict['trig_mask_outcome'])
-            frames = get_jittered_waitframes(*toutmask_ms)
-            for frame in range(frames):
-                circ_stim.draw()
-                win.flip()
-                if frame == 0:
-                    log_data(data_file, onset=exp_timer.getTime(),
-                             trial=current_ntrls, duration=frames,
-                             value=trigger_dict['trig_mask_outcome'])
-
-            win.callOnFlip(ser.write, trigger_dict['trig_show_outcome'])
-            frames = get_jittered_waitframes(*toutshow_ms)
-            for frame in range(frames):
-                circ_stim.draw()
-                txt_stim.draw()
-                win.flip()
-                if frame == 0:
-                    log_data(data_file, onset=exp_timer.getTime(),
-                             trial=current_ntrls, duration=frames,
-                             outcome=outcome,
-                             value=trigger_dict['trig_show_outcome'])
-
-        else:  # action == 2 or current_nsamples > max_nsamples
-            # First need to check that a minimum of samples has been taken
-            # otherwise, it's an error
-            if current_nsamples <= 1:
-                set_fixstim_color(inner, color_error)
-                win.callOnFlip(ser.write, trigger_dict['trig_error'])
-                frames = get_jittered_waitframes(*tdisplay_ms)
-                for frame in range(frames):
-                    win.flip()
-                    if frame == 0:
-                        # Log an event that we have to disregard all prior
-                        # events in this trial
-                        log_data(data_file, onset=exp_timer.getTime(),
-                                 trial=current_ntrls,
-                                 value=trigger_dict['trig_error'],
-                                 duration=frames, reset=True)
-                if condition == 'active':
-                    # start a new trial without incrementing the trial counter
-                    break
-                else:  # condition == 'passive'
-                    # if a premature stop happens in passive condition, we need
-                    # to drop if from the df in order not to enter an endless
-                    # loop
-                    # # NOTE: We also drop all trials previous to this one ...
-                    # They have been replayed, so it should be fine.
-                    df = df[df['trial'] >= current_ntrls]
-                    # drop rows before and including the *first* encountered
-                    # premature stop ... also drop first following event which
-                    # indicates the error coloring of the fixation stim ...
-                    # retain all other events
-                    mask = np.ones(df.shape[0])
-                    i = np.where(df['action_type'] == 'premature_stop')[0][0]
-                    mask[:i+2] = 0
-                    mask = (mask == 1)
-                    df = df[mask]
-                    break
-            # We survived the minimum samples check ...
-            # Now get ready for final choice
-            set_fixstim_color(inner, color_finchoice)
-            win.callOnFlip(ser.write, trigger_dict['trig_new_final_choice'])
-            frames = get_jittered_waitframes(*tdisplay_ms)
-            for frame in range(frames):
-                win.flip()
-                if frame == 0:
-                    log_data(data_file, onset=exp_timer.getTime(),
-                             trial=current_ntrls,
-                             value=trigger_dict['trig_new_final_choice'],
-                             duration=frames)
-
-            # Switch color of stim cross back to standard: action allowed
+        # Within this trial, allow sampling
+        current_nsamples = 0
+        while True:
+            # Starting a new sample by setting the fix stim to standard color
             set_fixstim_color(inner, color_standard)
-            win.callOnFlip(ser.write, trigger_dict['trig_final_choice_onset'])
+            win.callOnFlip(ser.write, trigger_dict['trig_sample_onset'])
             win.flip()
             rt_clock.reset()
-            log_data(data_file, onset=exp_timer.getTime(),
-                     trial=current_ntrls,
-                     value=trigger_dict['trig_final_choice_onset'])
+            log_data(data_file, onset=exp_timer.getTime(), trial=current_ntrls,
+                     value=trigger_dict['trig_sample_onset'])
 
-            # Wait for an action of the participant
-            keys_rts = event.waitKeys(maxWait=maxwait_finchoice,
-                                      keyList=keylist_finchoice,
-                                      timeStamped=rt_clock)
+            if condition == 'active':
+                # Wait for an action of the participant
+                keys_rts = event.waitKeys(maxWait=maxwait_samples,
+                                          keyList=keylist_samples,
+                                          timeStamped=rt_clock)
+            else:  # condition == 'passive'
+                # Load action from recorded data
+                keys_rts = get_passive_action(df, current_ntrls,
+                                              current_nsamples)
+                rt = keys_rts[0][-1]
+                # safeguard to never wait for more than maxwait_samples secs,
+                # which is otherwise possible in the first sample of a trial
+                if rt >= maxwait_samples:
+                    rt = np.random.randint(0, maxwait_samples)
+                core.wait(rt)  # wait for the time that was the RT
 
             if not keys_rts:
-                # No keypress in due time: raise an error and start new trial
-                set_fixstim_color(inner, color_error)
-                win.callOnFlip(ser.write, trigger_dict['trig_error'])
+                if current_nsamples == 0:
+                    # No keypress in due time: Is this the first sample in the
+                    # trial? If yes, forgive them and wait for a response
+                    # forever
+                    keys_rts = event.waitKeys(maxWait=float('inf'),
+                                              keyList=keylist_samples,
+                                              timeStamped=rt_clock)
+                else:  # Else: raise an error and start new trial
+                    set_fixstim_color(inner, color_error)
+                    win.callOnFlip(ser.write, trigger_dict['trig_error'])
+                    frames = get_jittered_waitframes(*tdisplay_ms)
+                    for frame in range(frames):
+                        win.flip()
+                        if frame == 0:
+                            # Log an event that we have to disregard all prior
+                            # events in this trial
+                            log_data(data_file, onset=exp_timer.getTime(),
+                                     trial=current_ntrls,
+                                     value=trigger_dict['trig_error'],
+                                     duration=frames, reset=True)
+                    # start a new trial without incrementing the trial counter
+                    break
+
+            # Send trigger
+            key, rt = keys_rts[0]
+            current_nsamples += 1
+            action = keylist_samples.index(key)
+            if action == 0 and current_nsamples <= max_nsamples:
+                ser.write(trigger_dict['trig_left_choice'])
+                value = trigger_dict['trig_left_choice']
+            elif action == 1 and current_nsamples <= max_nsamples:
+                ser.write(trigger_dict['trig_right_choice'])
+                value = trigger_dict['trig_right_choice']
+            elif action == 2 and current_nsamples > 1:
+                ser.write(trigger_dict['trig_final_choice'])
+                value = trigger_dict['trig_final_choice']
+            elif action in [0, 1] and current_nsamples > max_nsamples:
+                # sampling too much, final choice is being forced
+                ser.write(trigger_dict['trig_forced_stop'])
+                value = trigger_dict['trig_forced_stop']
+                action = 5 if action == 0 else 6
+            elif action == 2 and current_nsamples <= 1:
+                # premature final choice. will lead to error
+                ser.write(trigger_dict['trig_premature_stop'])
+                value = trigger_dict['trig_premature_stop']
+                action = 7
+            elif action == 3:
+                core.quit()
+
+            log_data(data_file, onset=exp_timer.getTime(), trial=current_ntrls,
+                     action=action, response_time=rt, value=value)
+
+            # Proceed depending on action
+            if action in [0, 1] and current_nsamples <= max_nsamples:
+                # Display the outcome
+                if condition == 'active':
+                    outcome = np.random.choice(payoff_dict[action])
+                else:  # condition == 'passive'
+                    # note: deduct one off current_nsamples because we already
+                    # added one (see above) which is to early for this line of
+                    # code
+                    outcome = get_passive_outcome(df, current_ntrls,
+                                                  current_nsamples-1)
+                pos = (-5, 0) if action == 0 else (5, 0)
+                circ_stim.pos = pos
+                txt_stim.pos = pos
+                txt_stim.text = str(outcome)
+                # manually push text to center of circle
+                txt_stim.pos += (0, 0.3)
+
+                win.callOnFlip(ser.write, trigger_dict['trig_mask_outcome'])
+                frames = get_jittered_waitframes(*toutmask_ms)
+                for frame in range(frames):
+                    circ_stim.draw()
+                    win.flip()
+                    if frame == 0:
+                        log_data(data_file, onset=exp_timer.getTime(),
+                                 trial=current_ntrls, duration=frames,
+                                 value=trigger_dict['trig_mask_outcome'])
+
+                win.callOnFlip(ser.write, trigger_dict['trig_show_outcome'])
+                frames = get_jittered_waitframes(*toutshow_ms)
+                for frame in range(frames):
+                    circ_stim.draw()
+                    txt_stim.draw()
+                    win.flip()
+                    if frame == 0:
+                        log_data(data_file, onset=exp_timer.getTime(),
+                                 trial=current_ntrls, duration=frames,
+                                 outcome=outcome,
+                                 value=trigger_dict['trig_show_outcome'])
+
+            else:  # action == 2 or current_nsamples > max_nsamples
+                # First need to check that a minimum of samples has been taken
+                # otherwise, it's an error
+                if current_nsamples <= 1:
+                    set_fixstim_color(inner, color_error)
+                    win.callOnFlip(ser.write, trigger_dict['trig_error'])
+                    frames = get_jittered_waitframes(*tdisplay_ms)
+                    for frame in range(frames):
+                        win.flip()
+                        if frame == 0:
+                            # Log an event that we have to disregard all prior
+                            # events in this trial
+                            log_data(data_file, onset=exp_timer.getTime(),
+                                     trial=current_ntrls,
+                                     value=trigger_dict['trig_error'],
+                                     duration=frames, reset=True)
+                    if condition == 'active':
+                        # start a new trial without incrementing the trial
+                        # counter
+                        break
+                    else:  # condition == 'passive'
+                        # if a premature stop happens in passive condition, we
+                        # need to drop if from the df in order not to enter an
+                        # endless loop
+                        # # NOTE: We also drop all trials previous to this one.
+                        # They have been replayed, so it should be fine.
+                        df = df[df['trial'] >= current_ntrls]
+                        # drop rows before and including the *first*
+                        # encountered premature stop ... also drop first
+                        # following event which indicates the error coloring of
+                        # the fixation stim ... retain all other events
+                        mask = np.ones(df.shape[0])
+                        i = np.where(df['action_type'] ==
+                                     'premature_stop')[0][0]
+                        mask[:i+2] = 0
+                        mask = (mask == 1)
+                        df = df[mask]
+                        break
+                # We survived the minimum samples check ...
+                # Now get ready for final choice
+                set_fixstim_color(inner, color_finchoice)
+                win.callOnFlip(ser.write,
+                               trigger_dict['trig_new_final_choice'])
                 frames = get_jittered_waitframes(*tdisplay_ms)
                 for frame in range(frames):
                     win.flip()
                     if frame == 0:
-                        # Log an event that we have to disregard all prior
-                        # events in this trial
                         log_data(data_file, onset=exp_timer.getTime(),
                                  trial=current_ntrls,
-                                 value=trigger_dict['trig_error'],
-                                 duration=frames, reset=True)
-                # start a new trial without incrementing the trial counter
+                                 value=trigger_dict['trig_new_final_choice'],
+                                 duration=frames)
+
+                # Switch color of stim cross back to standard: action allowed
+                set_fixstim_color(inner, color_standard)
+                win.callOnFlip(ser.write,
+                               trigger_dict['trig_final_choice_onset'])
+                win.flip()
+                rt_clock.reset()
+                log_data(data_file, onset=exp_timer.getTime(),
+                         trial=current_ntrls,
+                         value=trigger_dict['trig_final_choice_onset'])
+
+                # Wait for an action of the participant
+                keys_rts = event.waitKeys(maxWait=maxwait_finchoice,
+                                          keyList=keylist_finchoice,
+                                          timeStamped=rt_clock)
+
+                if not keys_rts:
+                    # No keypress in due time: raise an error and start new
+                    # trial
+                    set_fixstim_color(inner, color_error)
+                    win.callOnFlip(ser.write, trigger_dict['trig_error'])
+                    frames = get_jittered_waitframes(*tdisplay_ms)
+                    for frame in range(frames):
+                        win.flip()
+                        if frame == 0:
+                            # Log an event that we have to disregard all prior
+                            # events in this trial
+                            log_data(data_file, onset=exp_timer.getTime(),
+                                     trial=current_ntrls,
+                                     value=trigger_dict['trig_error'],
+                                     duration=frames, reset=True)
+                    # start a new trial without incrementing the trial counter
+                    break
+
+                key, rt = keys_rts[0]
+                action = keylist_finchoice.index(key)
+                if action == 0:
+                    ser.write(trigger_dict['trig_left_final_choice'])
+                    value = trigger_dict['trig_left_final_choice']
+                elif action == 1:
+                    ser.write(trigger_dict['trig_right_final_choice'])
+                    value = trigger_dict['trig_right_final_choice']
+                elif action == 2:
+                    core.quit()
+
+                # NOTE: add 3 to "action" to distinguish final choice from
+                # sampling
+                log_data(data_file, onset=exp_timer.getTime(),
+                         trial=current_ntrls, action=action+3,
+                         response_time=rt, value=value)
+                current_nsamples += 1
+
+                # Display final outcome
+                outcome = np.random.choice(payoff_dict[action])
+                pos = (-5, 0) if action == 0 else (5, 0)
+                circ_stim.pos = pos
+                txt_stim.pos = pos
+                txt_stim.text = str(outcome)
+                # manually push text to center of circle
+                txt_stim.pos += (0, 0.3)
+
+                win.callOnFlip(ser.write,
+                               trigger_dict['trig_mask_final_outcome'])
+                frames = get_jittered_waitframes(*toutmask_ms)
+                for frame in range(frames):
+                    circ_stim.draw()
+                    win.flip()
+                    if frame == 0:
+                        log_data(data_file, onset=exp_timer.getTime(),
+                                 trial=current_ntrls, duration=frames,
+                                 value=trigger_dict['trig_mask_final_outcome'])
+
+                win.callOnFlip(ser.write,
+                               trigger_dict['trig_show_final_outcome'])
+                frames = get_jittered_waitframes(*toutshow_ms)
+                for frame in range(frames):
+                    circ_stim.draw()
+                    txt_stim.draw()
+                    win.flip()
+                    if frame == 0:
+                        log_data(data_file, onset=exp_timer.getTime(),
+                                 trial=current_ntrls, duration=frames,
+                                 outcome=outcome,
+                                 value=trigger_dict['trig_show_final_outcome'])
+
+                # Is a block finished? If yes, display block feedback and
+                # provide a short break
+                if (current_ntrls+1) % block_size == 0:
+                    current_nblocks += 1
+
+                    df_tmp = pd.read_csv(data_file, sep='\t')
+                    outcomes = get_final_choice_outcomes(df_tmp)
+                    points = int(np.sum(outcomes))
+                    [stim.setAutoDraw(False) for stim in fixation_stim_parts]
+                    txt_stim.text = (f'Block {current_nblocks}/{nblocks} done!'
+                                     f' You earned {points} points so far.'
+                                     ' Remember that your points will be '
+                                     ' converted to Euros and paid to you at'
+                                     ' the end of the experiment as a bonus.'
+                                     ' Take a short break now.'
+                                     ' Then press any key to continue.')
+                    txt_stim.pos = (0, 0)
+                    txt_stim.height = 1
+                    txt_stim.draw()
+                    win.callOnFlip(ser.write,
+                                   trigger_dict['trig_block_feedback'])
+                    win.flip()
+                    log_data(data_file, onset=exp_timer.getTime(),
+                             value=trigger_dict['trig_block_feedback'])
+                    core.wait(1)  # wait for a bit so that this is not skipped
+                    event.waitKeys()
+
+                    # Reset stim settings for next block
+                    [stim.setAutoDraw(True) for stim in fixation_stim_parts]
+                    # set height for stimuli to be shown below
+                    txt_stim.height = 4
+
+                # start the next trial
+                current_ntrls += 1
                 break
 
-            key, rt = keys_rts[0]
-            action = keylist_finchoice.index(key)
-            if action == 0:
-                ser.write(trigger_dict['trig_left_final_choice'])
-                value = trigger_dict['trig_left_final_choice']
-            elif action == 1:
-                ser.write(trigger_dict['trig_right_final_choice'])
-                value = trigger_dict['trig_right_final_choice']
-            elif action == 2:
-                core.quit()
+    # We are done
+    [stim.setAutoDraw(False) for stim in fixation_stim_parts]
+    txt_stim.text = 'This task is over. Press any key to quit.'
+    txt_stim.pos = (0, 0)
+    txt_stim.height = 1
 
-            # NOTE: add 3 to "action" to distinguish final choice from sampling
-            log_data(data_file, onset=exp_timer.getTime(), trial=current_ntrls,
-                     action=action+3, response_time=rt, value=value)
-            current_nsamples += 1
+    txt_stim.draw()
+    win.callOnFlip(ser.write, trigger_dict['trig_end_experiment'])
+    win.flip()
+    log_data(data_file, onset=exp_timer.getTime(),
+             value=trigger_dict['trig_end_experiment'])
+    event.waitKeys()
+    win.close()
+    core.quit()
 
-            # Display final outcome
-            outcome = np.random.choice(payoff_dict[action])
-            pos = (-5, 0) if action == 0 else (5, 0)
-            circ_stim.pos = pos
-            txt_stim.pos = pos
-            txt_stim.text = str(outcome)
-            txt_stim.pos += (0, 0.3)  # manually push text to center of circle
 
-            win.callOnFlip(ser.write, trigger_dict['trig_mask_final_outcome'])
-            frames = get_jittered_waitframes(*toutmask_ms)
-            for frame in range(frames):
-                circ_stim.draw()
-                win.flip()
-                if frame == 0:
-                    log_data(data_file, onset=exp_timer.getTime(),
-                             trial=current_ntrls, duration=frames,
-                             value=trigger_dict['trig_mask_final_outcome'])
+if __name__ == '__main__':
+    # Yoking map
+    # ==========
+    # To determine, which participant gets yoked to which.
+    # First 10 subjs are mapped to themselves
+    yoke_map = dict(zip(list(range(1, 11)), list(range(1, 11))))
+    # Next 10 are mapped to first ten
+    for i, j in zip(list(range(11, 21)), list(range(1, 11))):
+        yoke_map[i] = j
 
-            win.callOnFlip(ser.write, trigger_dict['trig_show_final_outcome'])
-            frames = get_jittered_waitframes(*toutshow_ms)
-            for frame in range(frames):
-                circ_stim.draw()
-                txt_stim.draw()
-                win.flip()
-                if frame == 0:
-                    log_data(data_file, onset=exp_timer.getTime(),
-                             trial=current_ntrls, duration=frames,
-                             outcome=outcome,
-                             value=trigger_dict['trig_show_final_outcome'])
-
-            # Is a block finished? If yes, display block feedback and provide
-            # a short break
-            if (current_ntrls+1) % block_size == 0:
-                current_nblocks += 1
-
-                df_tmp = pd.read_csv(data_file, sep='\t')
-                outcomes = get_final_choice_outcomes(df_tmp)
-                points = int(np.sum(outcomes))
-                [stim.setAutoDraw(False) for stim in fixation_stim_parts]
-                txt_stim.text = (f'Block {current_nblocks}/{nblocks} done! '
-                                 f'You earned {points} points so far. '
-                                 'Remember that your points will be '
-                                 'converted to Euros and paid to you at the '
-                                 'end of the experiment as a bonus. '
-                                 'Take a short break now. '
-                                 'Then press any key to continue.')
-                txt_stim.pos = (0, 0)
-                txt_stim.height = 1
-                txt_stim.draw()
-                win.callOnFlip(ser.write, trigger_dict['trig_block_feedback'])
-                win.flip()
-                log_data(data_file, onset=exp_timer.getTime(),
-                         value=trigger_dict['trig_block_feedback'])
-                core.wait(1)  # wait for a bit so that this is not skipped
-                event.waitKeys()
-
-                # Reset stim settings for next block
-                [stim.setAutoDraw(True) for stim in fixation_stim_parts]
-                txt_stim.height = 4  # set height for stimuli to be shown below
-
-            # start the next trial
-            current_ntrls += 1
-            break
-
-# We are done
-[stim.setAutoDraw(False) for stim in fixation_stim_parts]
-txt_stim.text = 'This task is over. Press any key to quit.'
-txt_stim.pos = (0, 0)
-txt_stim.height = 1
-
-txt_stim.draw()
-win.callOnFlip(ser.write, trigger_dict['trig_end_experiment'])
-win.flip()
-log_data(data_file, onset=exp_timer.getTime(),
-         value=trigger_dict['trig_end_experiment'])
-event.waitKeys()
-win.close()
-core.quit()
+    # Navigate
+    run = navigation()
+    if run:
+        data_file, condition, yoke_to = prep_logging(yoke_map)
+        run_flow(data_file=data_file, condition=condition, yoke_to=yoke_to)
