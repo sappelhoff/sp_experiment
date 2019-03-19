@@ -220,12 +220,8 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     if UTILS_FPS != fps:
         raise ValueError('Please adjust the UTILS_FPS variable in utils.py')
 
-    # Get the objects for the fixation stim
-    outer, inner, horz, vert = get_fixation_stim(win)
-    fixation_stim_parts = [outer, horz, vert, inner]
-
     # Mask and text for outcomes, properties will be set and reset below
-    circ_color = [-0.5] * 3
+    circ_color = (-0.45, -0.45, -0.45)
     circ_stim = visual.Circle(win,
                               pos=(0, 0),
                               units='deg',
@@ -234,10 +230,14 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                               radius=2.5,
                               edges=128)
 
-    txt_color = [0.5] * 3
+    txt_color = (0.45, 0.45, 0.45)
     txt_stim = visual.TextStim(win,
                                units='deg',
                                color=txt_color)
+
+    # Get the objects for the fixation stim
+    outer, inner, horz, vert = get_fixation_stim(win, stim_color=txt_color)
+    fixation_stim_parts = [outer, horz, vert, inner]
 
     # Start communicating with the serial port
     # ========================================
@@ -255,9 +255,10 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
 
     font = 'Liberation Sans'  # Looks like Arial, but it's free!
 
-    toutmask_ms = (600, 1000)  # time for masking an outcome
-    toutshow_ms = (800, 1200)  # time for showing an outcome
-    tdisplay_ms = (900, 1100)  # delay if "new trial", "error", "final choice"
+    tfeeddelay_ms = (200, 400)  # time for delaying feedback after an action
+    toutmask_ms = (800, 800)  # time for masking an outcome ("show blob")
+    toutshow_ms = (500, 500)  # time for showing an outcome ("show number")
+    tdisplay_ms = (1000, 1000)  # show color: new trial, error, final choice
 
     maxwait_samples = 3  # Maximum seconds we wait for a sample
     maxwait_finchoice = 3  # can also be float('inf') to wait forever
@@ -265,7 +266,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     expected_value_diff = 0.1  # For payoff settings to be used
 
     # Set the fixation_stim colors for signalling state of the experiment
-    color_standard = (1, 1, 1)  # prompt to do an action
+    color_standard = txt_color  # prompt for an action
     color_newtrl = (0, 1, 0)  # wait: a new trial is starting
     color_finchoice = (0, 0, 1)  # wait: next action will be "final choice"
     color_error = (1, 0, 0)  # wait: you did an error ... we have to restart
@@ -434,6 +435,11 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                 # manually push text to center of circle
                 txt_stim.pos += (0, 0.3)
 
+                # delay feedback
+                frames = get_jittered_waitframes(*tfeeddelay_ms)
+                for frame in range(frames):
+                    win.flip()
+
                 win.callOnFlip(ser.write, trigger_dict['trig_mask_outcome'])
                 frames = get_jittered_waitframes(*toutmask_ms)
                 for frame in range(frames):
@@ -567,6 +573,12 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                 txt_stim.text = str(outcome)
                 # manually push text to center of circle
                 txt_stim.pos += (0, 0.3)
+                txt_stim.color = (0, 1, 0)
+
+                # delay feedback
+                frames = get_jittered_waitframes(*tfeeddelay_ms)
+                for frame in range(frames):
+                    win.flip()
 
                 win.callOnFlip(ser.write,
                                trigger_dict['trig_mask_final_outcome'])
@@ -591,6 +603,9 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                                  trial=current_ntrls, duration=frames,
                                  outcome=outcome,
                                  value=trigger_dict['trig_show_final_outcome'])
+
+                # Reset txt_color
+                txt_stim.color = txt_color
 
                 # Is a block finished? If yes, display block feedback and
                 # provide a short break

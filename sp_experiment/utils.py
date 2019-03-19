@@ -315,13 +315,17 @@ def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
         fout.write(line + '\n')
 
 
-def get_fixation_stim(win):
+def get_fixation_stim(win, back_color=(0, 0, 0), stim_color=(1, 1, 1)):
     u"""Provide objects to represent a fixation stimulus as in [1]_.
 
     Parameters
     ----------
     win : psychopy.visual.Window
         The psychopy window on which to draw the fixation stimulus.
+    back_color : tuple
+        Color of the background (-1=black, 0=gray, 1=white)
+    stim_color : tuple
+        Color of the stimulus (-1=black, 0=gray, 1=white)
 
     Returns
     -------
@@ -345,29 +349,29 @@ def get_fixation_stim(win):
                           radius=0.6/2,
                           edges=32,
                           units='deg',
-                          fillColor=[1., 1., 1.],
-                          lineColor=[0., 0., 0.])
+                          fillColor=stim_color,
+                          lineColor=back_color)
 
     inner = visual.Circle(win=win,
                           radius=0.2/2,
                           edges=32,
                           units='deg',
-                          fillColor=[1., 1., 1.],
-                          lineColor=[1., 1., 1.])
+                          fillColor=stim_color,
+                          lineColor=stim_color)
 
     horz = visual.Rect(win=win,
                        units='deg',
                        width=0.6,
                        height=0.2,
-                       fillColor=[0., 0., 0.],
-                       lineColor=[0., 0., 0.])
+                       fillColor=back_color,
+                       lineColor=back_color)
 
     vert = visual.Rect(win=win,
                        units='deg',
                        width=0.2,
                        height=0.6,
-                       fillColor=[0., 0., 0.],
-                       lineColor=[0., 0., 0.])
+                       fillColor=back_color,
+                       lineColor=back_color)
 
     return(outer, inner, horz, vert)
 
