@@ -24,7 +24,9 @@ from psychopy import visual, event, core, gui
 from sp_experiment.define_variable_meanings import (make_events_json_dict,
                                                     make_data_dir
                                                     )
-from sp_experiment.utils import (utils_fps,
+from sp_experiment.utils import (KEYLIST_SAMPLES,
+                                 KEYLIST_FINCHOICE,
+                                 UTILS_FPS,
                                  get_fixation_stim,
                                  calc_bonus_payoff,
                                  set_fixstim_color,
@@ -209,8 +211,8 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     # On which frame rate are we operating?
     fps = int(round(win.getActualFrameRate()))
     assert fps == 60
-    if utils_fps != fps:
-        raise ValueError('Please adjust the utils_fps variable in utils.py')
+    if UTILS_FPS != fps:
+        raise ValueError('Please adjust the UTILS_FPS variable in utils.py')
 
     # Get the objects for the fixation stim
     outer, inner, horz, vert = get_fixation_stim(win)
@@ -253,12 +255,6 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
 
     maxwait_samples = 3  # Maximum seconds we wait for a sample
     maxwait_finchoice = 3  # can also be float('inf') to wait forever
-
-    # replace "__" with "f" to allow final choices
-    # NOTE: if you change these, you also need to change `get_passive_action`
-    # in utils.py
-    keylist_samples = ['s', 'd', '__', 'x']  # press x to quit
-    keylist_finchoice = ['s', 'd', 'x']
 
     expected_value_diff = 0.1  # For payoff settings to be used
 
@@ -348,7 +344,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
             if condition == 'active':
                 # Wait for an action of the participant
                 keys_rts = event.waitKeys(maxWait=maxwait_samples,
-                                          keyList=keylist_samples,
+                                          keyList=KEYLIST_SAMPLES,
                                           timeStamped=rt_clock)
             else:  # condition == 'passive'
                 # Load action from recorded data
@@ -367,7 +363,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                     # trial? If yes, forgive them and wait for a response
                     # forever
                     keys_rts = event.waitKeys(maxWait=float('inf'),
-                                              keyList=keylist_samples,
+                                              keyList=KEYLIST_SAMPLES,
                                               timeStamped=rt_clock)
                 else:  # Else: raise an error and start new trial
                     set_fixstim_color(inner, color_error)
@@ -388,7 +384,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
             # Send trigger
             key, rt = keys_rts[0]
             current_nsamples += 1
-            action = keylist_samples.index(key)
+            action = KEYLIST_SAMPLES.index(key)
             if action == 0 and current_nsamples <= max_nsamples:
                 ser.write(trigger_dict['trig_left_choice'])
                 value = trigger_dict['trig_left_choice']
@@ -518,7 +514,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
 
                 # Wait for an action of the participant
                 keys_rts = event.waitKeys(maxWait=maxwait_finchoice,
-                                          keyList=keylist_finchoice,
+                                          keyList=KEYLIST_FINCHOICE,
                                           timeStamped=rt_clock)
 
                 if not keys_rts:
@@ -540,7 +536,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                     break
 
                 key, rt = keys_rts[0]
-                action = keylist_finchoice.index(key)
+                action = KEYLIST_FINCHOICE.index(key)
                 if action == 0:
                     ser.write(trigger_dict['trig_left_final_choice'])
                     value = trigger_dict['trig_left_final_choice']
@@ -693,9 +689,9 @@ if __name__ == '__main__':
         data_file, condition, yoke_to = prep_logging(yoke_map)
         run_flow(monitor='eizoforis',
                  ser=Fake_serial(),
-                 max_ntrls=1,
+                 max_ntrls=10,
                  max_nsamples=12,
-                 block_size=1,
+                 block_size=10,
                  data_file=data_file,
                  condition=condition,
                  yoke_to=yoke_to)

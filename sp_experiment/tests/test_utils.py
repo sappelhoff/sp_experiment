@@ -17,7 +17,8 @@ from sp_experiment.utils import (Fake_serial,
                                  get_passive_action,
                                  get_passive_outcome,
                                  get_jittered_waitframes,
-                                 utils_fps,
+                                 UTILS_FPS,
+                                 KEYLIST_SAMPLES,
                                  log_data
                                  )
 from sp_experiment.define_payoff_settings import (get_payoff_settings,
@@ -106,7 +107,7 @@ def test_get_passive_action():
     assert isinstance(keys_rts[0], tuple)
 
     # did we read the correct numbers
-    assert keys_rts[0][0] == 'd'
+    assert keys_rts[0][0] == KEYLIST_SAMPLES[1]
     np.testing.assert_allclose(keys_rts[0][1], 0.328, rtol=0.01)
 
 
@@ -131,7 +132,7 @@ def test_get_jittered_waitframes():
     n = 100
     for i in range(n):
         wait_frames = get_jittered_waitframes(1000, 2000)
-        assert wait_frames >= utils_fps and wait_frames <= utils_fps*2
+        assert wait_frames >= UTILS_FPS and wait_frames <= UTILS_FPS*2
 
 
 def test_log_data():

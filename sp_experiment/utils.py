@@ -15,8 +15,15 @@ import pandas as pd
 import sp_experiment
 from sp_experiment.define_payoff_settings import get_random_payoff_dict
 
+
+# CONSTANTS
 # Frames per second. Change depending on your hardware.
-utils_fps = 60
+UTILS_FPS = 60
+
+# Keylists for responses
+# replace "__" with "f" to allow final choices
+KEYLIST_SAMPLES = ['s', 'd', '__', 'x']  # press x to quit
+KEYLIST_FINCHOICE = ['s', 'd', 'x']
 
 
 class Fake_serial():
@@ -149,7 +156,7 @@ def get_passive_action(df, trial, sample):
             (df['action_type'].isin(admissible_actions))]
     key = int(df['action'].tolist()[int(sample)])
     rt = float(df['response_time'].tolist()[int(sample)])
-    key = {0: 's', 1: 'd', 2: 'f'}[key]
+    key = dict(enumerate(KEYLIST_SAMPLES))[key]
     keys_rts = [(key, rt)]
     return keys_rts
 
@@ -177,7 +184,7 @@ def get_passive_outcome(df, trial, sample):
     return outcome
 
 
-def get_jittered_waitframes(min_wait, max_wait, fps=utils_fps):
+def get_jittered_waitframes(min_wait, max_wait, fps=UTILS_FPS):
     """From a uniform distribution, determine a waiting time within an interval.
 
     Parameters
@@ -202,7 +209,7 @@ def get_jittered_waitframes(min_wait, max_wait, fps=utils_fps):
 
 def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
              outcome='n/a', response_time='n/a', value='n/a',
-             payoff_dict='n/a', fps=utils_fps,
+             payoff_dict='n/a', fps=UTILS_FPS,
              version=sp_experiment.__version__, reset=False):
     """Write data to the log file.
 
@@ -218,7 +225,7 @@ def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
 
     duration : int | 0
         duration of the event in frames. Will then be converted to seconds by
-        dividing with `utils_fps`.
+        dividing with `UTILS_FPS`.
 
     trial : int | 'n/a'
         the number of the trial in which this event happened.
