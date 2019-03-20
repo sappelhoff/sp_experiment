@@ -14,6 +14,7 @@ import pandas as pd
 
 import sp_experiment
 from sp_experiment.define_payoff_settings import get_random_payoff_dict
+from sp_experiment.define_ttl_triggers import provide_trigger_dict
 
 
 # CONSTANTS
@@ -62,7 +63,11 @@ def calc_bonus_payoff(sub_id, conversion_factor=0.01):
             return bonus
         else:
             df = pd.read_csv(fpath, sep='\t')
-            points += np.sum(df[df['value'] == 15]['outcome'].to_numpy())
+            trig_dict = provide_trigger_dict()
+            trig_fin_out = [ord(trig_dict['trig_show_final_out_l']),
+                            ord(trig_dict['trig_show_final_out_r'])]
+            vals = df[df['value'].isin(trig_fin_out)]['outcome'].to_numpy()
+            points += np.sum(vals)
 
     money = int(np.ceil(points * conversion_factor))
     bonus = f'earned {money} Euros as bonus.'

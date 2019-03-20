@@ -11,6 +11,8 @@ import itertools
 import numpy as np
 import pandas as pd
 
+from sp_experiment.define_ttl_triggers import provide_trigger_dict
+
 
 def get_payoff_settings(ev_diff):
     """Provide a set of possible payoff distributions.
@@ -205,9 +207,15 @@ def provide_balancing_selection(df, payoff_settings):
 
     """
     # Get sampling actions and corresponding outcomes so far
-    actions = df[df['value'].isin([5, 6])]['action'].to_numpy(copy=True,
-                                                              dtype=int)
-    outcomes = df[df['value'] == 9]['outcome'].to_numpy(copy=True, dtype=int)
+    trig_dict = provide_trigger_dict()
+    trig_sample = [ord(trig_dict['trig_left_choice']),
+                   ord(trig_dict['trig_right_choice'])]
+    trig_out = [ord(trig_dict['trig_show_out_l']),
+                ord(trig_dict['trig_show_out_r'])]
+    actions = df[df['value'].isin(trig_sample)]['action'].to_numpy(copy=True,
+                                                                   dtype=int)
+    outcomes = df[df['value'].isin(trig_out)]['outcome'].to_numpy(copy=True,
+                                                                  dtype=int)
 
     # combine actions and outcomes to code outcomes on the left with negative
     # sign outcomes on the right with positive sign ... will end up with stim

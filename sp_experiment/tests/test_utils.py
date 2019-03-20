@@ -66,7 +66,7 @@ def test_get_final_choice_outcomes():
     """Test getting final choice outcomes."""
     df = pd.read_csv(no_errors_file, sep='\t')
     outcomes = get_final_choice_outcomes(df)
-    expected_outcomes = [8, 6]  # as can be read in the data file
+    expected_outcomes = [5, 9]  # as can be read in the data file
     np.testing.assert_array_equal(outcomes, expected_outcomes)
 
 
@@ -81,12 +81,12 @@ def test_get_payoff_dict():
     # Make a more thorough test with the second payoff distribution
     payoff_dict = get_payoff_dict(df, 1)
     read_set = set(payoff_dict[0])
-    expected_set = set((1, 6))
+    expected_set = set((3, 9))
     assert len(read_set) == len(expected_set)
     assert sorted(read_set) == sorted(expected_set)
 
     read_set = set(payoff_dict[1])
-    expected_set = set((9, 5))
+    expected_set = set((7, 8))
     assert len(read_set) == len(expected_set)
     assert sorted(read_set) == sorted(expected_set)
 
@@ -107,8 +107,8 @@ def test_get_passive_action():
     assert isinstance(keys_rts[0], tuple)
 
     # did we read the correct numbers
-    assert keys_rts[0][0] == KEYLIST_SAMPLES[1]
-    np.testing.assert_allclose(keys_rts[0][1], 0.328, rtol=0.01)
+    assert keys_rts[0][0] == KEYLIST_SAMPLES[0]
+    np.testing.assert_allclose(keys_rts[0][1], 0.227, rtol=0.01)
 
 
 def test_get_passive_outcome():
@@ -121,7 +121,7 @@ def test_get_passive_outcome():
     assert outcome == outcomes[0]
 
     # Other samples give us reasonable results
-    expected_outcomes = [2, 8, 8, 8, 3, 3, 3, 3, 3, 3, 3, 3]
+    expected_outcomes = [3, 3, 3, 5, 5, 5, 4, 5, 3, 3, 3, 3]
     for sample, expected in zip(range(12), expected_outcomes):
         out = get_passive_outcome(df, 0, sample)
         assert out == expected
@@ -142,7 +142,7 @@ def test_log_data():
     # Check that action_types are as expected
     action_types = df['action_type'].dropna().unique().tolist()
     np.testing.assert_array_equal(action_types,
-                                  ['sample', 'stop', 'final_choice'])
+                                  ['sample', 'forced_stop', 'final_choice'])
 
     # Create a temporary logging file
     myhash = str(hash(os.times()))

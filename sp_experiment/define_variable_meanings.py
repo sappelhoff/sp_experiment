@@ -89,10 +89,10 @@ def make_events_json_dict():
                                                 'during sampling'),
             trigger_dict['trig_final_choice']: ('subject chose *stop* during '
                                                 'sampling'),
-            trigger_dict['trig_mask_outcome']: ('a masked outcome is shown '
-                                                'after sampling'),
-            trigger_dict['trig_show_outcome']: ('a masked outcome is revealed '
-                                                'after sampling'),
+            trigger_dict['trig_mask_out_l']: ('a masked outcome is shown '
+                                              'after sampling (left side)'),
+            trigger_dict['trig_show_out_r']: ('a masked outcome is revealed '
+                                              'after sampling (right side)'),
             trigger_dict['trig_new_final_choice']: ('color of fixcross is '
                                                     'changed to indicate '
                                                     'start of a final choice'),
@@ -105,12 +105,12 @@ def make_events_json_dict():
                                                      'for final choice'),
             trigger_dict['trig_right_final_choice']: ('subject chose *right* '
                                                       'for final choice'),
-            trigger_dict['trig_mask_final_outcome']: ('a masked outcome is '
-                                                      'shown after final '
-                                                      'choice'),
-            trigger_dict['trig_show_final_outcome']: ('a masked outcome is '
-                                                      'revealed after final '
-                                                      'choice'),
+            trigger_dict['trig_mask_final_out_l']: ('a masked outcome is '
+                                                    'shown after final '
+                                                    'choice (left side)'),
+            trigger_dict['trig_show_final_out_r']: ('a masked outcome is '
+                                                    'revealed after final '
+                                                    'choice (right side)'),
             trigger_dict['trig_error']: ('color of fixcross is changed to '
                                          'indicate an error (ignore all '
                                          'markers prior to this marker '

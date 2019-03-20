@@ -245,7 +245,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
         pass
 
     # Trigger meanings and values
-    trigger_dict = provide_trigger_dict()
+    trig_dict = provide_trigger_dict()
 
     # Experiment settings
     # ===================
@@ -282,10 +282,10 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     txt_stim.draw()
     win.flip()
     event.waitKeys()
-    ser.write(trigger_dict['trig_begin_experiment'])
+    ser.write(trig_dict['trig_begin_experiment'])
     exp_timer = core.MonotonicClock()
     log_data(data_file, onset=exp_timer.getTime(),
-             value=trigger_dict['trig_begin_experiment'])
+             value=trig_dict['trig_begin_experiment'])
     txt_stim.height = 4  # set height for stimuli to be shown below
 
     # Get general payoff settings
@@ -328,25 +328,25 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
         # Starting a new trial
         [stim.setAutoDraw(True) for stim in fixation_stim_parts]
         set_fixstim_color(inner, color_newtrl)
-        win.callOnFlip(ser.write, trigger_dict['trig_new_trl'])
+        win.callOnFlip(ser.write, trig_dict['trig_new_trl'])
         frames = get_jittered_waitframes(*tdisplay_ms)
         for frame in range(frames):
             win.flip()
             if frame == 0:
                 log_data(data_file, onset=exp_timer.getTime(),
                          trial=current_ntrls,
-                         value=trigger_dict['trig_new_trl'], duration=frames)
+                         value=trig_dict['trig_new_trl'], duration=frames)
 
         # Within this trial, allow sampling
         current_nsamples = 0
         while True:
             # Starting a new sample by setting the fix stim to standard color
             set_fixstim_color(inner, color_standard)
-            win.callOnFlip(ser.write, trigger_dict['trig_sample_onset'])
+            win.callOnFlip(ser.write, trig_dict['trig_sample_onset'])
             win.flip()
             rt_clock.reset()
             log_data(data_file, onset=exp_timer.getTime(), trial=current_ntrls,
-                     value=trigger_dict['trig_sample_onset'])
+                     value=trig_dict['trig_sample_onset'])
 
             if condition == 'active':
                 # Wait for an action of the participant
@@ -374,7 +374,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                                               timeStamped=rt_clock)
                 else:  # Else: raise an error and start new trial
                     set_fixstim_color(inner, color_error)
-                    win.callOnFlip(ser.write, trigger_dict['trig_error'])
+                    win.callOnFlip(ser.write, trig_dict['trig_error'])
                     frames = get_jittered_waitframes(*tdisplay_ms)
                     for frame in range(frames):
                         win.flip()
@@ -383,7 +383,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                             # events in this trial
                             log_data(data_file, onset=exp_timer.getTime(),
                                      trial=current_ntrls,
-                                     value=trigger_dict['trig_error'],
+                                     value=trig_dict['trig_error'],
                                      duration=frames, reset=True)
                     # start a new trial without incrementing the trial counter
                     break
@@ -393,23 +393,23 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
             current_nsamples += 1
             action = KEYLIST_SAMPLES.index(key)
             if action == 0 and current_nsamples <= max_nsamples:
-                ser.write(trigger_dict['trig_left_choice'])
-                value = trigger_dict['trig_left_choice']
+                ser.write(trig_dict['trig_left_choice'])
+                value = trig_dict['trig_left_choice']
             elif action == 1 and current_nsamples <= max_nsamples:
-                ser.write(trigger_dict['trig_right_choice'])
-                value = trigger_dict['trig_right_choice']
+                ser.write(trig_dict['trig_right_choice'])
+                value = trig_dict['trig_right_choice']
             elif action == 2 and current_nsamples > 1:
-                ser.write(trigger_dict['trig_final_choice'])
-                value = trigger_dict['trig_final_choice']
+                ser.write(trig_dict['trig_final_choice'])
+                value = trig_dict['trig_final_choice']
             elif action in [0, 1] and current_nsamples > max_nsamples:
                 # sampling too much, final choice is being forced
-                ser.write(trigger_dict['trig_forced_stop'])
-                value = trigger_dict['trig_forced_stop']
+                ser.write(trig_dict['trig_forced_stop'])
+                value = trig_dict['trig_forced_stop']
                 action = 5 if action == 0 else 6
             elif action == 2 and current_nsamples <= 1:
                 # premature final choice. will lead to error
-                ser.write(trigger_dict['trig_premature_stop'])
-                value = trigger_dict['trig_premature_stop']
+                ser.write(trig_dict['trig_premature_stop'])
+                value = trig_dict['trig_premature_stop']
                 action = 7
             elif action == 3:
                 core.quit()
@@ -428,7 +428,14 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                     # code
                     outcome = get_passive_outcome(df, current_ntrls,
                                                   current_nsamples-1)
-                pos = (-5, 0) if action == 0 else (5, 0)
+                if action == 0:
+                    pos = (-5, 0)
+                    trig_val_mask = trig_dict['trig_mask_out_l']
+                    trig_val_show = trig_dict['trig_show_out_l']
+                else:
+                    pos = (5, 0)
+                    trig_val_mask = trig_dict['trig_mask_out_r']
+                    trig_val_show = trig_dict['trig_show_out_r']
                 circ_stim.pos = pos
                 txt_stim.pos = pos
                 txt_stim.text = str(outcome)
@@ -440,7 +447,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                 for frame in range(frames):
                     win.flip()
 
-                win.callOnFlip(ser.write, trigger_dict['trig_mask_outcome'])
+                win.callOnFlip(ser.write, trig_val_mask)
                 frames = get_jittered_waitframes(*toutmask_ms)
                 for frame in range(frames):
                     circ_stim.draw()
@@ -448,9 +455,9 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                     if frame == 0:
                         log_data(data_file, onset=exp_timer.getTime(),
                                  trial=current_ntrls, duration=frames,
-                                 value=trigger_dict['trig_mask_outcome'])
+                                 value=trig_val_mask)
 
-                win.callOnFlip(ser.write, trigger_dict['trig_show_outcome'])
+                win.callOnFlip(ser.write, trig_val_show)
                 frames = get_jittered_waitframes(*toutshow_ms)
                 for frame in range(frames):
                     circ_stim.draw()
@@ -460,14 +467,14 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                         log_data(data_file, onset=exp_timer.getTime(),
                                  trial=current_ntrls, duration=frames,
                                  outcome=outcome,
-                                 value=trigger_dict['trig_show_outcome'])
+                                 value=trig_val_show)
 
             else:  # action == 2 or current_nsamples > max_nsamples
                 # First need to check that a minimum of samples has been taken
                 # otherwise, it's an error
                 if current_nsamples <= 1:
                     set_fixstim_color(inner, color_error)
-                    win.callOnFlip(ser.write, trigger_dict['trig_error'])
+                    win.callOnFlip(ser.write, trig_dict['trig_error'])
                     frames = get_jittered_waitframes(*tdisplay_ms)
                     for frame in range(frames):
                         win.flip()
@@ -476,7 +483,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                             # events in this trial
                             log_data(data_file, onset=exp_timer.getTime(),
                                      trial=current_ntrls,
-                                     value=trigger_dict['trig_error'],
+                                     value=trig_dict['trig_error'],
                                      duration=frames, reset=True)
                     if condition == 'active':
                         # start a new trial without incrementing the trial
@@ -504,25 +511,24 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                 # Now get ready for final choice
                 set_fixstim_color(inner, color_finchoice)
                 win.callOnFlip(ser.write,
-                               trigger_dict['trig_new_final_choice'])
+                               trig_dict['trig_new_final_choice'])
                 frames = get_jittered_waitframes(*tdisplay_ms)
                 for frame in range(frames):
                     win.flip()
                     if frame == 0:
                         log_data(data_file, onset=exp_timer.getTime(),
                                  trial=current_ntrls,
-                                 value=trigger_dict['trig_new_final_choice'],
+                                 value=trig_dict['trig_new_final_choice'],
                                  duration=frames)
 
                 # Switch color of stim cross back to standard: action allowed
                 set_fixstim_color(inner, color_standard)
-                win.callOnFlip(ser.write,
-                               trigger_dict['trig_final_choice_onset'])
+                win.callOnFlip(ser.write, trig_dict['trig_final_choice_onset'])
                 win.flip()
                 rt_clock.reset()
                 log_data(data_file, onset=exp_timer.getTime(),
                          trial=current_ntrls,
-                         value=trigger_dict['trig_final_choice_onset'])
+                         value=trig_dict['trig_final_choice_onset'])
 
                 # Wait for an action of the participant
                 keys_rts = event.waitKeys(maxWait=maxwait_finchoice,
@@ -533,7 +539,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                     # No keypress in due time: raise an error and start new
                     # trial
                     set_fixstim_color(inner, color_error)
-                    win.callOnFlip(ser.write, trigger_dict['trig_error'])
+                    win.callOnFlip(ser.write, trig_dict['trig_error'])
                     frames = get_jittered_waitframes(*tdisplay_ms)
                     for frame in range(frames):
                         win.flip()
@@ -542,7 +548,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                             # events in this trial
                             log_data(data_file, onset=exp_timer.getTime(),
                                      trial=current_ntrls,
-                                     value=trigger_dict['trig_error'],
+                                     value=trig_dict['trig_error'],
                                      duration=frames, reset=True)
                     # start a new trial without incrementing the trial counter
                     break
@@ -550,11 +556,11 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                 key, rt = keys_rts[0]
                 action = KEYLIST_FINCHOICE.index(key)
                 if action == 0:
-                    ser.write(trigger_dict['trig_left_final_choice'])
-                    value = trigger_dict['trig_left_final_choice']
+                    ser.write(trig_dict['trig_left_final_choice'])
+                    value = trig_dict['trig_left_final_choice']
                 elif action == 1:
-                    ser.write(trigger_dict['trig_right_final_choice'])
-                    value = trigger_dict['trig_right_final_choice']
+                    ser.write(trig_dict['trig_right_final_choice'])
+                    value = trig_dict['trig_right_final_choice']
                 elif action == 2:
                     core.quit()
 
@@ -567,7 +573,14 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
 
                 # Display final outcome
                 outcome = np.random.choice(payoff_dict[action])
-                pos = (-5, 0) if action == 0 else (5, 0)
+                if action == 0:
+                    pos = (-5, 0)
+                    trig_val_mask_final = trig_dict['trig_mask_final_out_l']
+                    trig_val_show_final = trig_dict['trig_show_final_out_l']
+                else:
+                    pos = (5, 0)
+                    trig_val_mask_final = trig_dict['trig_mask_final_out_r']
+                    trig_val_show_final = trig_dict['trig_show_final_out_r']
                 circ_stim.pos = pos
                 txt_stim.pos = pos
                 txt_stim.text = str(outcome)
@@ -580,8 +593,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                 for frame in range(frames):
                     win.flip()
 
-                win.callOnFlip(ser.write,
-                               trigger_dict['trig_mask_final_outcome'])
+                win.callOnFlip(ser.write, trig_val_mask_final)
                 frames = get_jittered_waitframes(*toutmask_ms)
                 for frame in range(frames):
                     circ_stim.draw()
@@ -589,10 +601,9 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                     if frame == 0:
                         log_data(data_file, onset=exp_timer.getTime(),
                                  trial=current_ntrls, duration=frames,
-                                 value=trigger_dict['trig_mask_final_outcome'])
+                                 value=trig_val_mask_final)
 
-                win.callOnFlip(ser.write,
-                               trigger_dict['trig_show_final_outcome'])
+                win.callOnFlip(ser.write, trig_val_show_final)
                 frames = get_jittered_waitframes(*toutshow_ms)
                 for frame in range(frames):
                     circ_stim.draw()
@@ -602,7 +613,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                         log_data(data_file, onset=exp_timer.getTime(),
                                  trial=current_ntrls, duration=frames,
                                  outcome=outcome,
-                                 value=trigger_dict['trig_show_final_outcome'])
+                                 value=trig_val_show_final)
 
                 # Reset txt_color
                 txt_stim.color = txt_color
@@ -626,11 +637,10 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                     txt_stim.pos = (0, 0)
                     txt_stim.height = 1
                     txt_stim.draw()
-                    win.callOnFlip(ser.write,
-                                   trigger_dict['trig_block_feedback'])
+                    win.callOnFlip(ser.write, trig_dict['trig_block_feedback'])
                     win.flip()
                     log_data(data_file, onset=exp_timer.getTime(),
-                             value=trigger_dict['trig_block_feedback'])
+                             value=trig_dict['trig_block_feedback'])
                     core.wait(1)  # wait for a bit so that this is not skipped
                     event.waitKeys()
 
@@ -650,10 +660,10 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     txt_stim.height = 1
 
     txt_stim.draw()
-    win.callOnFlip(ser.write, trigger_dict['trig_end_experiment'])
+    win.callOnFlip(ser.write, trig_dict['trig_end_experiment'])
     win.flip()
     log_data(data_file, onset=exp_timer.getTime(),
-             value=trigger_dict['trig_end_experiment'])
+             value=trig_dict['trig_end_experiment'])
     event.waitKeys()
     win.close()
 
