@@ -2,6 +2,8 @@
 
 Version information
 -------------------
+0.2.0: Triggers for left and right feedback added.
+
 0.1.0-dev: Experiment with fixed horizon, basically the "final choice" key
            is not part of the accepted keys anymore and the maximum number of
            samples is set to the fixed horizon. Participants then sample and
