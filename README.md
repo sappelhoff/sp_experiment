@@ -60,6 +60,16 @@ participant 1 HAS to perform the active condition first and the respective data
 needs to be present in `sp_experiment/experiment_data` **as saved by the
 logger**.
 
+# GIT notes:
+
+You may want to git ignore the data files that are produced by running the
+experiment. For that, simply add the following line to the `.git/info/exclude`
+file in your clone/fork of the repository:
+
+`experiment_data/`
+
+This will gitignore the folder locally on your machine.
+
 # Instructions to participants
 
 All participants should read this instruction text and should also be allowed
