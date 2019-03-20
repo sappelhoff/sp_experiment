@@ -46,7 +46,7 @@ from sp_experiment.define_payoff_settings import (get_payoff_settings,
 from sp_experiment.define_ttl_triggers import provide_trigger_dict
 
 
-def navigation():
+def navigation(nav='initial', bonus=''):
     """Lead through a navigation GUI.
 
     Provides the options to run the experiment, test trials, or print out the
@@ -54,23 +54,30 @@ def navigation():
     it either starts the test trials and quits, or prints the bonus money and
     quits.
 
+    Parameters
+    ----------
+    nav : str
+        Entry point into the navigation. Can be 'initial' or 'show_bonus'
+    bonus : str
+        Specify the bonus to be shown.
+
     Returns
     -------
     run : bool
 
     """
     run = False
-    nav = 'initial'
-    bonus = ''
+    auto = False
     while not nav == 'finished':
         # Prepare GUI
         myDlg = gui.Dlg(title='Sampling Paradigm Experiment')
         if nav == 'initial':
-            myDlg.addField('What to do?:', choices=['run experiment',
+            myDlg.addField('What to do?:', choices=['automatic run',
+                                                    'run experiment',
                                                     'run test trials',
                                                     'calculate bonus money'])
         elif nav == 'testing_cond':
-            myDlg.addField('Condition:', choices=['active', 'passive'])
+            myDlg.addField('Condition:', choices=['A', 'B'])
 
         elif nav == 'calc_bonus':
             myDlg.addField('ID:', choices=list(range(1, 21)))
@@ -82,7 +89,12 @@ def navigation():
         # Get data
         ok_data = myDlg.show()
         if myDlg.OK:
-            if ok_data[0] == 'run experiment':
+            if ok_data[0] == 'automatic run':
+                print('auto run experiment')
+                run = True
+                auto = True
+                nav = 'finished'
+            elif ok_data[0] == 'run experiment':
                 print('running experiment now')
                 run = True
                 nav = 'finished'  # quit navigattion and run experiment
@@ -91,7 +103,8 @@ def navigation():
             elif nav == 'testing_cond':
                 print('preparing test trials now')
                 # run test trials, then quit program
-                run_test_trials(condition=ok_data[0])
+                condition = 'active' if ok_data[0] == 'A' else 'passive'
+                run_test_trials(condition=condition)
                 core.quit()
             elif ok_data[0] == 'calculate bonus money':
                 nav = 'calc_bonus'  # ask for ID
@@ -104,10 +117,10 @@ def navigation():
             print('user cancelled GUI input')
             core.quit()
 
-    return run
+    return run, auto
 
 
-def prep_logging(yoke_map):
+def prep_logging(yoke_map, gui_info=None):
     """Prepare logging for the experiment run.
 
     Parameters
@@ -117,30 +130,38 @@ def prep_logging(yoke_map):
         active task. That task will then be served as a replay to the current
         ID.
 
+    gui_info : dict
+
+
     Returns
     -------
     data_file : str
         path to the data file
 
     """
-    # Collect the ID, age, sex, condition
-    myDlg = gui.Dlg(title='Sampling Paradigm Experiment')
-    myDlg.addField('ID:', choices=list(range(1, 21)))
-    myDlg.addField('Age:', choices=list(range(18, 100)))
-    myDlg.addField('Sex:', choices=['Male', 'Female'])
-    myDlg.addField('Condition:', choices=['active', 'passive'])
+    if not isinstance(gui_info, dict):
+        # Collect the ID, age, sex, condition
+        myDlg = gui.Dlg(title='Sampling Paradigm Experiment')
+        myDlg.addField('ID:', choices=list(range(1, 21)))
+        myDlg.addField('Age:', choices=list(range(18, 100)))
+        myDlg.addField('Sex:', choices=['Male', 'Female'])
+        myDlg.addField('Condition:', choices=['A', 'B'])
 
-    # show dialog and wait for OK or Cancel
-    ok_data = myDlg.show()
-    if myDlg.OK:  # or if ok_data is not None
-        sub_id = int(ok_data[0])
-        age = int(ok_data[1])
-        sex = ok_data[2]
-        condition = ok_data[3]
-        yoke_to = yoke_map[sub_id]
+        # show dialog and wait for OK or Cancel
+        ok_data = myDlg.show()
+        if myDlg.OK:  # or if ok_data is not None
+            sub_id = int(ok_data[0])
+            age = int(ok_data[1])
+            sex = ok_data[2]
+            condition = 'active' if ok_data[3] == 'A' else 'passive'
+            yoke_to = yoke_map[sub_id]
+        else:
+            print('user cancelled GUI input')
+            core.quit()
     else:
-        print('user cancelled GUI input')
-        core.quit()
+        sub_id = gui_info['sub_id']
+        condition = gui_info['condition2']
+        yoke_to = yoke_map[sub_id]
 
     # Data logging
     # ============
@@ -151,8 +172,7 @@ def prep_logging(yoke_map):
 
     data_file = op.join(data_dir, fname)
     if op.exists(data_file):
-        raise OSError(f'A data file for {sub_id} '
-                      f'already exists: {data_file}')
+        raise OSError(f'\n\nA data file for ID "{sub_id}" already exists.\n\n')
 
     # Write header to the tab separated log file
     variable_meanings_dict = make_events_json_dict()
@@ -162,15 +182,19 @@ def prep_logging(yoke_map):
         header = '\t'.join(variables)
         fout.write(header + '\n')
 
-    # Write a brief log file for this participant
-    fname = f'log_{sub_id}_{condition}.txt'
-    log_path = op.join(data_dir, fname)
-    with open(log_path, 'w') as fout:
-        for line in [sub_id, age, sex, condition, yoke_to]:
-            fout.write(f'{line}')  # noqa E999
-            fout.write('\n')
+    # Write a brief log file for this participant ... only needs to be done
+    # once. If it is done twice, then you can check which condition was first
+    # by checking the starting time in the events.tsv file.
+    if not isinstance(gui_info, dict):
+        fname = f'log_{sub_id}_{condition}.txt'
+        log_path = op.join(data_dir, fname)
+        prefixes = ['sub_id', 'age', 'sex', 'yoke_to']
+        with open(log_path, 'w') as fout:
+            for i, line in enumerate([sub_id, age, sex, yoke_to]):
+                fout.write(f'{prefixes[i]}: {line}')
+                fout.write('\n')
 
-    return data_file, condition, yoke_to
+    return sub_id, data_file, condition, yoke_to
 
 
 def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
@@ -277,7 +301,8 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     # ===========================
     # Get ready to start the experiment. Start timing from next button press.
     modstr = 'experiment' if not is_test else 'TEST TRIAL'
-    txt_stim.text = (f'Starting the {modstr} in {condition} condition! '
+    modstr_cond = 'A' if condition == 'active' else 'B'
+    txt_stim.text = (f'Starting the {modstr} for task {modstr_cond}! '
                      'Press any key to start.')
     txt_stim.height = 1
     txt_stim.font = font
@@ -728,17 +753,74 @@ if __name__ == '__main__':
     for i, j in zip(list(range(11, 21)), list(range(1, 11))):
         yoke_map[i] = j
 
+    # experiment settings
+    monitor = 'eizoforis'
+    ser = Fake_serial()
+    max_ntrls = 75
+    max_nsamples = 12
+    block_size = 25
+
     # Navigate
-    run = navigation()
-    if run:
-        data_file, condition, yoke_to = prep_logging(yoke_map)
-        run_flow(monitor='eizoforis',
-                 ser=Fake_serial(),
-                 max_ntrls=75,
-                 max_nsamples=12,
-                 block_size=25,
+    run, auto = navigation()
+
+    # Perhaps just run (no auto)
+    if run and not auto:
+        sub_id, data_file, condition, yoke_to = prep_logging(yoke_map)
+        run_flow(monitor=monitor,
+                 ser=ser,
+                 max_ntrls=max_ntrls,
+                 max_nsamples=max_nsamples,
+                 block_size=block_size,
                  data_file=data_file,
                  condition=condition,
                  yoke_to=yoke_to)
+
+    # if auto, do a complete flow
+    if run and auto:
+        # Get input
+        sub_id, data_file, condition, yoke_to = prep_logging(yoke_map)
+
+        # Save for later
+        info = dict()
+        info['sub_id'] = sub_id
+
+        # Run test for first condition
+        if condition == 'active':
+            run_test_trials(monitor=monitor, condition=condition)
+            info['condition2'] = 'passive'
+        elif condition == 'passive':
+            run_test_trials(monitor=monitor, condition=condition)
+            info['condition2'] = 'active'
+
+        # Run first condition
+        run_flow(monitor=monitor,
+                 ser=ser,
+                 max_ntrls=max_ntrls,
+                 max_nsamples=max_nsamples,
+                 block_size=block_size,
+                 data_file=data_file,
+                 condition=condition,
+                 yoke_to=yoke_to)
+
+        # Run test for second condition
+        run_test_trials(monitor=monitor, condition=info['condition2'])
+
+        # prep new data_file, skipping GUI
+        sub_id, data_file, condition, yoke_to = prep_logging(yoke_map,
+                                                             gui_info=info)
+
+        # Run second condition
+        run_flow(monitor=monitor,
+                 ser=ser,
+                 max_ntrls=max_ntrls,
+                 max_nsamples=max_nsamples,
+                 block_size=block_size,
+                 data_file=data_file,
+                 condition=condition,
+                 yoke_to=yoke_to)
+
+        # Print out earnings
+        bonus = calc_bonus_payoff(sub_id)
+        navigation(nav='show_bonus', bonus=bonus)
 
     core.quit()
