@@ -43,7 +43,8 @@ from sp_experiment.define_payoff_settings import (get_payoff_settings,
                                                   get_random_payoff_dict,
                                                   )
 from sp_experiment.define_ttl_triggers import provide_trigger_dict
-from sp_experiment.define_instructions import (provide_blockfbk_str,
+from sp_experiment.define_instructions import (run_instructions,
+                                               provide_blockfbk_str,
                                                provide_start_str,
                                                provide_stop_str)
 
@@ -210,7 +211,7 @@ def prep_logging(yoke_map, auto=False, gui_info=None):
 
 
 def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
-             max_nsamples=12, block_size=10, data_file=None,
+             max_nsamples=12, block_size=10, data_file=None, font=None,
              condition='active', yoke_to=None, is_test=False, lang='en'):
     """Run the experimental flow.
 
@@ -229,6 +230,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
         Number of trials after which feedback is provided
     data_file : str | None
         Path to the data file
+    font : str | None
     condition : str
         Condition in which to run the experiment
     yoke_to : int | None
@@ -293,8 +295,6 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     assert max_ntrls % block_size == 0
     nblocks = int(max_ntrls/block_size)
 
-    font = 'Liberation Sans'  # Looks like Arial, but it's free!
-
     tfeeddelay_ms = (200, 400)  # time for delaying feedback after an action
     toutmask_ms = (800, 800)  # time for masking an outcome ("show blob")
     toutshow_ms = (500, 500)  # time for showing an outcome ("show number")
@@ -335,7 +335,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
 
     # If we are in the passive condition, load pre-recorded data to replay
     if condition == 'passive':
-        fname = f'sub-{yoke_to}_task-spactive_events.tsv'
+        fname = f'sub-{yoke_to:02d}_task-spactive_events.tsv'
         fpath = op.join(op.dirname(data_file), fname)
         df = pd.read_csv(fpath, sep='\t')
         df = df[pd.notnull(df['trial'])]
@@ -758,6 +758,8 @@ if __name__ == '__main__':
     max_nsamples = 12
     block_size = 25
     lang = 'de'
+    font = 'Liberation Sans'
+
     # First 10 subjs are mapped to themselves
     yoke_map = dict(zip(list(range(1, 11)), list(range(1, 11))))
     # Next 10 are mapped to first ten
@@ -778,7 +780,8 @@ if __name__ == '__main__':
                  data_file=data_file,
                  condition=condition,
                  yoke_to=yoke_to,
-                 lang=lang)
+                 lang=lang,
+                 font=font)
 
     # if auto, do a complete flow
     if run and auto:
@@ -788,6 +791,9 @@ if __name__ == '__main__':
         # Save for later
         info = dict()
         info['sub_id'] = sub_id
+
+        # General instructions
+        run_instructions(kind='general', monitor=monitor, font=font)
 
         # Run test for first condition
         if condition == 'active':
@@ -806,7 +812,8 @@ if __name__ == '__main__':
                  data_file=data_file,
                  condition=condition,
                  yoke_to=yoke_to,
-                 lang=lang)
+                 lang=lang,
+                 font=font)
 
         # Run test for second condition
         run_test_trials(monitor=monitor, condition=info['condition2'],
@@ -825,7 +832,8 @@ if __name__ == '__main__':
                  data_file=data_file,
                  condition=condition,
                  yoke_to=yoke_to,
-                 lang=lang)
+                 lang=lang,
+                 font=font)
 
         # Print out earnings
         bonus = calc_bonus_payoff(sub_id)
