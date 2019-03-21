@@ -35,16 +35,17 @@ class Fake_serial():
         pass
 
 
-def calc_bonus_payoff(sub_id, conversion_factor=0.01):
+def calc_bonus_payoff(sub_id, conversion_factor=0.01, lang='en'):
     """Calculate the bonus money a participant has earned.
 
     Parameters
     ----------
     sub_id : int
         The subject ID
-
     conversion_factor : float
         Converting points to Euros
+    lang : str
+        Language, can be 'de' or 'en' for German or English.
 
     Returns
     -------
@@ -70,7 +71,10 @@ def calc_bonus_payoff(sub_id, conversion_factor=0.01):
             points += np.sum(vals)
 
     money = int(np.ceil(points * conversion_factor))
-    bonus = f'earned {money} Euros as bonus.'
+    if lang == 'de':
+        bonus = f'{money} Euro wurden als Bonus verdient.'
+    elif lang == 'en':
+        bonus = f'earned {money} Euros as bonus.'
     return bonus
 
 

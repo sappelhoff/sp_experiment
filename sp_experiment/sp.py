@@ -48,7 +48,7 @@ from sp_experiment.define_instructions import (provide_blockfbk_str,
                                                provide_stop_str)
 
 
-def navigation(nav='initial', bonus=''):
+def navigation(nav='initial', bonus='', lang='en'):
     """Lead through a navigation GUI.
 
     Provides the options to run the experiment, test trials, or print out the
@@ -62,6 +62,8 @@ def navigation(nav='initial', bonus=''):
         Entry point into the navigation. Can be 'initial' or 'show_bonus'
     bonus : str
         Specify the bonus to be shown.
+    lang : str
+        Language, can be 'de' or 'en' for German or English.
 
     Returns
     -------
@@ -106,12 +108,12 @@ def navigation(nav='initial', bonus=''):
                 print('preparing test trials now')
                 # run test trials, then quit program
                 condition = 'active' if ok_data[0] == 'A' else 'passive'
-                run_test_trials(condition=condition)
+                run_test_trials(condition=condition, lang=lang)
                 core.quit()
             elif ok_data[0] == 'calculate bonus money':
                 nav = 'calc_bonus'  # ask for ID
             elif nav == 'calc_bonus':
-                bonus = calc_bonus_payoff(int(ok_data[0]))
+                bonus = calc_bonus_payoff(int(ok_data[0]), lang=lang)
                 nav = 'show_bonus'
             elif nav == 'quit':
                 core.quit()  # We have shown the bonus. Now quit program
@@ -122,7 +124,7 @@ def navigation(nav='initial', bonus=''):
     return run, auto
 
 
-def prep_logging(yoke_map, gui_info=None):
+def prep_logging(yoke_map, auto=False, gui_info=None):
     """Prepare logging for the experiment run.
 
     Parameters
@@ -130,9 +132,12 @@ def prep_logging(yoke_map, gui_info=None):
     yoke_map : dict
         dictionary mapping a sub_id to a previous sub_id that performed the
         active task. That task will then be served as a replay to the current
-        ID.
-
+        ID. It also determines, which IDs are possible inputs into the GUI.
+    auto : bool
+        If True, guess the condition from yoke_map, else inquire condition via
+        GUI. Disregarded if gui_info is specified.
     gui_info : dict
+        If provided, skip GUI input
 
 
     Returns
@@ -144,10 +149,11 @@ def prep_logging(yoke_map, gui_info=None):
     if not isinstance(gui_info, dict):
         # Collect the ID, age, sex, condition
         myDlg = gui.Dlg(title='Sampling Paradigm Experiment')
-        myDlg.addField('ID:', choices=list(range(1, 21)))
-        myDlg.addField('Age:', choices=list(range(18, 100)))
+        myDlg.addField('ID:', choices=list(yoke_map.keys()))
+        myDlg.addField('Age:', choices=list(range(18, 80)))
         myDlg.addField('Sex:', choices=['Male', 'Female'])
-        myDlg.addField('Condition:', choices=['A', 'B'])
+        if not auto:
+            myDlg.addField('Condition:', choices=['A', 'B'])
 
         # show dialog and wait for OK or Cancel
         ok_data = myDlg.show()
@@ -155,8 +161,12 @@ def prep_logging(yoke_map, gui_info=None):
             sub_id = int(ok_data[0])
             age = int(ok_data[1])
             sex = ok_data[2]
-            condition = 'active' if ok_data[3] == 'A' else 'passive'
             yoke_to = yoke_map[sub_id]
+            if not auto:
+                condition = 'active' if ok_data[3] == 'A' else 'passive'
+            else:
+                condition = ('active' if sub_id == yoke_map[sub_id]
+                             else 'passive')
         else:
             print('user cancelled GUI input')
             core.quit()
@@ -689,7 +699,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     win.close()
 
 
-def run_test_trials(monitor='testMonitor', condition='active'):
+def run_test_trials(monitor='testMonitor', condition='active', lang='en'):
     """Run the test trials.
 
     Parameters
@@ -720,7 +730,8 @@ def run_test_trials(monitor='testMonitor', condition='active'):
                  block_size=1,  # i.e., no block feedback because never reached
                  data_file=data_file,
                  condition='active',
-                 is_test=True)
+                 is_test=True,
+                 lang=lang)
 
     elif condition == 'passive':
         # Run a single passive test trial ... using a prerecorded dataset
@@ -731,7 +742,8 @@ def run_test_trials(monitor='testMonitor', condition='active'):
                  data_file=data_file,
                  condition='passive',
                  yoke_to=999,
-                 is_test=True)
+                 is_test=True,
+                 lang=lang)
 
     # Remove the test data
     os.remove(data_file)
@@ -753,7 +765,7 @@ if __name__ == '__main__':
         yoke_map[i] = j
 
     # Navigate
-    run, auto = navigation()
+    run, auto = navigation(lang=lang)
 
     # Perhaps just run (no auto)
     if run and not auto:
@@ -771,7 +783,7 @@ if __name__ == '__main__':
     # if auto, do a complete flow
     if run and auto:
         # Get input
-        sub_id, data_file, condition, yoke_to = prep_logging(yoke_map)
+        sub_id, data_file, condition, yoke_to = prep_logging(yoke_map, auto)
 
         # Save for later
         info = dict()
@@ -779,10 +791,10 @@ if __name__ == '__main__':
 
         # Run test for first condition
         if condition == 'active':
-            run_test_trials(monitor=monitor, condition=condition)
+            run_test_trials(monitor=monitor, condition=condition, lang=lang)
             info['condition2'] = 'passive'
         elif condition == 'passive':
-            run_test_trials(monitor=monitor, condition=condition)
+            run_test_trials(monitor=monitor, condition=condition, lang=lang)
             info['condition2'] = 'active'
 
         # Run first condition
@@ -797,7 +809,8 @@ if __name__ == '__main__':
                  lang=lang)
 
         # Run test for second condition
-        run_test_trials(monitor=monitor, condition=info['condition2'])
+        run_test_trials(monitor=monitor, condition=info['condition2'],
+                        lang=lang)
 
         # prep new data_file, skipping GUI
         sub_id, data_file, condition, yoke_to = prep_logging(yoke_map,
@@ -816,6 +829,6 @@ if __name__ == '__main__':
 
         # Print out earnings
         bonus = calc_bonus_payoff(sub_id)
-        navigation(nav='show_bonus', bonus=bonus)
+        navigation(nav='show_bonus', bonus=bonus, lang=lang)
 
     core.quit()
