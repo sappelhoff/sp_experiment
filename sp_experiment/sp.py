@@ -43,7 +43,9 @@ from sp_experiment.define_payoff_settings import (get_payoff_settings,
                                                   get_random_payoff_dict,
                                                   )
 from sp_experiment.define_ttl_triggers import provide_trigger_dict
-from sp_experiment.define_instructions import (provide_blockfbk_str)
+from sp_experiment.define_instructions import (provide_blockfbk_str,
+                                               provide_start_str,
+                                               provide_stop_str)
 
 
 def navigation(nav='initial', bonus=''):
@@ -199,7 +201,7 @@ def prep_logging(yoke_map, gui_info=None):
 
 def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
              max_nsamples=12, block_size=10, data_file=None,
-             condition='active', yoke_to=None, is_test=False):
+             condition='active', yoke_to=None, is_test=False, lang='en'):
     """Run the experimental flow.
 
     Parameters
@@ -223,6 +225,8 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
         sub_id which to yoke a subject to in passive condition.
     is_test : bool
         Flag whether this is a test run.
+    lang : str
+        Language, can be 'de' or 'en' for German or English.
 
     """
     if data_file is None:
@@ -300,10 +304,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     # Start the experimental flow
     # ===========================
     # Get ready to start the experiment. Start timing from next button press.
-    modstr = 'experiment' if not is_test else 'TEST TRIAL'
-    modstr_cond = 'A' if condition == 'active' else 'B'
-    txt_stim.text = (f'Starting the {modstr} for task {modstr_cond}! '
-                     'Press any key to start.')
+    txt_stim.text = provide_start_str(is_test, condition, lang)
     txt_stim.height = 1
     txt_stim.font = font
     txt_stim.draw()
@@ -653,7 +654,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                     txt_stim.text = provide_blockfbk_str(data_file,
                                                          current_nblocks,
                                                          nblocks,
-                                                         lang='de')
+                                                         lang=lang)
                     txt_stim.pos = (0, 0)
                     txt_stim.height = 1
                     txt_stim.draw()
@@ -675,7 +676,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
 
     # We are done
     [stim.setAutoDraw(False) for stim in fixation_stim_parts]
-    txt_stim.text = 'This task is over. Press any key to quit.'
+    txt_stim.text = provide_stop_str(is_test, lang)
     txt_stim.pos = (0, 0)
     txt_stim.height = 1
 
@@ -726,7 +727,7 @@ def run_test_trials(monitor='testMonitor', condition='active'):
         run_flow(monitor=monitor,
                  max_ntrls=1,
                  max_nsamples=12,
-                 block_size=1,  # i.e., no block feedback because never reached
+                 block_size=1,
                  data_file=data_file,
                  condition='passive',
                  yoke_to=999,
@@ -737,21 +738,19 @@ def run_test_trials(monitor='testMonitor', condition='active'):
 
 
 if __name__ == '__main__':
-    # Yoking map
-    # ==========
-    # To determine, which participant gets yoked to which.
-    # First 10 subjs are mapped to themselves
-    yoke_map = dict(zip(list(range(1, 11)), list(range(1, 11))))
-    # Next 10 are mapped to first ten
-    for i, j in zip(list(range(11, 21)), list(range(1, 11))):
-        yoke_map[i] = j
-
-    # experiment settings
+    # EXPERIMENT SETTINGS,  including yoke_map to determine which participant
+    # gets yoked to which
     monitor = 'eizoforis'
     ser = Fake_serial()
     max_ntrls = 75
     max_nsamples = 12
     block_size = 25
+    lang = 'de'
+    # First 10 subjs are mapped to themselves
+    yoke_map = dict(zip(list(range(1, 11)), list(range(1, 11))))
+    # Next 10 are mapped to first ten
+    for i, j in zip(list(range(11, 21)), list(range(1, 11))):
+        yoke_map[i] = j
 
     # Navigate
     run, auto = navigation()
@@ -766,7 +765,8 @@ if __name__ == '__main__':
                  block_size=block_size,
                  data_file=data_file,
                  condition=condition,
-                 yoke_to=yoke_to)
+                 yoke_to=yoke_to,
+                 lang=lang)
 
     # if auto, do a complete flow
     if run and auto:
@@ -793,7 +793,8 @@ if __name__ == '__main__':
                  block_size=block_size,
                  data_file=data_file,
                  condition=condition,
-                 yoke_to=yoke_to)
+                 yoke_to=yoke_to,
+                 lang=lang)
 
         # Run test for second condition
         run_test_trials(monitor=monitor, condition=info['condition2'])
@@ -810,7 +811,8 @@ if __name__ == '__main__':
                  block_size=block_size,
                  data_file=data_file,
                  condition=condition,
-                 yoke_to=yoke_to)
+                 yoke_to=yoke_to,
+                 lang=lang)
 
         # Print out earnings
         bonus = calc_bonus_payoff(sub_id)
