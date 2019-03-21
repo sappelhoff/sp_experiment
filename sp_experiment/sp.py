@@ -49,7 +49,7 @@ from sp_experiment.define_instructions import (run_instructions,
                                                provide_stop_str)
 
 
-def navigation(nav='initial', bonus='', lang='en'):
+def navigation(nav='initial', bonus='', lang='en', yoke_map=None):
     """Lead through a navigation GUI.
 
     Provides the options to run the experiment, test trials, or print out the
@@ -65,14 +65,19 @@ def navigation(nav='initial', bonus='', lang='en'):
         Specify the bonus to be shown.
     lang : str
         Language, can be 'de' or 'en' for German or English.
+    yoke_map : dict
+        Dictionary to infer subject IDs from
 
     Returns
     -------
     run : bool
 
     """
+    if yoke_map is None:
+        yoke_map = {i: i for i in range(100)}
     run = False
     auto = False
+    next = ''
     while not nav == 'finished':
         # Prepare GUI
         myDlg = gui.Dlg(title='Sampling Paradigm Experiment')
@@ -80,12 +85,13 @@ def navigation(nav='initial', bonus='', lang='en'):
             myDlg.addField('What to do?:', choices=['automatic run',
                                                     'run experiment',
                                                     'run test trials',
-                                                    'calculate bonus money'])
-        elif nav == 'testing_cond':
+                                                    'calculate bonus money',
+                                                    'show instructions'])
+        elif nav == 'inquire_condition':
             myDlg.addField('Condition:', choices=['A', 'B'])
 
         elif nav == 'calc_bonus':
-            myDlg.addField('ID:', choices=list(range(1, 21)))
+            myDlg.addField('ID:', choices=list(yoke_map.keys()))
 
         elif nav == 'show_bonus':
             myDlg.addFixedField('Bonus:', bonus)
@@ -103,13 +109,19 @@ def navigation(nav='initial', bonus='', lang='en'):
                 print('running experiment now')
                 run = True
                 nav = 'finished'  # quit navigattion and run experiment
-            elif ok_data[0] == 'run test trials':
-                nav = 'testing_cond'
-            elif nav == 'testing_cond':
+            elif (ok_data[0] == 'run test trials' or
+                  ok_data[0] == 'show instructions'):
+                nav = 'inquire_condition'
+                next = 'test' if ok_data[0].startswith('r') else 'show'
+            elif next == 'test':
                 print('preparing test trials now')
                 # run test trials, then quit program
                 condition = 'active' if ok_data[0] == 'A' else 'passive'
                 run_test_trials(condition=condition, lang=lang)
+                core.quit()
+            elif next == 'show':
+                condition = 'active' if ok_data[0] == 'A' else 'passive'
+                run_instructions(kind=condition, lang=lang)
                 core.quit()
             elif ok_data[0] == 'calculate bonus money':
                 nav = 'calc_bonus'  # ask for ID
@@ -211,7 +223,7 @@ def prep_logging(yoke_map, auto=False, gui_info=None):
 
 
 def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
-             max_nsamples=12, block_size=10, data_file=None, font=None,
+             max_nsamples=12, block_size=10, data_file=None, font='',
              condition='active', yoke_to=None, is_test=False, lang='en'):
     """Run the experimental flow.
 
@@ -767,7 +779,7 @@ if __name__ == '__main__':
         yoke_map[i] = j
 
     # Navigate
-    run, auto = navigation(lang=lang)
+    run, auto = navigation(lang=lang, yoke_map=yoke_map)
 
     # Perhaps just run (no auto)
     if run and not auto:
@@ -793,13 +805,17 @@ if __name__ == '__main__':
         info['sub_id'] = sub_id
 
         # General instructions
-        run_instructions(kind='general', monitor=monitor, font=font)
+        run_instructions(kind='general', monitor=monitor, lang=lang, font=font)
 
         # Run test for first condition
         if condition == 'active':
+            run_instructions(kind='active', monitor=monitor, lang=lang,
+                             font=font)
             run_test_trials(monitor=monitor, condition=condition, lang=lang)
             info['condition2'] = 'passive'
         elif condition == 'passive':
+            run_instructions(kind='passive', monitor=monitor, lang=lang,
+                             font=font)
             run_test_trials(monitor=monitor, condition=condition, lang=lang)
             info['condition2'] = 'active'
 
@@ -816,6 +832,8 @@ if __name__ == '__main__':
                  font=font)
 
         # Run test for second condition
+        run_instructions(kind=info['condition2'], monitor=monitor, lang=lang,
+                         font=font)
         run_test_trials(monitor=monitor, condition=info['condition2'],
                         lang=lang)
 

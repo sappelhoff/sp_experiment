@@ -5,6 +5,70 @@ import pandas as pd
 from sp_experiment.utils import get_final_choice_outcomes
 
 
+def run_instructions(kind, monitor='testMonitor', font='', lang='em'):
+    """Show experiment instructions on the screen.
+
+    Parameters
+    ----------
+    kind : str
+        Can be 'general', 'active', and 'passive'.
+
+    """
+    from psychopy import visual, event
+    # Define monitor specific window object
+    win = visual.Window(color=(0, 0, 0),  # Background color: RGB [-1,1]
+                        fullscr=True,  # Fullscreen for better timing
+                        monitor=monitor,
+                        units='deg',
+                        winType='pyglet')
+
+    # Hide the cursor
+    win.mouseVisible = False
+
+    # prepare text object
+    txt_color = (0.45, 0.45, 0.45)
+    txt_stim = visual.TextStim(win,
+                               units='deg',
+                               color=txt_color)
+    txt_stim.height = 1
+    txt_stim.font = font
+
+    if kind == 'general':
+        txt_stim.text = _provide_general_instr_str(lang=lang)
+        txt_stim.draw()
+        win.flip()
+        event.waitKeys()
+    elif kind == 'active':
+        pass
+    elif kind == 'passive':
+        pass
+
+    win.close()
+
+
+def _provide_general_instr_str(lang='en'):
+    """Provide a welcome screen text."""
+    if lang == 'de':
+        welcome_str = ('Wilkommen! Sie werden zwei Aufgaben nacheinander '
+                       'ausführen. Im Folgenden bekommen Sie Anweisungen zur '
+                       'ersten Aufgabe. Dann dürfen Sie einen Test der '
+                       'ersten Aufgabe durchführen. Danach wird die erste '
+                       'Aufgabe gestartet. Wenn Sie mit dieser Aufgabe '
+                       'fertig sind, wird die zweite Aufgabe in den selben '
+                       'Schritten durchgeführt. Das heißt: Erst Anweisung, '
+                       'dann Test, dann Durchführung der Aufgabe.')
+    elif lang == 'en':
+        welcome_str = ('Welcome! You will perform two tasks, one after the '
+                       'other. In the following you will get instructions '
+                       'for the first task. Then you are allowed to practice '
+                       'the first task. Then you will perform the first task'
+                       '. After you are done, the second task will be '
+                       'started using the same procedure. That is, first '
+                       'instructions, then practice, then execution of the '
+                       'second task.')
+    return welcome_str
+
+
 def provide_blockfbk_str(data_file, current_nblocks, nblocks, lang):
     """Provide a string to be displayed during block feedback.
 
@@ -55,7 +119,7 @@ def provide_start_str(is_test, condition, lang):
         start_str = (f'Beginn der{mod}Aufgabe {condi}. Druecken Sie eine '
                      'beliebige Taste um zu beginnen.')
     elif lang == 'en':
-        start_str = (f'Starting the {mod} for task {condi}. '
+        start_str = (f'Starting the{mod}for task {condi}. '
                      'Press any key to start.')
     return start_str
 
