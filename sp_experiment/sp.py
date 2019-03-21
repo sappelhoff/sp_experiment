@@ -38,12 +38,12 @@ from sp_experiment.utils import (KEYLIST_SAMPLES,
                                  get_payoff_dict,
                                  get_passive_action,
                                  get_passive_outcome,
-                                 get_final_choice_outcomes
                                  )
 from sp_experiment.define_payoff_settings import (get_payoff_settings,
                                                   get_random_payoff_dict,
                                                   )
 from sp_experiment.define_ttl_triggers import provide_trigger_dict
+from sp_experiment.define_instructions import (provide_blockfbk_str)
 
 
 def navigation(nav='initial', bonus=''):
@@ -649,18 +649,11 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                 # provide a short break
                 if (current_ntrls+1) % block_size == 0:
                     current_nblocks += 1
-
-                    df_tmp = pd.read_csv(data_file, sep='\t')
-                    outcomes = get_final_choice_outcomes(df_tmp)
-                    points = int(np.sum(outcomes))
                     [stim.setAutoDraw(False) for stim in fixation_stim_parts]
-                    txt_stim.text = (f'Block {current_nblocks}/{nblocks} done!'
-                                     f' You earned {points} points so far.'
-                                     ' Remember that your points will be '
-                                     ' converted to Euros and paid to you at'
-                                     ' the end of the experiment as a bonus.'
-                                     ' Take a short break now.'
-                                     ' Then press any key to continue.')
+                    txt_stim.text = provide_blockfbk_str(data_file,
+                                                         current_nblocks,
+                                                         nblocks,
+                                                         lang='de')
                     txt_stim.pos = (0, 0)
                     txt_stim.height = 1
                     txt_stim.draw()
