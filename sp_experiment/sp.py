@@ -521,7 +521,10 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                                  outcome=outcome,
                                  value=trig_val_show)
 
-            else:  # action == 2 or current_nsamples > max_nsamples
+            # XXX: Following line could be a simple "else" to always trigger
+            # if action == 2 or current_nsamples > max_nsamples
+            # Necessary for "open horizon" sampling paradigms
+            if current_nsamples == max_nsamples:
                 # First need to check that a minimum of samples has been taken
                 # otherwise, it's an error
                 if current_nsamples <= 1:
