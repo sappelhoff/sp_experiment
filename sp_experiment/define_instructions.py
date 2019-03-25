@@ -8,7 +8,7 @@ import sp_experiment
 from sp_experiment.utils import get_final_choice_outcomes
 
 
-def run_instructions(kind, monitor='testMonitor', font='', lang='em'):
+def run_instructions(kind, monitor='testMonitor', font='', lang='en'):
     """Show experiment instructions on the screen.
 
     Parameters
