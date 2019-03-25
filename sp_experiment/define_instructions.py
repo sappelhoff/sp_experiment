@@ -55,10 +55,24 @@ def run_instructions(kind, monitor='testMonitor', font='', lang='em'):
         for text in texts:
             txt_stim.text = text
             txt_stim.draw()
-            if '' in text:
-                img_stim.image = op.join(img_dir, 'bbtk_layout.png')
+            if 'a' in text:
+                img_stim.image = op.join(img_dir, 'bbox_photo.png')
                 img_stim.draw()
-
+            elif 'b' in text:
+                img_stim.image = op.join(img_dir, 'start_cropped.png')
+                img_stim.draw()
+            elif 'c' in text:
+                img_stim.image = op.join(img_dir, 'action_cropped.png')
+                img_stim.draw()
+            elif 'd' in text:
+                img_stim.image = op.join(img_dir, 'choice_cropped.png')
+                img_stim.draw()
+            elif 'e' in text:
+                img_stim.image = op.join(img_dir, 'error_cropped.png')
+                img_stim.draw()
+            elif 'f' in text:
+                img_stim.image = op.join(img_dir, 'fix_stims.png')
+                img_stim.draw()
             win.flip()
             event.waitKeys()
 
@@ -76,11 +90,16 @@ def run_instructions(kind, monitor='testMonitor', font='', lang='em'):
     win.close()
 
 
-def _provide_active_instr_strs(lang='en'):
+def _provide_active_instr_strs(lang='en', max_nsamples=12):
     """Provide active instr texts."""
     texts = list()
     if lang == 'de':
-        pass
+        texts.append('a')
+        texts.append('b')
+        texts.append('c')
+        texts.append('d')
+        texts.append('e')
+        texts.append('f')
     elif lang == 'en':
         pass
     return texts

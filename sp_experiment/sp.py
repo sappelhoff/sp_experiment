@@ -89,9 +89,11 @@ def navigation(nav='initial', bonus='', lang='en', yoke_map=None):
                                                     'show instructions'])
         elif nav == 'inquire_condition':
             myDlg.addField('Condition:', choices=['A', 'B'])
+            myDlg.addField('Language:', choices=['de', 'en'])
 
         elif nav == 'calc_bonus':
             myDlg.addField('ID:', choices=list(yoke_map.keys()))
+            myDlg.addField('Language:', choices=['de', 'en'])
 
         elif nav == 'show_bonus':
             myDlg.addFixedField('Bonus:', bonus)
@@ -117,16 +119,16 @@ def navigation(nav='initial', bonus='', lang='en', yoke_map=None):
                 print('preparing test trials now')
                 # run test trials, then quit program
                 condition = 'active' if ok_data[0] == 'A' else 'passive'
-                run_test_trials(condition=condition, lang=lang)
+                run_test_trials(condition=condition, lang=ok_data[1])
                 core.quit()
             elif next == 'show':
                 condition = 'active' if ok_data[0] == 'A' else 'passive'
-                run_instructions(kind=condition, lang=lang)
+                run_instructions(kind=condition, lang=ok_data[1])
                 core.quit()
             elif ok_data[0] == 'calculate bonus money':
                 nav = 'calc_bonus'  # ask for ID
             elif nav == 'calc_bonus':
-                bonus = calc_bonus_payoff(int(ok_data[0]), lang=lang)
+                bonus = calc_bonus_payoff(int(ok_data[0]), lang=ok_data[1])
                 nav = 'show_bonus'
             elif nav == 'quit':
                 core.quit()  # We have shown the bonus. Now quit program

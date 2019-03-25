@@ -60,7 +60,11 @@ def calc_bonus_payoff(sub_id, conversion_factor=0.01, lang='en'):
         fname = f'sub-{sub_id:02d}_task-sp{condition}_events.tsv'  # noqa: E999
         fpath = op.join(data_dir, fname)
         if not op.exists(fpath):
-            bonus = f'did not complete "{condition}" condition yet.'
+            modstr = 'A' if condition == 'active' else 'B'
+            if lang == 'de':
+                bonus = f'Aufgabe "{modstr}" wurde noch nicht durchgefuehrt.'
+            elif lang == 'en':
+                bonus = f'did not yet complete task "{modstr}".'
             return bonus
         else:
             df = pd.read_csv(fpath, sep='\t')
