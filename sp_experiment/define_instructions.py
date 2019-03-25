@@ -204,3 +204,37 @@ def provide_stop_str(is_test, lang):
         stop_str = f'The{mod}task is over. Press any key to quit.'
 
     return stop_str
+
+
+def instruct_str_descriptions(lang='en'):
+    """Provide instructions."""
+    if lang == 'de':
+        instruct_str = ('Im Folgenden werden Sie auf der linken und rechten '
+                        'Seite jeweils eine Lotterie sehen. Benutzen Sie die '
+                        'linke oder rechte Taste, um sich fuer die Lotterie '
+                        'entscheiden, die Sie fuer profitabler halten.'
+                        '\n\nBeispiel:\n\n')
+        instruct_str += '1 - 90%    |    2 - 80%\n3 - 10%    |    4 - 20%'
+        instruct_str += '\n\n'
+        instruct_str += ('Linke lotterie: 1 Punkt mit 90%iger oder '
+                         '5 Punkte mit 10%iger Chance')
+        instruct_str += '\n\ngegen\n\n'
+        instruct_str += ('Rechte Lotterie: 2 Punkte mit 80%iger oder '
+                         '3 Punkte with 20%iger Chance')
+        instruct_str += '\n\nDruecken Sie eine beliebige Taste um zu beginnen.'
+
+    elif lang == 'en':
+        instruct_str = ('In the following you will be presented with '
+                        'lotteries on the left and right side of the screen. '
+                        'Use the left and right key to select the lottery '
+                        'that you deem more profitable.'
+                        '\n\nExample:\n\n')
+        instruct_str += '1 - 90%    |    2 - 80%\n3 - 10%    |    4 - 20%'
+        instruct_str += '\n\n'
+        instruct_str += ('Lottery left: 1 point with 90% or '
+                         '3 points with 10% chance')
+        instruct_str += '\n\nversus\n\n'
+        instruct_str += ('Lottery right: 2 points with 80% '
+                         'or a 4 points with 20% chance')
+        instruct_str += '\n\nPress any key to begin.'
+    return instruct_str
