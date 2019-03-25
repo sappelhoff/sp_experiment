@@ -25,6 +25,7 @@ UTILS_FPS = 60
 # replace "__" with "f" to allow final choices
 KEYLIST_SAMPLES = ['s', 'd', '__', 'x']  # press x to quit
 KEYLIST_FINCHOICE = ['s', 'd', 'x']
+KEYLIST_DESCRIPTION = ['s', 'd', 'x']
 
 
 class Fake_serial():
@@ -106,6 +107,25 @@ def get_final_choice_outcomes(df):
     return outcomes
 
 
+def _get_payoff_setting(df, trial):
+    """Get the payoff setting."""
+    # get the setting and reformat it to fit with internal usage in
+    # `define_payoff_settings.py`
+    # NOTE: always take the last available setting, because the previous ones
+    #       (if there are any) have been dropped due to an error (if there was
+    #       one)
+    tmp_df = df[(df['trial'] == trial)]
+    tmp_df = tmp_df.loc[:,  'mag0_1':'prob1_2'].dropna()
+    wrong_format_setting = tmp_df.iloc[-1].tolist()
+    setting = np.array(wrong_format_setting)[[0, 2, 1, 3, 4, 6, 5, 7]]
+    setting = np.expand_dims(setting, 0)
+    # quick sanity check that we have proper roundings, for example 0.3 instead
+    # of 0.29999999 ... 1., 2., 3., etc. would be fine (as magnitudes)
+    for entry in setting[0]:
+        assert len(str(entry)) in [2, 3]  # 2 for magnitudes, 3 for probs
+    return setting
+
+
 def get_payoff_dict(df, trial):
     """Get the payoff dict at a trial within the data.
 
@@ -125,20 +145,7 @@ def get_payoff_dict(df, trial):
         drawing the reward
 
     """
-    # get the setting and reformat it to fit with internal usage in
-    # `define_payoff_settings.py`
-    # NOTE: always take the last available setting, because the previous ones
-    #       (if there are any) have been dropped due to an error (if there was
-    #       one)
-    tmp_df = df[(df['trial'] == trial)]
-    tmp_df = tmp_df.loc[:,  'mag0_1':'prob1_2'].dropna()
-    wrong_format_setting = tmp_df.iloc[-1].tolist()
-    setting = np.array(wrong_format_setting)[[0, 2, 1, 3, 4, 6, 5, 7]]
-    setting = np.expand_dims(setting, 0)
-    # quick sanity check that we have proper roundings, for example 0.3 instead
-    # of 0.29999999 ... 1., 2., 3., etc. would be fine (as magnitudes)
-    for entry in setting[0]:
-        assert len(str(entry)) in [2, 3]  # 2 for magnitudes, 3 for probs
+    setting = _get_payoff_setting(df, trial)
     # NOTE: we use get_random_payoff_dict simply for putting the structure
     # into the right order. With a setting of length 1, there is no randomness
     # as to which setting gets drawn.
