@@ -23,6 +23,7 @@ import numpy as np
 import pandas as pd
 from psychopy import visual, event, core, gui
 
+from sp_experiment.descriptions import run_descriptions
 from sp_experiment.define_variable_meanings import (make_events_json_dict,
                                                     make_data_dir
                                                     )
@@ -805,7 +806,7 @@ if __name__ == '__main__':
     # if auto, do a complete flow
     if run and auto:
         # Get input
-        sub_id, data_file, condition, yoke_to = prep_logging(yoke_map, auto)
+        sub_id, data_file1, condition1, yoke_to = prep_logging(yoke_map, auto)
 
         # Save for later
         info = dict()
@@ -815,15 +816,15 @@ if __name__ == '__main__':
         run_instructions(kind='general', monitor=monitor, lang=lang, font=font)
 
         # Run test for first condition
-        if condition == 'active':
+        if condition1 == 'active':
             run_instructions(kind='active', monitor=monitor, lang=lang,
                              font=font)
-            run_test_trials(monitor=monitor, condition=condition, lang=lang)
+            run_test_trials(monitor=monitor, condition=condition1, lang=lang)
             info['condition2'] = 'passive'
-        elif condition == 'passive':
+        elif condition1 == 'passive':
             run_instructions(kind='passive', monitor=monitor, lang=lang,
                              font=font)
-            run_test_trials(monitor=monitor, condition=condition, lang=lang)
+            run_test_trials(monitor=monitor, condition=condition1, lang=lang)
             info['condition2'] = 'active'
 
         # Run first condition
@@ -832,8 +833,8 @@ if __name__ == '__main__':
                  max_ntrls=max_ntrls,
                  max_nsamples=max_nsamples,
                  block_size=block_size,
-                 data_file=data_file,
-                 condition=condition,
+                 data_file=data_file1,
+                 condition=condition1,
                  yoke_to=yoke_to,
                  lang=lang,
                  font=font)
@@ -845,8 +846,8 @@ if __name__ == '__main__':
                         lang=lang)
 
         # prep new data_file, skipping GUI
-        sub_id, data_file, condition, yoke_to = prep_logging(yoke_map,
-                                                             gui_info=info)
+        sub_id, data_file2, condition2, yoke_to = prep_logging(yoke_map,
+                                                               gui_info=info)
 
         # Run second condition
         run_flow(monitor=monitor,
@@ -854,11 +855,15 @@ if __name__ == '__main__':
                  max_ntrls=max_ntrls,
                  max_nsamples=max_nsamples,
                  block_size=block_size,
-                 data_file=data_file,
-                 condition=condition,
+                 data_file=data_file2,
+                 condition=condition2,
                  yoke_to=yoke_to,
                  lang=lang,
                  font=font)
+
+        # Also run the descriptions task
+        events_file = data_file1 if condition1 == 'active' else data_file2
+        run_descriptions(events_file, monitor, font, lang)
 
         # Print out earnings
         bonus = calc_bonus_payoff(sub_id)
