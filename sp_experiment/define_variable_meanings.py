@@ -8,6 +8,32 @@ import sp_experiment
 from sp_experiment.define_ttl_triggers import provide_trigger_dict
 
 
+def make_description_task_json():
+    """Provide variable meanings for description task."""
+    events_json_dict = dict()
+
+    # Start populating the dict
+    events_json_dict['onset'] = {
+        'Description': 'onset of a lottery selection screen',
+        'Units': 'seconds'
+    }
+
+    events_json_dict['duration'] = {
+        'Description': ('duration until a button press was recorded while '
+                        'showing the lottery selection screen.'),
+        'Units': 'seconds'
+    }
+
+    events_json_dict['trial'] = {
+        'Description': ('zero indexed trial counter, where a trial index '
+                        'points to the lottery setting that was used in this '
+                        'event by comparing with the trial column in the '
+                        'spactive task.')
+    }
+
+    return events_json_dict
+
+
 def make_events_json_dict():
     """Provide a dict to describe all collected variables."""
     # Get the trigger values
@@ -225,6 +251,12 @@ def make_data_dir():
     # and overwrite without potential issues.
     variable_meanings_dict = make_events_json_dict()
     with open(op.join(data_dir, 'task-sp_events.json'), 'w') as fout:
+        json.dump(obj=variable_meanings_dict, fp=fout,
+                  sort_keys=False, indent=4)
+
+    # Also need a JSON for description task
+    variable_meanings_dict = make_description_task_json()
+    with open(op.join(data_dir, 'task-description_events.json'), 'w') as fout:
         json.dump(obj=variable_meanings_dict, fp=fout,
                   sort_keys=False, indent=4)
 

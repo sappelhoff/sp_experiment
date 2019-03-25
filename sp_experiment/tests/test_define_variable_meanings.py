@@ -4,7 +4,8 @@ import os.path as op
 import json
 
 import sp_experiment
-from sp_experiment.define_variable_meanings import (make_events_json_dict,
+from sp_experiment.define_variable_meanings import (make_description_task_json,
+                                                    make_events_json_dict,
                                                     make_data_dir)
 
 
@@ -17,6 +18,10 @@ def test_make_events_json_dict():
     for key in events_json_dict['value']['Levels'].keys():
         assert isinstance(key, int)
         assert key >= 0 and key <= 255
+
+    # Also test descriptions task json
+    events_json_dict = make_description_task_json()
+    assert isinstance(events_json_dict, dict)
 
 
 def test_json():

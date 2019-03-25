@@ -7,10 +7,10 @@ import os
 import os.path as op
 
 import pandas as pd
-import numpy as np
 from psychopy import visual, event, core
 
 import sp_experiment
+from sp_experiment.define_variable_meanings import make_description_task_json
 from sp_experiment.define_instructions import instruct_str_descriptions
 from sp_experiment.utils import _get_payoff_setting, KEYLIST_DESCRIPTION
 
@@ -28,6 +28,7 @@ def run_descriptions(events_file, monitor='testMonitor', font='', lang='en'):
     -------
     data_file : str
         Path to the output data file
+
     """
     # Define monitor specific window object
     win = visual.Window(color=(0, 0, 0),  # Background color: RGB [-1,1]
@@ -67,7 +68,8 @@ def run_descriptions(events_file, monitor='testMonitor', font='', lang='en'):
     fname = sub_part + '_task-description_events.tsv'
     data_file = op.join(head, fname)
 
-    variables = ['onset', 'duration', 'trial', 'selected_side']
+    variable_meanings_dict = make_description_task_json()
+    variables = list(variable_meanings_dict.keys())
     with open(data_file, 'w') as fout:
         header = '\t'.join(variables)
         fout.write(header + '\n')
@@ -106,7 +108,7 @@ def run_descriptions(events_file, monitor='testMonitor', font='', lang='en'):
 
         side = KEYLIST_DESCRIPTION.index(key)
         with open(data_file, 'a') as fout:
-            values = [onset, rt, trial, key]
+            values = [onset, rt, trial, side]
             values = [str(val) for val in values]
             fout.write('\t'.join(values))
 
