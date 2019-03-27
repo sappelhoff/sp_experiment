@@ -36,14 +36,14 @@ class Fake_serial():
         pass
 
 
-def calc_bonus_payoff(sub_id, conversion_factor=0.01, lang='en'):
+def calc_bonus_payoff(sub_id, exchange_rate=0.1, lang='en'):
     """Calculate the bonus money a participant has earned.
 
     Parameters
     ----------
     sub_id : int
         The subject ID
-    conversion_factor : float
+    exchange_rate : float
         Converting points to Euros
     lang : str
         Language, can be 'de' or 'en' for German or English.
@@ -75,7 +75,7 @@ def calc_bonus_payoff(sub_id, conversion_factor=0.01, lang='en'):
             vals = df[df['value'].isin(trig_fin_out)]['outcome'].to_numpy()
             points += np.sum(vals)
 
-    money = int(np.ceil(points * conversion_factor))
+    money = int(np.ceil(points * exchange_rate))
     if lang == 'de':
         bonus = f'{money} Euro wurden als Bonus verdient.'
     elif lang == 'en':

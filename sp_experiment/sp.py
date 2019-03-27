@@ -50,7 +50,9 @@ from sp_experiment.define_instructions import (run_instructions,
                                                provide_stop_str)
 
 
-def navigation(nav='initial', bonus='', lang='en', yoke_map=None):
+def navigation(nav='initial', bonus='', lang='en', yoke_map=None,
+               max_ntrls=100, max_nsamples=12, block_size=25, maxwait=3,
+               exchange_rate=0.1):
     """Lead through a navigation GUI.
 
     Provides the options to run the experiment, test trials, or print out the
@@ -68,6 +70,16 @@ def navigation(nav='initial', bonus='', lang='en', yoke_map=None):
         Language, can be 'de' or 'en' for German or English.
     yoke_map : dict
         Dictionary to infer subject IDs from
+    max_ntrls : int
+        Maximum number of trials for this run.
+    max_nsamples : int
+        Maximum number of samples per trial.
+    block_size : int
+        Number of trials after which feedback is provided
+    maxwait : int | float
+        Maximum time to wait for a response until time out
+    exchange_rate : float
+        Conversion rate of points to Euros
 
     Returns
     -------
@@ -227,7 +239,8 @@ def prep_logging(yoke_map, auto=False, gui_info=None):
 
 def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
              max_nsamples=12, block_size=10, data_file=None, font='',
-             condition='active', yoke_to=None, is_test=False, lang='en'):
+             condition='active', yoke_to=None, is_test=False, lang='en',
+             maxwait=3):
     """Run the experimental flow.
 
     Parameters
@@ -245,7 +258,8 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
         Number of trials after which feedback is provided
     data_file : str | None
         Path to the data file
-    font : str | None
+    font : str
+        Font to br used
     condition : str
         Condition in which to run the experiment
     yoke_to : int | None
@@ -254,6 +268,8 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
         Flag whether this is a test run.
     lang : str
         Language, can be 'de' or 'en' for German or English.
+    maxwait : int | float | float('inf')
+        Maximum time to wait for a response until time out
 
     """
     if data_file is None:
@@ -315,8 +331,8 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     toutshow_ms = (500, 500)  # time for showing an outcome ("show number")
     tdisplay_ms = (1000, 1000)  # show color: new trial, error, final choice
 
-    maxwait_samples = 3  # Maximum seconds we wait for a sample
-    maxwait_finchoice = 3  # can also be float('inf') to wait forever
+    maxwait_samples = maxwait  # Maximum seconds we wait for a sample
+    maxwait_finchoice = maxwait  # can also be float('inf') to wait forever
 
     expected_value_diff = 0.1  # For payoff settings to be used
 
@@ -726,7 +742,6 @@ def run_test_trials(monitor='testMonitor', condition='active', lang='en'):
     ----------
     monitor : str
         Name of the monitor to be used
-
     condition : str
         Condition for which to perform test trial. Can be 'active' or 'passive'
 
@@ -777,6 +792,8 @@ if __name__ == '__main__':
     max_ntrls = 75
     max_nsamples = 12
     block_size = 25
+    maxwait = 3
+    exchange_rate = 0.1
     lang = 'de'
     font = 'Liberation Sans'
 
@@ -787,7 +804,9 @@ if __name__ == '__main__':
         yoke_map[i] = j
 
     # Navigate
-    run, auto = navigation(lang=lang, yoke_map=yoke_map)
+    run, auto = navigation(lang=lang, yoke_map=yoke_map, max_ntrls=max_ntrls,
+                           max_nsamples=max_nsamples, block_size=block_size,
+                           maxwait=maxwait, exchange_rate=exchange_rate)
 
     # Perhaps just run (no auto)
     if run and not auto:
@@ -818,12 +837,16 @@ if __name__ == '__main__':
         # Run test for first condition
         if condition1 == 'active':
             run_instructions(kind='active', monitor=monitor, lang=lang,
-                             font=font)
+                             font=font, max_ntrls=max_ntrls,
+                             max_nsamples=max_nsamples, block_size=block_size,
+                             maxwait=maxwait, exchange_rate=exchange_rate)
             run_test_trials(monitor=monitor, condition=condition1, lang=lang)
             info['condition2'] = 'passive'
         elif condition1 == 'passive':
             run_instructions(kind='passive', monitor=monitor, lang=lang,
-                             font=font)
+                             font=font, max_ntrls=max_ntrls,
+                             max_nsamples=max_nsamples, block_size=block_size,
+                             maxwait=maxwait, exchange_rate=exchange_rate)
             run_test_trials(monitor=monitor, condition=condition1, lang=lang)
             info['condition2'] = 'active'
 
@@ -841,7 +864,9 @@ if __name__ == '__main__':
 
         # Run test for second condition
         run_instructions(kind=info['condition2'], monitor=monitor, lang=lang,
-                         font=font)
+                         font=font, max_ntrls=max_ntrls,
+                         max_nsamples=max_nsamples, block_size=block_size,
+                         maxwait=maxwait, exchange_rate=exchange_rate)
         run_test_trials(monitor=monitor, condition=info['condition2'],
                         lang=lang)
 
@@ -866,7 +891,7 @@ if __name__ == '__main__':
         run_descriptions(events_file, monitor, font, lang)
 
         # Print out earnings
-        bonus = calc_bonus_payoff(sub_id)
+        bonus = calc_bonus_payoff(sub_id, exchange_rate)
         navigation(nav='show_bonus', bonus=bonus, lang=lang)
 
     core.quit()

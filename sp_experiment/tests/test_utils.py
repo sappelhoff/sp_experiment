@@ -59,7 +59,7 @@ def test_calc_bonus_payoff():
     os.remove(tmp_fpath1)
     os.remove(tmp_fpath2)
 
-    assert bonus == 'earned 1 Euros as bonus.'
+    assert bonus == 'earned 3 Euros as bonus.'
 
 
 def test_get_final_choice_outcomes():
