@@ -53,7 +53,7 @@ def test_calc_bonus_payoff():
     copyfile(no_errors_file, tmp_fpath1)
     copyfile(no_errors_file, tmp_fpath2)
 
-    bonus = calc_bonus_payoff(998)
+    bonus = calc_bonus_payoff(998, exchange_rate=0.1)
 
     # remove tmp files
     os.remove(tmp_fpath1)

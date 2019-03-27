@@ -810,7 +810,7 @@ if __name__ == '__main__':
     max_nsamples = 12
     block_size = 25
     maxwait = 3
-    exchange_rate = 0.1
+    exchange_rate = 0.01
     lang = 'de'
     font = 'Liberation Sans'
 

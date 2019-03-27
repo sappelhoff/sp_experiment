@@ -36,7 +36,7 @@ class Fake_serial():
         pass
 
 
-def calc_bonus_payoff(sub_id, exchange_rate=0.1, lang='en'):
+def calc_bonus_payoff(sub_id, exchange_rate=0.01, lang='en'):
     """Calculate the bonus money a participant has earned.
 
     Parameters
