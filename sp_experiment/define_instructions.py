@@ -145,8 +145,8 @@ def run_instructions(kind, monitor='testMonitor', font='', lang='en',
     win.close()
 
 
-def _provide_active_instr_strs(lang='en', max_ntrls=100, max_nsamples=12,
-                               block_size=25, maxwait=3, exchange_rate=0.1):
+def _provide_active_instr_strs(lang, max_ntrls, max_nsamples, block_size,
+                               maxwait, exchange_rate):
     """Provide active instr texts."""
     texts = list()
     if lang == 'de':
@@ -162,12 +162,12 @@ def _provide_active_instr_strs(lang='en', max_ntrls=100, max_nsamples=12,
         texts.append('Die Instruktionen sind abgeschlossen. Drücken Sie eine beliebige Taste um fortzufahren.')  # noqa: E501
 
     elif lang == 'en':
-        texts.append('NOT IMPLEMENTED YET')
+        texts.append('LANGUAGE NOT IMPLEMENTED YET')
     return texts
 
 
-def _provide_passive_instr_strs(lang='en', max_ntrls=100, max_nsamples=12,
-                                block_size=25, maxwait=3, exchange_rate=0.1):
+def _provide_passive_instr_strs(lang, max_ntrls, max_nsamples, block_size,
+                                maxwait, exchange_rate):
     """Provide passive instr texts."""
     texts = list()
     if lang == 'de':
@@ -184,11 +184,11 @@ def _provide_passive_instr_strs(lang='en', max_ntrls=100, max_nsamples=12,
         texts.append('Die Instruktionen sind abgeschlossen. Drücken Sie eine beliebige Taste um fortzufahren.')  # noqa: E501
 
     elif lang == 'en':
-        texts.append('NOT IMPLEMENTED YET')
+        texts.append('LANGUAGE NOT IMPLEMENTED YET')
     return texts
 
 
-def _provide_general_instr_str(lang='en'):
+def _provide_general_instr_str(lang):
     """Provide a welcome screen text."""
     if lang == 'de':
         welcome_str = ('Wilkommen! Sie werden zwei Aufgaben nacheinander '
@@ -199,7 +199,7 @@ def _provide_general_instr_str(lang='en'):
                        'fertig sind, wird die zweite Aufgabe in den selben '
                        'Schritten durchgeführt. Das heißt: Erst Anweisung, '
                        'dann Test, dann Durchführung der Aufgabe. '
-                       'Druecken Sie eine beliebige Taste.')
+                       'Drücken Sie eine beliebige Taste.')
     elif lang == 'en':
         welcome_str = ('Welcome! You will perform two tasks, one after the '
                        'other. In the following you will get instructions '
@@ -240,7 +240,7 @@ def provide_blockfbk_str(data_file, current_nblocks, nblocks, lang):
                           ' Am Ende des Experiments werden Ihre Punkte'
                           ' in Euro umgerechnet und Ihnen als Bonus gezahlt.'
                           ' Machen Sie jetzt eine kurze Pause.'
-                          ' Druecken Sie eine beliebige Taste um'
+                          ' Drücken Sie eine beliebige Taste um'
                           ' fortzufahren.')
     elif lang == 'en':
         block_feedback = (f'Block {current_nblocks}/{nblocks} done!'  # noqa: E999 E501
@@ -259,7 +259,7 @@ def provide_start_str(is_test, condition, lang):
     condi = 'A' if condition == 'active' else 'B'
     mod = ' TEST ' if is_test else ' '
     if lang == 'de':
-        start_str = (f'Beginn der{mod}Aufgabe {condi}. Druecken Sie eine '
+        start_str = (f'Beginn der{mod}Aufgabe {condi}. Drücken Sie eine '
                      'beliebige Taste um zu beginnen.')
     elif lang == 'en':
         start_str = (f'Starting the{mod}for task {condi}. '
@@ -271,7 +271,7 @@ def provide_stop_str(is_test, lang):
     """Provide a string for end of the task."""
     mod = ' TEST ' if is_test else ' '
     if lang == 'de':
-        stop_str = (f'Die{mod}Aufgabe ist beendet. Druecken Sie eine beliebige'
+        stop_str = (f'Die{mod}Aufgabe ist beendet. Drücken Sie eine beliebige'
                     ' Taste.')
     elif lang == 'en':
         stop_str = f'The{mod}task is over. Press any key to quit.'
@@ -294,7 +294,7 @@ def instruct_str_descriptions(lang='en'):
         instruct_str += '\n\ngegen\n\n'
         instruct_str += ('Rechte Lotterie: 2 Punkte mit 80%iger oder '
                          '3 Punkte with 20%iger Chance')
-        instruct_str += '\n\nDruecken Sie eine beliebige Taste um zu beginnen.'
+        instruct_str += '\n\nDrücken Sie eine beliebige Taste um zu beginnen.'
 
     elif lang == 'en':
         instruct_str = ('In the following you will be presented with '

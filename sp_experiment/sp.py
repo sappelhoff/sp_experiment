@@ -51,7 +51,7 @@ from sp_experiment.define_instructions import (run_instructions,
 
 def navigation(nav='initial', bonus='', lang='en', yoke_map=None,
                max_ntrls=100, max_nsamples=12, block_size=25, maxwait=3,
-               exchange_rate=0.1):
+               exchange_rate=0.1, monitor='testMonitor'):
     """Lead through a navigation GUI.
 
     Provides the options to run the experiment, test trials, or print out the
@@ -79,6 +79,8 @@ def navigation(nav='initial', bonus='', lang='en', yoke_map=None,
         Maximum time to wait for a response until time out
     exchange_rate : float
         Conversion rate of points to Euros
+    monitor : str
+        Monitor definitionto be used, see define_monitors.py
 
     Returns
     -------
@@ -131,7 +133,9 @@ def navigation(nav='initial', bonus='', lang='en', yoke_map=None,
                 print('preparing test trials now')
                 # run test trials, then quit program
                 condition = 'active' if ok_data[0] == 'A' else 'passive'
-                run_test_trials(condition=condition, lang=ok_data[1])
+                run_test_trials(monitor, condition, ok_data[1],
+                                test_max_ntrls, test_max_nsamples,
+                                test_block_size, maxwait)
                 core.quit()
             elif next == 'show':
                 condition = 'active' if ok_data[0] == 'A' else 'passive'
@@ -140,7 +144,8 @@ def navigation(nav='initial', bonus='', lang='en', yoke_map=None,
             elif ok_data[0] == 'calculate bonus money':
                 nav = 'calc_bonus'  # ask for ID
             elif nav == 'calc_bonus':
-                bonus = calc_bonus_payoff(int(ok_data[0]), lang=ok_data[1])
+                bonus = calc_bonus_payoff(int(ok_data[0]), lang=ok_data[1],
+                                          exchange_rate=exchange_rate)
                 nav = 'show_bonus'
             elif nav == 'quit':
                 core.quit()  # We have shown the bonus. Now quit program
@@ -734,7 +739,8 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     win.close()
 
 
-def run_test_trials(monitor='testMonitor', condition='active', lang='en'):
+def run_test_trials(monitor, condition, lang, max_ntrls, max_nsamples,
+                    block_size, maxwait):
     """Run the test trials.
 
     Parameters
@@ -743,6 +749,16 @@ def run_test_trials(monitor='testMonitor', condition='active', lang='en'):
         Name of the monitor to be used
     condition : str
         Condition for which to perform test trial. Can be 'active' or 'passive'
+    lang : str
+        Language to be used, can be 'de' or 'en'
+    max_ntrls : int
+        Maximum number of trials for this run.
+    max_nsamples : int
+        Maximum number of samples per trial.
+    block_size : int
+        Number of trials after which feedback is provided
+    maxwait : int | float | float('inf')
+        Maximum time to wait for a response until time out
 
     """
     init_dir, data_dir = make_data_dir()
@@ -759,25 +775,27 @@ def run_test_trials(monitor='testMonitor', condition='active', lang='en'):
     if condition == 'active':
         # Run a single active test trial
         run_flow(monitor=monitor,
-                 max_ntrls=1,
-                 max_nsamples=12,
-                 block_size=1,  # i.e., no block feedback because never reached
+                 max_ntrls=max_ntrls,
+                 max_nsamples=max_nsamples,
+                 block_size=block_size,
                  data_file=data_file,
                  condition='active',
                  is_test=True,
-                 lang=lang)
+                 lang=lang,
+                 maxwait=maxwait)
 
     elif condition == 'passive':
         # Run a single passive test trial ... using a prerecorded dataset
         run_flow(monitor=monitor,
-                 max_ntrls=1,
-                 max_nsamples=12,
-                 block_size=1,
+                 max_ntrls=max_ntrls,
+                 max_nsamples=max_nsamples,
+                 block_size=block_size,
                  data_file=data_file,
                  condition='passive',
                  yoke_to=999,
                  is_test=True,
-                 lang=lang)
+                 lang=lang,
+                 maxwait=maxwait)
 
     # Remove the test data
     os.remove(data_file)
@@ -796,6 +814,11 @@ if __name__ == '__main__':
     lang = 'de'
     font = 'Liberation Sans'
 
+    # Settings for training
+    test_max_ntrls = 1
+    test_max_nsamples = 12
+    test_block_size = 1
+
     # First 10 subjs are mapped to themselves
     yoke_map = dict(zip(list(range(1, 11)), list(range(1, 11))))
     # Next 10 are mapped to first ten
@@ -805,7 +828,8 @@ if __name__ == '__main__':
     # Navigate
     run, auto = navigation(lang=lang, yoke_map=yoke_map, max_ntrls=max_ntrls,
                            max_nsamples=max_nsamples, block_size=block_size,
-                           maxwait=maxwait, exchange_rate=exchange_rate)
+                           maxwait=maxwait, exchange_rate=exchange_rate,
+                           monitor=monitor)
 
     # Perhaps just run (no auto)
     if run and not auto:
@@ -839,14 +863,16 @@ if __name__ == '__main__':
                              font=font, max_ntrls=max_ntrls,
                              max_nsamples=max_nsamples, block_size=block_size,
                              maxwait=maxwait, exchange_rate=exchange_rate)
-            run_test_trials(monitor=monitor, condition=condition1, lang=lang)
+            run_test_trials(monitor, condition1, lang, test_max_ntrls,
+                            test_max_nsamples, test_block_size, maxwait)
             info['condition2'] = 'passive'
         elif condition1 == 'passive':
             run_instructions(kind='passive', monitor=monitor, lang=lang,
                              font=font, max_ntrls=max_ntrls,
                              max_nsamples=max_nsamples, block_size=block_size,
                              maxwait=maxwait, exchange_rate=exchange_rate)
-            run_test_trials(monitor=monitor, condition=condition1, lang=lang)
+            run_test_trials(monitor, condition1, lang, test_max_ntrls,
+                            test_max_nsamples, test_block_size, maxwait)
             info['condition2'] = 'active'
 
         # Run first condition
@@ -866,8 +892,8 @@ if __name__ == '__main__':
                          font=font, max_ntrls=max_ntrls,
                          max_nsamples=max_nsamples, block_size=block_size,
                          maxwait=maxwait, exchange_rate=exchange_rate)
-        run_test_trials(monitor=monitor, condition=info['condition2'],
-                        lang=lang)
+        run_test_trials(monitor, info['condition2'], lang, test_max_ntrls,
+                        test_max_nsamples, test_block_size, maxwait)
 
         # prep new data_file, skipping GUI
         sub_id, data_file2, condition2, yoke_to = prep_logging(yoke_map,
@@ -887,6 +913,6 @@ if __name__ == '__main__':
 
         # Print out earnings
         bonus = calc_bonus_payoff(sub_id, exchange_rate)
-        navigation(nav='show_bonus', bonus=bonus, lang=lang)
+        navigation(nav='show_bonus', bonus=bonus, lang=lang, monitor=monitor)
 
     core.quit()
