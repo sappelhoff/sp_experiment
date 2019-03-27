@@ -23,7 +23,6 @@ import numpy as np
 import pandas as pd
 from psychopy import visual, event, core, gui
 
-from sp_experiment.descriptions import run_descriptions
 from sp_experiment.define_variable_meanings import (make_events_json_dict,
                                                     make_data_dir
                                                     )
@@ -885,10 +884,6 @@ if __name__ == '__main__':
                  yoke_to=yoke_to,
                  lang=lang,
                  font=font)
-
-        # Also run the descriptions task
-        events_file = data_file1 if condition1 == 'active' else data_file2
-        run_descriptions(events_file, monitor, font, lang)
 
         # Print out earnings
         bonus = calc_bonus_payoff(sub_id, exchange_rate)
