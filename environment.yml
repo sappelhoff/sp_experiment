@@ -1,15 +1,14 @@
 name: sp_experiment
 channels:
-- conda-forge
-- defaults
+  - defaults
+  - conda-forge
 dependencies:
-- python=3.7
-- numpy
-- scipy
-- matplotlib
-- pandas
-- wxpython
-- pip:
+  - python=3.7
+  - numpy
+  - scipy
+  - matplotlib
+  - pandas
+  - wxpython
   - pyopengl
   - pyglet
   - pillow
@@ -17,8 +16,9 @@ dependencies:
   - lxml
   - openpyxl
   - configobj
-  - psychopy==3.0.4
   - pytest  # testing
   - pytest-cov  # testing
   - flake8  # linter
   - flake8-docstrings  # linter
+  - pip:
+    - psychopy==3.0.4
