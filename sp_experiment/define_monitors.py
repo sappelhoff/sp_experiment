@@ -31,6 +31,13 @@ if __name__ == '__main__':
     my_monitor.setDistance(50)
     my_monitor.saveMon()
 
+    # Room26
+    my_monitor = monitors.Monitor(name='room26')
+    my_monitor.setSizePix((1920, 1080))
+    my_monitor.setWidth(53)
+    my_monitor.setDistance(60)
+    my_monitor.saveMon()
+
     # Add new monitor below
 
     # Print all available monitors
