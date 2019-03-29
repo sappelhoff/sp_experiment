@@ -10,7 +10,7 @@ from sp_experiment.utils import get_final_choice_outcomes
 
 def run_instructions(kind, monitor='testMonitor', font='', lang='en',
                      max_ntrls=100, max_nsamples=12, block_size=25, maxwait=3,
-                     exchange_rate=0.1):
+                     exchange_rate=0.01):
     """Show experiment instructions on the screen.
 
     Parameters
@@ -152,7 +152,7 @@ def _provide_active_instr_strs(lang, max_ntrls, max_nsamples, block_size,
     if lang == 'de':
         texts.append('Instruktionen Aufgabe *A*. Bitte lesen Sie aufmerksam den folgenden Text. Drücken Sie eine beliebige Taste um fortzufahren.')  # noqa: E501
         texts.append(f'Bitte fixieren Sie während des Experiments mit ihrem Blick immer den zentralen Stimulus in der Bildschirmmitte. Links und rechts von diesem Stimulus befinden sich zwei unsichtbare Urnen. In den Urnen befinden sich mehrere Kugeln mit Zahlen darauf. Die Zahlen stehen für Spielpunkte, die zu einen Wechselkurs von {exchange_rate} in Euro umgewandelt werden. Dieses Geld in Euro wird Ihnen am Ende des Experimentes als Bonus ausgezahlt.')  # noqa: E501 E999
-        texts.append(f'Es gibt in dieser Aufgabe viele Durchgänge. In jedem Durchgang gibt es neue Urnen, und ihre Aufgabe wird jedes Mal sein, sich am Ende der Aufgabe für eine der beiden Urnen zu entscheiden. Um etwas über den Inhalt der Urnen zu erfahren, dürfen Sie in jedem Durchgang  insgesamt {max_nsamples} Kugeln ziehen. Dies können Sie tun, indem Sie die linke oder die rechte Taste drücken. Sie können also jedes Mal selbst wählen, aus welcher Urne die nächste Kugel gezogen wird. Die gezogene Kugel wir Ihnen kurz gezeigt, und danach zurück in die Urne gelegt.')  # noqa: E501 E999
+        texts.append(f'Es gibt in dieser Aufgabe viele Durchgänge. In jedem Durchgang gibt es neue Urnen, und ihre Aufgabe wird jedes Mal sein, sich am Ende der Aufgabe für eine der beiden Urnen zu entscheiden. Um etwas über den Inhalt der Urnen zu erfahren, dürfen Sie in jedem Durchgang  insgesamt {max_nsamples} Kugeln ziehen. Dies können Sie tun, indem Sie die linke oder die rechte Taste drücken. Sie können also jedes Mal selbst wählen, aus welcher Urne die nächste Kugel gezogen wird. Die gezogene Kugel wird Ihnen kurz gezeigt, und danach zurück in die Urne gelegt.')  # noqa: E501 E999
         texts.append(f'Nachdem Sie sich die {max_nsamples} Kugeln angeschaut haben, müssen Sie sich final für einer der Urnen entscheiden. Ihr Ziel sollte natürlich  sein, dabei immer die jeweils bessere Urne zu wählen. Nach dieser finalen Entscheidung wird aus der gewählten Urne nochmals eine Kugel gezogen. Die Punkte auf dieser finalen Kugel werden Ihrem Konto gutgeschrieben. Dies wird durch die grüne Farbe der Punkte gezeigt. Danach beginnt ein neuer Durchgang mit neuen Urnen. Insgesamt gibt es {max_ntrls} Durchgänge und alle {block_size} Durchgänge werden Sie Zeit für eine kurze Pause haben.')  # noqa: E501
         texts.append('Als Hilfestellung zeigt Ihnen die Farbe des zentralen Stimulus an, was während der Durchgänge als nächstes passiert: Zu Beginn eines Durchgangs ist der Stimulus kurz grün und dann weiß. Das bedeutet, dass neue unsichtbaren Urnen links und rechts aufgestellt wurden.')  # noqa: E501
         texts.append('Dann bleibt die Farbe des zentralen Stimulus weiß. Das bedeutet, dass Sie jetzt eine Kugel aus eine der Urnen ziehen können mit der linken oder der rechten Taste. (Die Farbe des zentralen Stimulus ist auch weiß, wenn Sie darauf warten, dass die Kugel gezeigt wird.)')  # noqa: E501

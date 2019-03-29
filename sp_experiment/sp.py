@@ -497,7 +497,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                     outcome = np.random.choice(payoff_dict[action])
                 else:  # condition == 'passive'
                     # note: deduct one off current_nsamples because we already
-                    # added one (see above) which is to early for this line of
+                    # added one (see above) which is too early for this line of
                     # code
                     outcome = get_passive_outcome(df, current_ntrls,
                                                   current_nsamples-1)
@@ -804,9 +804,9 @@ def run_test_trials(monitor, condition, lang, max_ntrls, max_nsamples,
 if __name__ == '__main__':
     # EXPERIMENT SETTINGS,  including yoke_map to determine which participant
     # gets yoked to which
-    monitor = 'eizoforis'
+    monitor = 'room26'
     ser = Fake_serial()
-    max_ntrls = 75
+    max_ntrls = 100
     max_nsamples = 12
     block_size = 25
     maxwait = 3
@@ -912,7 +912,7 @@ if __name__ == '__main__':
                  font=font)
 
         # Print out earnings
-        bonus = calc_bonus_payoff(sub_id, exchange_rate)
+        bonus = calc_bonus_payoff(sub_id, exchange_rate, lang=lang)
         navigation(nav='show_bonus', bonus=bonus, lang=lang, monitor=monitor)
 
     core.quit()

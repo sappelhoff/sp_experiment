@@ -63,7 +63,7 @@ def calc_bonus_payoff(sub_id, exchange_rate=0.01, lang='en'):
         if not op.exists(fpath):
             modstr = 'A' if condition == 'active' else 'B'
             if lang == 'de':
-                bonus = f'Aufgabe "{modstr}" wurde noch nicht durchgefuehrt.'
+                bonus = f'Aufgabe "{modstr}" wurde noch nicht durchgeführt.'
             elif lang == 'en':
                 bonus = f'did not yet complete task "{modstr}".'
             return bonus
