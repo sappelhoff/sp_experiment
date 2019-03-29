@@ -236,7 +236,8 @@ def provide_blockfbk_str(data_file, current_nblocks, nblocks, lang):
 
     if lang == 'de':
         block_feedback = (f'Block {current_nblocks}/{nblocks} beendet!'  # noqa: E999 E501
-                          f' Sie haben bisher {points} Punkte gesammelt.'
+                          f' Sie haben in dieser Aufgabe bisher {points} '
+                          'Punkte gesammelt.'
                           ' Am Ende des Experiments werden Ihre Punkte'
                           ' in Euro umgerechnet und Ihnen als Bonus gezahlt.'
                           ' Machen Sie jetzt eine kurze Pause.'
@@ -244,7 +245,8 @@ def provide_blockfbk_str(data_file, current_nblocks, nblocks, lang):
                           ' fortzufahren.')
     elif lang == 'en':
         block_feedback = (f'Block {current_nblocks}/{nblocks} done!'  # noqa: E999 E501
-                          f' You earned {points} points so far.'
+                          f' You earned {points} points in this task '
+                          'so far.'
                           ' Remember that your points will be '
                           ' converted to Euros and paid to you at'
                           ' the end of the experiment as a bonus.'

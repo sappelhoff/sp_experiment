@@ -808,9 +808,9 @@ if __name__ == '__main__':
     ser = Fake_serial()
     max_ntrls = 100
     max_nsamples = 12
-    block_size = 25
+    block_size = 20
     maxwait = 3
-    exchange_rate = 0.01
+    exchange_rate = 0.005
     lang = 'de'
     font = 'Liberation Sans'
 
