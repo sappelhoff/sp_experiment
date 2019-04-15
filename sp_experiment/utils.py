@@ -153,6 +153,37 @@ def get_payoff_dict(df, trial):
     return payoff_dict
 
 
+def remove_error_rows(df, error_trig):
+    """Identify error rows and remove them.
+
+    Identify errors via an event value and discard all rows and including the
+    error row within the trial that the error happened.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        The original data with a 'trial' and 'value' column
+    error_trig : int
+        The event value marking an error, 16 in v0.1.0, 20 in v0.2.0
+
+    Returns
+    -------
+    df : pandas.DataFrame
+        The original df with the trials containing errors remove
+
+    """
+    error_idx = df.index[df['value'] == error_trig].to_numpy()
+    error_trls = df['trial'][error_idx].to_numpy()
+
+    remove_idx = list()
+    for idx, trl in zip(error_idx, error_trls):
+        __ = np.logical_and(df['trial'] == trl, df.index <= idx)
+        remove_idx += df.index[__].to_list()
+
+    df = df.drop(remove_idx)
+    return df
+
+
 def get_passive_action(df, trial, sample):
     """Get data for a replay.
 

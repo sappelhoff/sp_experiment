@@ -38,6 +38,7 @@ from sp_experiment.utils import (KEYLIST_SAMPLES,
                                  get_payoff_dict,
                                  get_passive_action,
                                  get_passive_outcome,
+                                 remove_error_rows
                                  )
 from sp_experiment.define_payoff_settings import (get_payoff_settings,
                                                   get_random_payoff_dict,
@@ -373,6 +374,8 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
         fname = f'sub-{yoke_to:02d}_task-spactive_events.tsv'
         fpath = op.join(op.dirname(data_file), fname)
         df = pd.read_csv(fpath, sep='\t')
+        error_trig = ord(trig_dict['trig_error'])
+        df = remove_error_rows(df, error_trig=error_trig)
         df = df[pd.notnull(df['trial'])]
 
     current_nblocks = 0
