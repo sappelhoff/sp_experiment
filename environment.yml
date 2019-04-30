@@ -3,7 +3,7 @@ channels:
   - defaults
   - conda-forge
 dependencies:
-  - python=3.7
+  - python=3.5
   - numpy
   - scipy
   - matplotlib
@@ -21,4 +21,4 @@ dependencies:
   - flake8  # linter
   - flake8-docstrings  # linter
   - pip:
-    - psychopy==3.0.4
+    - psychopy==3.0.7
