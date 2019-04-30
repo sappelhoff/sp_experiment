@@ -4,6 +4,8 @@ channels:
   - conda-forge
 dependencies:
   - python=3.5
+  - pip<10  # XXX to be fixed
+  - cython
   - numpy
   - scipy
   - matplotlib
@@ -21,4 +23,5 @@ dependencies:
   - flake8  # linter
   - flake8-docstrings  # linter
   - pip:
+    - PyPubSub
     - psychopy==3.0.7
