@@ -3,7 +3,7 @@ import os
 import os.path as op
 from tempfile import gettempdir
 from shutil import rmtree, copyfile
-
+from collections import OrderedDict
 
 import pytest
 import numpy as np
@@ -76,7 +76,7 @@ def test_get_payoff_dict():
 
     # The trial argument is 0-indexed
     payoff_dict = get_payoff_dict(df, 0)
-    assert isinstance(payoff_dict, dict)
+    assert isinstance(payoff_dict, OrderedDict)
 
     # Make a more thorough test with the second payoff distribution
     payoff_dict = get_payoff_dict(df, 1)

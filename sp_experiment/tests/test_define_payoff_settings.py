@@ -1,5 +1,6 @@
 """Testing the setup of the payoff distributions."""
 import os.path as op
+from collections import OrderedDict
 
 import numpy as np
 import pandas as pd
@@ -32,7 +33,7 @@ def test_get_random_payoff_dict():
     payoff_dict, payoff_settings = get_random_payoff_dict(payoff_settings)
 
     # Should be a dict
-    assert isinstance(payoff_dict, dict)
+    assert isinstance(payoff_dict, OrderedDict)
     assert len(list(payoff_dict.values())[0]) == 10
     assert len(list(payoff_dict.values())[1]) == 10
 
