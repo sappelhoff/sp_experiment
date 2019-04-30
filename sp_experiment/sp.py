@@ -210,14 +210,15 @@ def prep_logging(yoke_map, auto=False, gui_info=None):
 
     # Data logging
     # ============
-    fname = f'sub-{sub_id:02d}_task-sp{condition}_events.tsv'  # noqa: E999
+    fname = 'sub-{:02d}_task-sp{}_events.tsv'.format(sub_id, condition)
 
     # Check directory is present and file name not yet used
     init_dir, data_dir = make_data_dir()
 
     data_file = op.join(data_dir, fname)
     if op.exists(data_file):
-        raise OSError(f'\n\nA data file for ID "{sub_id}" already exists.\n\n')
+        raise OSError('\n\nA data file for ID "{}" already exists.\n\n'
+                      .format(sub_id))
 
     # Write header to the tab separated log file
     variable_meanings_dict = make_events_json_dict()
@@ -231,12 +232,12 @@ def prep_logging(yoke_map, auto=False, gui_info=None):
     # once. If it is done twice, then you can check which condition was first
     # by checking the starting time in the events.tsv file.
     if not isinstance(gui_info, dict):
-        fname = f'log_{sub_id}_{condition}.txt'
+        fname = 'log_{}_{}.txt'.format(sub_id, condition)
         log_path = op.join(data_dir, fname)
         prefixes = ['sub_id', 'age', 'sex', 'yoke_to']
         with open(log_path, 'w') as fout:
             for i, line in enumerate([sub_id, age, sex, yoke_to]):
-                fout.write(f'{prefixes[i]}: {line}')
+                fout.write('{}: {}'.format(prefixes[i], line))
                 fout.write('\n')
 
     return sub_id, data_file, condition, yoke_to
@@ -371,7 +372,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
 
     # If we are in the passive condition, load pre-recorded data to replay
     if condition == 'passive':
-        fname = f'sub-{yoke_to:02d}_task-spactive_events.tsv'
+        fname = 'sub-{:02d}_task-spactive_events.tsv'.format(yoke_to)
         fpath = op.join(op.dirname(data_file), fname)
         df = pd.read_csv(fpath, sep='\t')
         error_trig = ord(trig_dict['trig_error'])
