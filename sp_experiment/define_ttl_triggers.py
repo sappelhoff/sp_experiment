@@ -6,11 +6,12 @@ For more information, see also the "event_value" key within the
 define_variable_meanings.make_events_json_dict.
 
 """
+from collections import OrderedDict
 
 
 def provide_trigger_dict():
     """Provide a dictionnary mapping str names to byte values."""
-    trigger_dict = dict()
+    trigger_dict = OrderedDict()
 
     # At the beginning and end of the experiment ... take these triggers to
     # crop the meaningful EEG data. Make sure to include some time BEFORE and

@@ -8,6 +8,7 @@ other utilities: psychopy_utils.py
 
 """
 import os.path as op
+from collections import OrderedDict
 
 import numpy as np
 import pandas as pd
@@ -140,7 +141,7 @@ def get_payoff_dict(df, trial):
 
     Returns
     -------
-    payoff_dict : dict
+    payoff_dict : collections.OrderedDict
         Dictionary containing the reward distribution setting of the current
         trial. NOTE: returns the "final" payoff_dict that was used for
         drawing the reward
@@ -208,7 +209,7 @@ def get_passive_action(df, trial, sample):
             (df['action_type'].isin(admissible_actions))]
     key = int(df['action'].tolist()[int(sample)])
     rt = float(df['response_time'].tolist()[int(sample)])
-    key = dict(enumerate(KEYLIST_SAMPLES))[key]
+    key = OrderedDict(enumerate(KEYLIST_SAMPLES))[key]
     keys_rts = [(key, rt)]
     return keys_rts
 
@@ -294,7 +295,7 @@ def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
     value : byte | 'n/a'
         the TTL trigger value (=EEG marker value) associated with an event
 
-    payoff_dict : dict | 'n/a'
+    payoff_dict : collections.OrderedDict | 'n/a'
         Dictionary containing the reward distribution setting of the current
         trial.
 
@@ -314,7 +315,7 @@ def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
 
     """
     # Infer action type
-    action_type_dict = dict()
+    action_type_dict = OrderedDict()
     action_type_dict[0] = 'sample'
     action_type_dict[1] = 'sample'
     action_type_dict[2] = 'stop'

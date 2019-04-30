@@ -18,6 +18,7 @@ To do
 """
 import os
 import os.path as op
+from collections import OrderedDict
 
 import numpy as np
 import pandas as pd
@@ -89,7 +90,7 @@ def navigation(nav='initial', bonus='', lang='en', yoke_map=None,
 
     """
     if yoke_map is None:
-        yoke_map = {i: i for i in range(100)}
+        yoke_map = OrderedDict((i, i) for i in range(100))
     run = False
     auto = False
     next = ''
@@ -824,7 +825,7 @@ if __name__ == '__main__':
     test_block_size = 1
 
     # First 10 subjs are mapped to themselves
-    yoke_map = dict(zip(list(range(1, 11)), list(range(1, 11))))
+    yoke_map = OrderedDict(zip(list(range(1, 11)), list(range(1, 11))))
     # Next 10 are mapped to first ten
     for i, j in zip(list(range(11, 21)), list(range(1, 11))):
         yoke_map[i] = j

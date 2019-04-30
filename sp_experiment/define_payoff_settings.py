@@ -7,6 +7,7 @@ define_variable_meanings.make_events_json_dict: action_type, action, outcome
 
 """
 import itertools
+from collections import OrderedDict
 
 import numpy as np
 import pandas as pd
@@ -151,7 +152,7 @@ def get_random_payoff_dict(payoff_settings, pseudorand=False, df=None):
 
     Returns
     -------
-    payoff_dict : dict
+    payoff_dict : collections.OrderedDict
         Dict with keys [0, 1] and each key containing as values a list of
         possible outcomes, the frequency of which corresponds to a probability.
         For example payoff_dict[0] = [0, 0, ,0 ,0, 0, 0, 0, 1, 1, 1] for a
@@ -171,7 +172,7 @@ def get_random_payoff_dict(payoff_settings, pseudorand=False, df=None):
 
     # Form a payoff dictionary from the selected setting
     payoff_setting = payoff_settings[selected_row_idx, :]
-    payoff_dict = dict()
+    payoff_dict = OrderedDict()
     payoff_dict[0] = [int(payoff_setting[0])] * int(payoff_setting[2]*10)
     payoff_dict[0] += [int(payoff_setting[1])] * int(payoff_setting[3]*10)
     payoff_dict[1] = [int(payoff_setting[4])] * int(payoff_setting[6]*10)

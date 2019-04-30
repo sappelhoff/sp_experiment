@@ -3,6 +3,7 @@ import os
 import os.path as op
 import json
 from shutil import copyfile
+from collections import OrderedDict
 
 import sp_experiment
 from sp_experiment.define_ttl_triggers import provide_trigger_dict
@@ -10,7 +11,7 @@ from sp_experiment.define_ttl_triggers import provide_trigger_dict
 
 def make_description_task_json():
     """Provide variable meanings for description task."""
-    events_json_dict = dict()
+    events_json_dict = OrderedDict()
 
     # Start populating the dict
     events_json_dict['onset'] = {
@@ -38,7 +39,7 @@ def make_events_json_dict():
     """Provide a dict to describe all collected variables."""
     # Get the trigger values
     trigger_dict = provide_trigger_dict()
-    events_json_dict = dict()
+    events_json_dict = OrderedDict()
 
     # Start populating the dict
     events_json_dict['onset'] = {
@@ -217,8 +218,9 @@ def make_events_json_dict():
     }
 
     # Keys in levels for "value" are bytes: we need to turn them into integers
-    events_json_dict['value']['Levels'] = {ord(key): val for key, val in
-                                           events_json_dict['value']['Levels'].items()}  # noqa: E501
+    events_json_dict['value']['Levels'] = OrderedDict((ord(key), val)
+                                                       for key, val
+                                                       in events_json_dict['value']['Levels'].items())  # noqa: E501
 
     # return
     return events_json_dict
