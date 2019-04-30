@@ -58,14 +58,15 @@ def calc_bonus_payoff(sub_id, exchange_rate=0.01, lang='en'):
     data_dir = op.join(op.dirname(sp_experiment.__file__), 'experiment_data')
     points = 0
     for condition in ['active', 'passive']:
-        fname = f'sub-{sub_id:02d}_task-sp{condition}_events.tsv'  # noqa: E999
+        fname = 'sub-{:02d}_task-sp{}_events.tsv'.format(sub_id, condition)
         fpath = op.join(data_dir, fname)
         if not op.exists(fpath):
             modstr = 'A' if condition == 'active' else 'B'
             if lang == 'de':
-                bonus = f'Aufgabe "{modstr}" wurde noch nicht durchgeführt.'
+                bonus = ('Aufgabe "{}" wurde noch nicht durchgeführt.'
+                         .format(modstr))
             elif lang == 'en':
-                bonus = f'did not yet complete task "{modstr}".'
+                bonus = 'did not yet complete task "{}".'.format(modstr)
             return bonus
         else:
             df = pd.read_csv(fpath, sep='\t')
@@ -77,9 +78,9 @@ def calc_bonus_payoff(sub_id, exchange_rate=0.01, lang='en'):
 
     money = int(np.ceil(points * exchange_rate))
     if lang == 'de':
-        bonus = f'{money} Euro wurden als Bonus verdient.'
+        bonus = '{} Euro wurden als Bonus verdient.'.format(money)
     elif lang == 'en':
-        bonus = f'earned {money} Euros as bonus.'
+        bonus = 'earned {} Euros as bonus.'.format(money)
     return bonus
 
 

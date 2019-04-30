@@ -89,10 +89,11 @@ def run_descriptions(events_file, monitor='testMonitor', font='', lang='en'):
         prob1_1 = setting[0, 6] * 10
         mag1_2 = setting[0, 5]
         prob1_2 = setting[0, 7] * 10
-        txt_stim.text = (f'{mag0_1} - {prob0_1}%    |    '  # noqa: E999
-                         f'{mag1_1} - {prob1_1}%\n'
-                         f'{mag0_2} - {prob0_2}%    |    '
-                         f'{mag1_2} - {prob1_2}%')
+        txt_stim.text = ''
+        txt_stim.text += '{} - {}%    |    '.format(mag0_1, prob0_1)
+        txt_stim.text += '{} - {}%\n'.format(mag1_1, prob1_1)
+        txt_stim.text += '{} - {}%    |    '.format(mag0_2, prob0_2)
+        txt_stim.text += '{} - {}%'.format(mag1_2, prob1_2)
         txt_stim.draw()
         rt_clock.reset()
         onset = exp_timer.getTime()
