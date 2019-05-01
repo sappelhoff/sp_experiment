@@ -213,10 +213,10 @@ def provide_balancing_selection(df, payoff_settings):
                    ord(trig_dict['trig_right_choice'])]
     trig_out = [ord(trig_dict['trig_show_out_l']),
                 ord(trig_dict['trig_show_out_r'])]
-    actions = df[df['value'].isin(trig_sample)]['action'].to_numpy(copy=True,
-                                                                   dtype=int)
-    outcomes = df[df['value'].isin(trig_out)]['outcome'].to_numpy(copy=True,
-                                                                  dtype=int)
+    actions = (df[df['value'].isin(trig_sample)]['action']
+               .copy().values.astype(int))
+    outcomes = (df[df['value'].isin(trig_out)]['outcome']
+                .copy().values.astype(int))
 
     # combine actions and outcomes to code outcomes on the left with negative
     # sign outcomes on the right with positive sign ... will end up with stim

@@ -74,7 +74,7 @@ def calc_bonus_payoff(sub_id, exchange_rate=0.01, lang='en'):
             trig_dict = provide_trigger_dict()
             trig_fin_out = [ord(trig_dict['trig_show_final_out_l']),
                             ord(trig_dict['trig_show_final_out_r'])]
-            vals = df[df['value'].isin(trig_fin_out)]['outcome'].to_numpy()
+            vals = df[df['value'].isin(trig_fin_out)]['outcome'].values
             points += np.sum(vals)
 
     money = int(np.ceil(points * exchange_rate))
@@ -174,8 +174,8 @@ def remove_error_rows(df, error_trig):
         The original df with the trials containing errors remove
 
     """
-    error_idx = df.index[df['value'] == error_trig].to_numpy()
-    error_trls = df['trial'][error_idx].to_numpy()
+    error_idx = df.index[df['value'] == error_trig].values
+    error_trls = df['trial'][error_idx].values
 
     remove_idx = list()
     for idx, trl in zip(error_idx, error_trls):
