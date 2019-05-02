@@ -3,8 +3,8 @@ channels:
   - defaults
   - conda-forge
 dependencies:
-  - python=3.5
-  - pip<10  # XXX to be fixed
+  - python=3.6
+  - pip=19
   - cython
   - numpy
   - scipy
@@ -23,6 +23,5 @@ dependencies:
   - flake8  # linter
   - flake8-docstrings  # linter
   - pip:
-    - PyPubSub
     - psychopy==3.0.7
-    - tobii_research
+    - tobii-research
