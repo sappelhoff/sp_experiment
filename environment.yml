@@ -25,3 +25,4 @@ dependencies:
   - pip:
     - PyPubSub
     - psychopy==3.0.7
+    - tobii_research

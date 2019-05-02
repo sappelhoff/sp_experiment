@@ -48,6 +48,14 @@ def run_descriptions(events_file, monitor='testMonitor', font='', lang='en'):
     txt_stim.height = 1
     txt_stim.font = font
 
+    # Prepare separation line
+    line_stim = visual.Line(win,
+                            units='deg',
+                            start=(0, -0.5),
+                            end=(0, 0.5),
+                            lineWidth=1,
+                            lineColor=txt_color)
+
     # Start a clock for measuring reaction times
     # NOTE: Will be reset to 0 right before recording a button press
     rt_clock = core.Clock()
@@ -90,10 +98,11 @@ def run_descriptions(events_file, monitor='testMonitor', font='', lang='en'):
         mag1_2 = setting[0, 5]
         prob1_2 = setting[0, 7] * 10
         txt_stim.text = ''
-        txt_stim.text += '{} - {}%    |    '.format(mag0_1, prob0_1)
+        txt_stim.text += '{} - {}%'.format(mag0_1, prob0_1)
         txt_stim.text += '{} - {}%\n'.format(mag1_1, prob1_1)
-        txt_stim.text += '{} - {}%    |    '.format(mag0_2, prob0_2)
+        txt_stim.text += '{} - {}%'.format(mag0_2, prob0_2)
         txt_stim.text += '{} - {}%'.format(mag1_2, prob1_2)
+        line_stim.draw()
         txt_stim.draw()
         rt_clock.reset()
         onset = exp_timer.getTime()
