@@ -27,9 +27,11 @@ and calling `make run`.
 
 First, there will be a general navigation to:
 
-1. run the experiment
-2. do some test trials
-3. calculate bonus money given a participant ID
+1. run the experiment automatically (the full experiment)
+1. run the experiment (if only parts should be run)
+1. do some test trials
+1. calculate bonus money given a participant ID
+1. just show some instructions
 
 For the general flow, select `run_experiment`. This will open a GUI that asks
 for the following information:

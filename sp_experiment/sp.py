@@ -1,19 +1,9 @@
 """Implement the experimental flow of the sampling paradigm.
 
-Version information
--------------------
-0.2.0: Triggers for left and right feedback added.
-
-0.1.0-dev: Experiment with fixed horizon, basically the "final choice" key
-           is not part of the accepted keys anymore and the maximum number of
-           samples is set to the fixed horizon. Participants then sample and
-           upon reaching the horizon and attempting to take one more sample,
-           they are informed that the next sample will be a final choice.
-0.1.0: The experiment with an open horizon
-
 To do
 -----
 - incorporate eye tracking (gaze-contingent fixation cross)
+- incorporate task "from description"
 
 """
 import os

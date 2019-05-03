@@ -20,7 +20,7 @@ setup(name='sp_experiment',
       author_email='stefan.appelhoff@mailbox.org',
       license='BSD 3-Clause License',
       classifiers=[
-          'Programming Language :: Python :: 3.7',
+          'Programming Language :: Python :: 3.6',
           'Operating System :: Microsoft :: Windows',
           'Operating System :: POSIX :: Linux',
           'Intended Audience :: Science/Research',
