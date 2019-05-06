@@ -119,7 +119,7 @@ def get_payoff_settings(ev_diff):
     # outcomes, for example: 6 and 7 versus 8 and 9
     # NOTE: For a low enough `ev_diff` parameter, there should be no "dominated
     #       options" anyways, according to how we computed the settings
-    deletion_mask = np.ones(payoff_settings.shape[0])
+    deletion_mask = np.zeros(payoff_settings.shape[0])
     for idx, row in enumerate(payoff_settings):
         if row[0] > row[4] and row[0] > row[5]:
             if row[1] > row[4] and row[1] > row[5]:
@@ -129,7 +129,7 @@ def get_payoff_settings(ev_diff):
                 deletion_mask[idx] = 1
 
     deletion_mask = deletion_mask == 1
-    payoff_settings = payoff_settings[deletion_mask, :]
+    payoff_settings = payoff_settings[~deletion_mask, :]
 
     return payoff_settings
 
