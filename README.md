@@ -62,6 +62,15 @@ participant 1 HAS to perform the active condition first and the respective data
 needs to be present in `sp_experiment/experiment_data` **as saved by the
 logger**.
 
+# Eyetracking
+
+The script works with a Tobii 4C eyetracker (WINDOWS only).
+You will need the proprietary software "TobiiProEyeTrackerManager" to be
+downloaded from https://www.tobiipro.com/learn-and-support/downloads-pro/
+
+And the Tobii 4C eyetracker with a "Pro license" (needs to be purchased
+separately and then loaded onto the specific eyetracker).
+
 # GIT notes:
 
 You may want to git ignore the data files that are produced by running the

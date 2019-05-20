@@ -23,5 +23,5 @@ dependencies:
   - flake8  # linter
   - flake8-docstrings  # linter
   - pip:
-    - psychopy==3.0.7
+    - psychopy==3.0
     - tobii-research

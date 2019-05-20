@@ -13,6 +13,7 @@ from collections import OrderedDict
 import numpy as np
 import pandas as pd
 from psychopy import visual, event, core, gui
+import tobii_research as tr
 
 from sp_experiment.define_variable_meanings import (make_events_json_dict,
                                                     make_data_dir
@@ -39,6 +40,46 @@ from sp_experiment.define_instructions import (run_instructions,
                                                provide_blockfbk_str,
                                                provide_start_str,
                                                provide_stop_str)
+from sp_experiment.define_eyetracker import find_eyetracker
+
+
+########## global variable functions ####################
+def get_gaze_data_callback(fout_name):
+    """Get a gaze_data_callback for the eyetracker.
+
+    Parameters
+    ----------
+    fout_name : str
+        Filename of the file in which to save gaze data.
+
+    Returns
+    -------
+    gaze_data_callback : callable
+        Function to be used in method call to an eyetracker object in the form
+        `eyetracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, gaze_data_callback, as_dictionary=True)`  # noqa: E501
+
+    """
+    gaze_data_callback = partial(_gaze_data_callback, fout_name=fout_name)
+    return gaze_data_callback
+
+
+def _gaze_data_callback(gaze_data, fout_name):
+    """Get gaze_data from the eyetracker, make available, and save to file."""
+    if not os.path.exists(fout_name):
+        with open(fout_name, 'w') as f:
+            w = csv.DictWriter(f, gaze_data.keys(), delimiter='\t')
+            w.writeheader()
+            w.writerow(gaze_data)
+    else:
+        with open(fout_name, 'a') as f:
+            w = csv.DictWriter(f, gaze_data.keys(), delimiter='\t')
+            w.writerow(gaze_data)
+
+    # Make gazepoint available
+    global gaze
+    gaze = (gaze_data['left_gaze_point_on_display_area'],
+            gaze_data['right_gaze_point_on_display_area'])
+########################
 
 
 def navigation(nav='initial', bonus='', lang='en', yoke_map=None,
@@ -163,7 +204,6 @@ def prep_logging(yoke_map, auto=False, gui_info=None):
     gui_info : dict
         If provided, skip GUI input
 
-
     Returns
     -------
     data_file : str
@@ -268,9 +308,35 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     maxwait : int | float | float('inf')
         Maximum time to wait for a response until time out
 
+    Notes
+    -----
+    If a tobii 4C eyetracker is connected, the gaze data will be collected and
+    saved to a file with an identical name as `data_file` but with the prefix
+    'eyetracking_'.
+
     """
     if data_file is None:
         raise ValueError('Please provide a data_file path.')
+
+    # Prepare eyetracking
+    try:
+        eyetracker = find_eyetracker()
+        track_eyes = True
+    except RuntimeError:
+        print('Not using eyetracking. Did not find a tracker')
+        track_eyes = False
+
+    # Set gaze to center of screen. If we DO track, it's a meaningful starting
+    # point ... else, it's a reasonable mock gaze
+    gaze = (0, 0)
+
+    if track_eyes:
+        print('Using eyetracker. Starting data collection now.')
+        head, tail = op.split()
+        eyetrack_fname = op.join(head, 'eyetracking_' + tail)
+        gaze_data_callback = get_gaze_data_callback(eyetrack_fname)
+        eyetracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, gaze_data_callback,
+                                as_dictionary=True)
 
     # Get PsychoPy stimuli ready
     # ==========================

@@ -12,6 +12,7 @@ from collections import OrderedDict
 
 import numpy as np
 import pandas as pd
+import tobii_research as tr
 
 import sp_experiment
 from sp_experiment.define_payoff_settings import get_random_payoff_dict
@@ -135,7 +136,6 @@ def get_payoff_dict(df, trial):
     ----------
     df : pandas.DataFrame
         Data from where to get the payoff dict
-
     trial : int
         Index into the data for which to fetch the payoff dict
 
@@ -193,7 +193,6 @@ def get_passive_action(df, trial, sample):
     ----------
     df : pandas.DataFrame
         Data to be replayed
-
     trial, sample : int
         Indices into the data for which to fetch actions
 
@@ -221,7 +220,6 @@ def get_passive_outcome(df, trial, sample):
     ----------
     df : pandas.DataFrame
         Data to be replayed
-
     trial, sample : int
         Indices into the data for which to fetch actions
 
@@ -244,7 +242,6 @@ def get_jittered_waitframes(min_wait, max_wait, fps=UTILS_FPS):
     ----------
     min_wait, max_wait :  int
         The minimum and maximum wait time in milliseconds.
-
     fps : int
         Refreshrate of the screen.
 
@@ -272,39 +269,28 @@ def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
     ----------
     fpath : str
         Path to the log file.
-
     onset : float | 'n/a'
         onset of the event in seconds
-
     duration : int | 0
         duration of the event in frames. Will then be converted to seconds by
         dividing with `UTILS_FPS`.
-
     trial : int | 'n/a'
         the number of the trial in which this event happened.
-
     action : int, one of [1, 2, 3] | 'n/a'
         the concrete action that the subject performed for the action type
-
     outcome : int | 'n/a'
         the outcome that the subject received for their action
-
     response_time : float | 'n/a'
         the time it took the subject to respond after the onset of the event
-
     value : byte | 'n/a'
         the TTL trigger value (=EEG marker value) associated with an event
-
     payoff_dict : collections.OrderedDict | 'n/a'
         Dictionary containing the reward distribution setting of the current
         trial.
-
     fps : int
         frames per second used in this experiment
-
     version : str
         version of the experiment used for collecting this data
-
     reset : bool
         if True, discard all prior events in the current trial because of
         an error of the participant. If False, ignore it
@@ -363,7 +349,8 @@ def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
                 mag0_1, prob0_1, mag0_2, prob0_2,
                 mag1_1, prob1_1, mag1_2, prob1_2,
                 version,
-                int(reset)]
+                int(reset),
+                tr.get_system_time_stamp()]
         line = '\t'.join([str(i) for i in data])
         fout.write(line + '\n')
 

@@ -217,6 +217,13 @@ def make_events_json_dict():
         }
     }
 
+    events_json_dict['system_time_stamp'] = {
+        'Description': ('system time in microseconds as measured from an '
+                        'arbitrary starting point. This should be used to'
+                        'connect the event with the eyetracking data.'),
+        'Units': 'microseconds'
+        }
+
     # Keys in levels for "value" are bytes: we need to turn them into integers
     events_json_dict['value']['Levels'] = OrderedDict((ord(key), val)
                                                        for key, val

@@ -157,7 +157,7 @@ def test_log_data():
     with open(fpath, 'r') as fin:
         for i, line in enumerate(fin.readlines()):
             # spot check some known data in the line
-            assert line.strip().split('\t')[-1] == '0'
+            assert line.strip().split('\t')[-2] == '0'
 
         # There should have been only one line
         assert i == 0
