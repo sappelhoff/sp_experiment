@@ -278,8 +278,8 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     suffix replaced by 'eyetracking'. Furthermore, live gaze_data is available
     from the global dictionary `gaze_dict`. Its 'gaze' key links to a value
     `gaze`, which is a tuple of len==2, with:
-    gaze[0] = 'left_gaze_point_on_display_area'
-    gaze[1] = 'right_gaze_point_on_display_area'
+    gaze[0] = 'left_gaze_point_on_display_area' (which is a tuple of len 2)
+    gaze[1] = 'right_gaze_point_on_display_area' (which is a tuple of len 2)
 
     """
     if data_file is None:
@@ -304,15 +304,15 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
         # This callback and the subscription method call will regularly
         # update the gaze_dict['gaze'] tuple with the left and right gaze point
         # However, the initial state should be 0
-        assert gaze_dict['gaze'][0] == 0
-        assert gaze_dict['gaze'][1] == 0
+        assert gaze_dict['gaze'][0][0] == 0
+        assert gaze_dict['gaze'][1][0] == 0
         gaze_data_callback = get_gaze_data_callback(eyetrack_fpath)
         eyetracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, gaze_data_callback,
                                 as_dictionary=True)
         # Collect for a bit and confirm that we truly get the gaze data
         core.wait(1)
-        assert gaze_dict['gaze'][0] != 0
-        assert gaze_dict['gaze'][1] != 0
+        assert gaze_dict['gaze'][0][0] != 0
+        assert gaze_dict['gaze'][1][0] != 0
         assert op.exists(eyetrack_fpath)
 
     # Get PsychoPy stimuli ready

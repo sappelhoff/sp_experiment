@@ -8,11 +8,12 @@ import os
 import csv
 from functools import partial
 
+import numpy as np
 import tobii_research as tr
 
 # global gaze_dict allows us to share the gazepoint of the left and right eye
-# as a tuple. By default it's set to be at (0, 0)
-gaze_dict = {'gaze': (0, 0)}
+# as tuples. By default it's set to be at (0, 0) for each eye
+gaze_dict = {'gaze': ((0, 0), (0, 0))}
 
 
 def find_eyetracker():
@@ -29,6 +30,33 @@ def find_eyetracker():
     print('Serial number: ' + eyetracker.serial_number)
     print('Sampling freq: {}Hz'.format(eyetracker.get_gaze_output_frequency()))
     return eyetracker
+
+
+def convert_gazepoint(gaze_dict):
+    """Convert Tobii system of two eyes to single normed gaze point.
+
+    Parameters
+    ----------
+    gaze : dict
+        Dictionary with key 'gaze' pointing to a value 'gaze', which is a
+        tuple of the left and right eye gaze points in Tobii coordinates.
+
+    Returns
+    -------
+    gazepoint : ndarray
+        X and Y coordinates of the gazepoint in a psychopy window with units
+        of type 'norm'
+
+    """
+    left = np.asarray(gaze_dict['gaze'][0])
+    right = np.asarray(gaze_dict['gaze'][1])
+    # Take mean of left and right eye
+    __ = np.array((left, right)).mean(axis=0)
+    # Reverse y axis
+    __[1] = 1 - __[1]
+    # Scale to range -1 1 for psychopy window unit "norm"
+    gazepoint = np.interp(__, (0, 1), (-1, 1))
+    return gazepoint
 
 
 def get_gaze_data_callback(fout_name):
