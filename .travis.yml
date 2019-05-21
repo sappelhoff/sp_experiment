@@ -1,4 +1,4 @@
-dist: trusty
+dist: xenial
 
 sudo: true
 
@@ -8,6 +8,12 @@ env:
     - PYTHON_VERSION=3.6
 
 before_install:
+    - sudo apt-get update
+    - a=$(ldd --version)
+    - echo $a
+    - apt-get install libc6
+    - a=$(ldd --version)
+    - echo $a
     - wget -q http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
     - chmod +x miniconda.sh
     - ./miniconda.sh -b -p /home/travis/miniconda
