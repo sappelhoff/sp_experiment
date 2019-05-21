@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/sappelhoff/sp_experiment.svg?branch=master)](https://travis-ci.org/sappelhoff/sp_experiment)
+[![CircleCI](https://circleci.com/gh/sappelhoff/sp_experiment.svg?style=svg)](https://circleci.com/gh/sappelhoff/sp_experiment)
 [![codecov](https://codecov.io/gh/sappelhoff/sp_experiment/branch/master/graph/badge.svg)](https://codecov.io/gh/sappelhoff/sp_experiment)
 
 # Implementing the Sampling Paradigm in PsychoPy

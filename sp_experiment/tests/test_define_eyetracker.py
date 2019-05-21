@@ -21,51 +21,13 @@ I'd be very happy to hear about a potential solution.
 """
 import os
 import pytest
-from functools import partial
-import csv
 
 import numpy as np
 import pandas as pd
 
-from sp_experiment.define_eyetracker import find_eyetracker
-
-########## global variable functions ####################
-def get_gaze_data_callback(fout_name):
-    """Get a gaze_data_callback for the eyetracker.
-
-    Parameters
-    ----------
-    fout_name : str
-        Filename of the file in which to save gaze data.
-
-    Returns
-    -------
-    gaze_data_callback : callable
-        Function to be used in method call to an eyetracker object in the form
-        `eyetracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, gaze_data_callback, as_dictionary=True)`  # noqa: E501
-
-    """
-    gaze_data_callback = partial(_gaze_data_callback, fout_name=fout_name)
-    return gaze_data_callback
-
-
-def _gaze_data_callback(gaze_data, fout_name):
-    """Get gaze_data from the eyetracker, make available, and save to file."""
-    if not os.path.exists(fout_name):
-        with open(fout_name, 'w') as f:
-            w = csv.DictWriter(f, gaze_data.keys(), delimiter='\t')
-            w.writeheader()
-            w.writerow(gaze_data)
-    else:
-        with open(fout_name, 'a') as f:
-            w = csv.DictWriter(f, gaze_data.keys(), delimiter='\t')
-            w.writerow(gaze_data)
-
-    # Make gazepoint available
-    global gaze
-    gaze = (gaze_data['left_gaze_point_on_display_area'],
-            gaze_data['right_gaze_point_on_display_area'])
-########################
+from sp_experiment.define_eyetracker import (find_eyetracker,
+                                             get_gaze_data_callback,
+                                             gaze_dict)
 
 
 def test_find_eyetracker():
@@ -91,15 +53,15 @@ def test_get_gaze_data_callback():
                  'right_gaze_point_on_display_area': 0.7}
     gaze_data_callback(gaze_data)
 
-    assert gaze[0] == 0.3
-    assert gaze[1] == 0.7
+    assert gaze_dict['gaze'][0] == 0.3
+    assert gaze_dict['gaze'][1] == 0.7
 
     gaze_data = {'left_gaze_point_on_display_area': 0.4,
                  'right_gaze_point_on_display_area': 0.6}
     gaze_data_callback(gaze_data)
 
-    assert gaze[0] == 0.4
-    assert gaze[1] == 0.6
+    assert gaze_dict['gaze'][0] == 0.4
+    assert gaze_dict['gaze'][1] == 0.6
 
     # Check that logging worked as well
     df = pd.read_csv(fname, sep='\t')
