@@ -274,11 +274,12 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     Notes
     -----
     If a tobii 4C eyetracker is connected, the gaze data will be collected and
-    saved to a file with an identical name as `data_file` but with the prefix
-    'eyetracking_'. Furthermore, live gaze_data is available from the global
-    dictionary `gaze_dict`. Its 'gaze' key links to a value `gaze`, which is a
-    tuple of len==2, with gaze[0]=left_gaze_point_on_display_area and
-    gaze[1]=right_gaze_point_on_display_area
+    saved to a file with an identical name as `data_file` but with the 'events'
+    suffix replaced by 'eyetracking'. Furthermore, live gaze_data is available
+    from the global dictionary `gaze_dict`. Its 'gaze' key links to a value
+    `gaze`, which is a tuple of len==2, with:
+    gaze[0] = 'left_gaze_point_on_display_area'
+    gaze[1] = 'right_gaze_point_on_display_area'
 
     """
     if data_file is None:
@@ -294,14 +295,15 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
 
     if track_eyes:
         print('Using eyetracker. Starting data collection now.')
-        head, tail = op.split()
-        eyetrack_fname = op.join(head, 'eyetracking_' + tail)
+        head, tail = op.split(data_file)
+        eyetrack_fname = tail.replace('events', 'eyetracking')
+        eyetrack_fpath = op.join(head, eyetrack_fname)
         # This callback and the subscription method call will regularly
         # update the gaze_dict['gaze'] tuple with the left and right gaze point
         # However, the initial state should be 0
         assert gaze_dict['gaze'][0] == 0
         assert gaze_dict['gaze'][1] == 0
-        gaze_data_callback = get_gaze_data_callback(eyetrack_fname)
+        gaze_data_callback = get_gaze_data_callback(eyetrack_fpath)
         eyetracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, gaze_data_callback,
                                 as_dictionary=True)
         # Wait a bit and confirm that we truly get the gaze data
