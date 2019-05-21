@@ -9,7 +9,7 @@ import pandas as pd
 from sp_experiment.define_eyetracker import (find_eyetracker,
                                              get_gaze_data_callback,
                                              gaze_dict,
-                                             convert_gazepoint)
+                                             get_normed_gazepoint)
 
 
 def test_find_eyetracker():
@@ -19,23 +19,23 @@ def test_find_eyetracker():
         find_eyetracker()
 
 
-def test_convert_gazepoint():
+def test_get_normed_gazepoint():
     """Test gazepoint conversion."""
     # Tobii has a system with (0, 0) in upper left
     gaze_dict = {'gaze': ((0, 0), (0, 0))}
-    gazepoint = convert_gazepoint(gaze_dict)
+    gazepoint = get_normed_gazepoint(gaze_dict)
     np.testing.assert_array_equal(gazepoint, np.array((-1, 1)))
 
     gaze_dict = {'gaze': ((0, 1), (0, 1))}
-    gazepoint = convert_gazepoint(gaze_dict)
+    gazepoint = get_normed_gazepoint(gaze_dict)
     np.testing.assert_array_equal(gazepoint, np.array((-1, -1)))
 
     gaze_dict = {'gaze': ((1, 1), (1, 1))}
-    gazepoint = convert_gazepoint(gaze_dict)
+    gazepoint = get_normed_gazepoint(gaze_dict)
     np.testing.assert_array_equal(gazepoint, np.array((1, -1)))
 
     gaze_dict = {'gaze': ((1, 0), (1, 0))}
-    gazepoint = convert_gazepoint(gaze_dict)
+    gazepoint = get_normed_gazepoint(gaze_dict)
     np.testing.assert_array_equal(gazepoint, np.array((1, 1)))
 
 

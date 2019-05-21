@@ -32,7 +32,7 @@ def find_eyetracker():
     return eyetracker
 
 
-def convert_gazepoint(gaze_dict):
+def get_normed_gazepoint(gaze_dict):
     """Convert Tobii system of two eyes to single normed gaze point.
 
     Parameters

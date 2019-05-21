@@ -42,7 +42,8 @@ from sp_experiment.define_instructions import (run_instructions,
                                                provide_stop_str)
 from sp_experiment.define_eyetracker import (gaze_dict,
                                              find_eyetracker,
-                                             get_gaze_data_callback)
+                                             get_gaze_data_callback,
+                                             get_normed_gazepoint)
 
 
 def navigation(nav='initial', bonus='', lang='en', yoke_map=None,
