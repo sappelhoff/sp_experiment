@@ -25,7 +25,7 @@ steps:
 
 - script: |
     call activate testEnv
-    pytest --cov=./sp_experiment --verbose
+    pytest --cov=./sp_experiment --cov-report=xml --verbose
   displayName: Testing and coverage via pytest / pytest --cov
 
 - script: |
