@@ -296,7 +296,10 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     if track_eyes:
         print('Using eyetracker. Starting data collection now.')
         head, tail = op.split(data_file)
-        eyetrack_fname = tail.replace('events', 'eyetracking')
+        if 'events' in tail:
+            eyetrack_fname = tail.replace('events', 'eyetracking')
+        else:
+            eyetrack_fname = 'eyetracking' + tail
         eyetrack_fpath = op.join(head, eyetrack_fname)
         # This callback and the subscription method call will regularly
         # update the gaze_dict['gaze'] tuple with the left and right gaze point
@@ -771,6 +774,10 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     log_data(data_file, onset=exp_timer.getTime(),
              value=trig_dict['trig_end_experiment'])
     event.waitKeys()
+
+    # Stop recording eye data and reset gaze to default
+    eyetracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, gaze_data_callback)
+    gaze_dict['gaze'] = (0, 0)
     win.close()
 
 
@@ -832,8 +839,12 @@ def run_test_trials(monitor, condition, lang, max_ntrls, max_nsamples,
                  lang=lang,
                  maxwait=maxwait)
 
-    # Remove the test data
+    # Remove the test data and potential eyetracking test data
     os.remove(data_file)
+    head, tail = op.split(data_file)
+    eyetrack_fpath = op.join(head, 'eyetracking' + tail)
+    if op.exists(eyetrack_fpath):
+        os.remove(eyetrack_fpath)
 
 
 if __name__ == '__main__':
