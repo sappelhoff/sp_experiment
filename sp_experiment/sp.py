@@ -448,6 +448,35 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                 log_data(data_file, onset=exp_timer.getTime(),
                          trial=current_ntrls,
                          value=trig_dict['trig_new_trl'], duration=frames)
+            # If we do eyetracking, make gaze-contingent fixation stim
+            if track_eyes:
+                fix_duration = frames - 1  # for how long to fixate on fix_stim
+                progress = 0  # counter for tracking progress
+                tolerance_norm = 0.5  # how close to fix_stim must the gaze be?
+                radius_outer_deg = 5  # noqa: E501 arbitrarily picked radius of an outer circle that will "shrink"
+                radius_inner_deg = 0.6  # radius of fix_stim
+                circle = visual.Circle(win, units='deg',
+                                       radius=radius_outer_deg, edges=128)
+
+                while True:
+                    # get current gazepoint and calculate distance to center
+                    gazepoint = get_normed_gazepoint(gaze_dict)
+                    dist_norm = np.linalg.norm(gazepoint)
+                    # If gaze is close enough, increment progress counter and
+                    # shrink focus circle until it merges with fix_stim
+                    if dist_norm <= tolerance_norm:
+                        progress += 1
+                        circle.setRadius(radius_outer_deg - ((radius_outer_deg - radius_inner_deg) / (fix_duration/progress)))  # noqa: E501
+                    else:
+                        # If gaze is too far off, reset the situation
+                        circle.radius = radius_outer_deg
+                        progress = 0
+
+                    circle.draw()
+                    win.flip()
+                    if progress >= fix_duration:
+                        break  # break from gaze-contingent fixstim
+                break  # break from non-track-eyes loop
 
         # Within this trial, allow sampling
         current_nsamples = 0
