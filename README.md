@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/sappelhoff/sp_experiment.svg?branch=master)](https://travis-ci.org/sappelhoff/sp_experiment)
-[![CircleCI](https://circleci.com/gh/sappelhoff/sp_experiment.svg?style=svg)](https://circleci.com/gh/sappelhoff/sp_experiment)
 [![Build Status](https://dev.azure.com/sappelhoff/sp_experiment/_apis/build/status/sappelhoff.sp_experiment?branchName=master)](https://dev.azure.com/sappelhoff/sp_experiment/_build/latest?definitionId=1&branchName=master)
 [![codecov](https://codecov.io/gh/sappelhoff/sp_experiment/branch/master/graph/badge.svg)](https://codecov.io/gh/sappelhoff/sp_experiment)
 
@@ -14,6 +12,8 @@ The sampling paradigm has close resemblance to the *Pure Exploration* setting
 of the multi-armed bandit task.
 
 # Installation
+
+This package is intended and tested to run on Windows.
 
 1. It is recommended to use the Anaconda distribution, see the
 [installation instructions](http://docs.continuum.io/anaconda/install/)

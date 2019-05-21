@@ -22,7 +22,6 @@ setup(name='sp_experiment',
       classifiers=[
           'Programming Language :: Python :: 3.6',
           'Operating System :: Microsoft :: Windows',
-          'Operating System :: POSIX :: Linux',
           'Intended Audience :: Science/Research',
       ],
       packages=find_packages(),
