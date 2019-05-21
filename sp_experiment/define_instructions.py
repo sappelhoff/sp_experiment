@@ -105,7 +105,7 @@ def run_instructions(kind, monitor='testMonitor', font='', lang='en',
             core.wait(2)  # force some wait time
             key = event.waitKeys()
             if key[0] == 'x':
-                core.quit()
+                break
 
     elif kind == 'passive':
         texts = _provide_passive_instr_strs(lang, max_ntrls, max_nsamples,
@@ -141,7 +141,7 @@ def run_instructions(kind, monitor='testMonitor', font='', lang='en',
             core.wait(2)  # force some wait time
             key = event.waitKeys()
             if key[0] == 'x':
-                core.quit()
+                break
     win.close()
 
 

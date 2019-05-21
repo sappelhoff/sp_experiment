@@ -306,10 +306,11 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
         gaze_data_callback = get_gaze_data_callback(eyetrack_fpath)
         eyetracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, gaze_data_callback,
                                 as_dictionary=True)
-        # Wait a bit and confirm that we truly get the gaze data
-        core.wait(0.2)
+        # Collect for a bit and confirm that we truly get the gaze data
+        core.wait(1)
         assert gaze_dict['gaze'][0] != 0
         assert gaze_dict['gaze'][1] != 0
+        assert op.exists(eyetrack_fpath)
 
     # Get PsychoPy stimuli ready
     # ==========================
