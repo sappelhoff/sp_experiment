@@ -449,11 +449,18 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                          trial=current_ntrls,
                          value=trig_dict['trig_new_trl'], duration=frames)
             # If we do eyetracking, make gaze-contingent fixation stim
+            # That is: Draw a circle around the fixation stim and continuously
+            # shrink the radius of the circle as long as the gaze rests in some
+            # tolerance distance of the fixation stim. Once the circle radius
+            # is the same size as the fixation stim, consider the gaze
+            # "captured" by the fication stim and move on. Whenever the gaze
+            # wanders elsewhere, reset the radius of the outer circle and start
+            # afresh
             if track_eyes:
                 fix_duration = frames - 1  # for how long to fixate on fix_stim
                 progress = 0  # counter for tracking progress
                 tolerance_norm = 0.5  # how close to fix_stim must the gaze be?
-                radius_outer_deg = 5  # noqa: E501 arbitrarily picked radius of an outer circle that will "shrink"
+                radius_outer_deg = 5  # arbitrarily picked
                 radius_inner_deg = 0.6  # radius of fix_stim
                 circle = visual.Circle(win, units='deg',
                                        radius=radius_outer_deg, edges=128)
