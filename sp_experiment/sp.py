@@ -2,7 +2,6 @@
 
 To do
 -----
-- incorporate eye tracking (gaze-contingent fixation cross)
 - incorporate task "from description"
 
 """
@@ -13,6 +12,8 @@ from collections import OrderedDict
 import numpy as np
 import pandas as pd
 from psychopy import visual, event, core, gui
+from psychopy.tools import monitorunittools
+import psychopy.monitors
 import tobii_research as tr
 
 from sp_experiment.define_variable_meanings import (make_events_json_dict,
@@ -287,6 +288,9 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
         raise ValueError('Please provide a data_file path.')
 
     # Prepare eyetracking
+    gaze_tolerance = 0.1  # in psychopy norm units: the window where gaze is OK
+    gaze__error_count = 0  # a counter for fixation errors
+    gaze_error_thresh = 4  # after how many fixation errors to cancel the trial
     try:
         eyetracker = find_eyetracker()
         track_eyes = True
@@ -449,8 +453,9 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
         # if we DO NOT do eyetracking, we just shrink the circle irrespective
         # of the gaze
         progress = 0  # counter for tracking progress
-        tolerance_norm = 0.5  # how close to fix_stim must the gaze be?
-        radius_outer_deg = 5  # arbitrarily picked
+        radius_outer_deg = monitorunittools.pix2deg(gaze_tolerance *
+                                                    (win.size[0] / 2),
+                                                    monitor=psychopy.monitors.Monitor(monitor))  # noqa: E501
         radius_inner_deg = 0.6  # radius of fix_stim
         circle = visual.Circle(win, units='deg', radius=radius_outer_deg,
                                edges=128)
@@ -475,7 +480,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                     dist_norm = np.linalg.norm(gazepoint)
                     # If gaze is close enough, increment progress counter and
                     # shrink focus circle until it merges with fix_stim
-                    if dist_norm <= tolerance_norm:
+                    if dist_norm <= gaze_tolerance:
                         progress += 1
                         circle.setRadius(radius_outer_deg - ((radius_outer_deg - radius_inner_deg) / (frames/progress)))  # noqa: E501
                     else:
@@ -625,6 +630,31 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                                  trial=current_ntrls, duration=frames,
                                  outcome=outcome,
                                  value=trig_val_show)
+
+                # Gaze Fixation test
+                gazepoint = get_normed_gazepoint(gaze_dict)
+                dist_norm = np.linalg.norm(gazepoint)
+
+                # Is gaze not within our tolerance?
+                if dist_norm >= gaze_tolerance:
+                    gaze__error_count += 1
+                    if gaze__error_count > gaze_error_thresh:
+                        gaze__error_count = 0
+                        set_fixstim_color(inner, color_error)
+                        win.callOnFlip(ser.write, trig_dict['trig_error'])
+                        frames = get_jittered_waitframes(*tdisplay_ms)
+                        for frame in range(frames):
+                            win.flip()
+                            if frame == 0:
+                                # Log an event that we have to disregard all
+                                # prior events in this trial
+                                log_data(data_file, onset=exp_timer.getTime(),
+                                         trial=current_ntrls,
+                                         value=trig_dict['trig_error'],
+                                         duration=frames, reset=True)
+                        # start a new trial without incrementing the trial
+                        # counter
+                        break
 
             # XXX: Following line could be a simple "else" to always trigger
             # if action == 2 or current_nsamples > max_nsamples
