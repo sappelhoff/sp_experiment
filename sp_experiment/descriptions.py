@@ -12,7 +12,9 @@ from psychopy import visual, event, core
 import sp_experiment
 from sp_experiment.define_variable_meanings import make_description_task_json
 from sp_experiment.define_instructions import instruct_str_descriptions
-from sp_experiment.utils import _get_payoff_setting, KEYLIST_DESCRIPTION
+from sp_experiment.utils import (_get_payoff_setting,
+                                 KEYLIST_DESCRIPTION,
+                                 get_fixation_stim)
 
 
 def run_descriptions(events_file, monitor='testMonitor', font='', lang='en'):
@@ -39,7 +41,7 @@ def run_descriptions(events_file, monitor='testMonitor', font='', lang='en'):
     # Hide the cursor
     win.mouseVisible = False
 
-    # prepare text object
+    # prepare text objects
     txt_color = (0.45, 0.45, 0.45)
     txt_stim = visual.TextStim(win,
                                color=txt_color,
@@ -48,13 +50,23 @@ def run_descriptions(events_file, monitor='testMonitor', font='', lang='en'):
     txt_stim.height = 1
     txt_stim.font = font
 
-    # Prepare separation line
-    line_stim = visual.Line(win,
-                            units='deg',
-                            start=(0, -0.5),
-                            end=(0, 0.5),
-                            lineWidth=1,
-                            lineColor=txt_color)
+    txt_left = visual.TextStim(win,
+                               color=txt_color,
+                               units='deg',
+                               pos=(-5, 0))
+    txt_left.height = 1
+    txt_left.font = font
+
+    txt_right = visual.TextStim(win,
+                                color=txt_color,
+                                units='deg',
+                                pos=(5, 0))
+    txt_right.height = 1
+    txt_right.font = font
+
+    # Get the objects for the fixation stim
+    outer, inner, horz, vert = get_fixation_stim(win, stim_color=txt_color)
+    fixation_stim_parts = [outer, horz, vert, inner]
 
     # Start a clock for measuring reaction times
     # NOTE: Will be reset to 0 right before recording a button press
@@ -85,6 +97,10 @@ def run_descriptions(events_file, monitor='testMonitor', font='', lang='en'):
     # Now collect the data
     ntrials = int(df['trial'].max())+1
     for trial in range(ntrials):
+
+        [stim.setAutoDraw(True) for stim in fixation_stim_parts]
+        # set_fixstim_color(inner, color_newtrl)
+
         setting = _get_payoff_setting(df, trial)
         setting[0, [2, 3, 6, 7]] *= 10  # multiply probs to be in percent
         setting = setting.astype(int)
@@ -97,13 +113,13 @@ def run_descriptions(events_file, monitor='testMonitor', font='', lang='en'):
         prob1_1 = setting[0, 6] * 10
         mag1_2 = setting[0, 5]
         prob1_2 = setting[0, 7] * 10
-        txt_stim.text = ''
-        txt_stim.text += '{} - {}%'.format(mag0_1, prob0_1)
-        txt_stim.text += '{} - {}%\n'.format(mag1_1, prob1_1)
-        txt_stim.text += '{} - {}%'.format(mag0_2, prob0_2)
-        txt_stim.text += '{} - {}%'.format(mag1_2, prob1_2)
-        line_stim.draw()
-        txt_stim.draw()
+        txt_left.text = '{} - {}%\n{} - {}%'.format(mag0_1, prob0_1,
+                                                    mag0_2, prob0_2)
+        txt_right.text = '{} - {}%\n{} - {}%'.format(mag1_1, prob1_1,
+                                                     mag1_2, prob1_2)
+
+        txt_left.draw()
+        txt_right.draw()
         rt_clock.reset()
         onset = exp_timer.getTime()
         win.flip()
