@@ -25,5 +25,5 @@ dependencies:
   - pip:
     - psychopy==3.0
     - tobii-research
-    - pytest-sugar
-    - pytest-faulthandler
+    - pytest-sugar  # testing
+    - pytest-faulthandler  # testing

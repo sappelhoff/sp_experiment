@@ -23,9 +23,7 @@ This package is intended and tested to run on Windows.
 
 # Usage
 
-You can start the experiment by calling `python sp_experiment/sp.py`. Or by
-making use of the [`Makefile`](https://github.com/sappelhoff/sp_experiment/blob/master/Makefile)
-and calling `make run`.
+You can start the experiment by calling `python sp_experiment/sp.py`.
 
 First, there will be a general navigation to:
 
@@ -63,6 +61,10 @@ replay of the first participant's active condition. Note that for this to work,
 participant 1 HAS to perform the active condition first and the respective data
 needs to be present in `sp_experiment/experiment_data` **as saved by the
 logger**.
+
+## Makefile
+There is also a [`Makefile`](https://github.com/sappelhoff/sp_experiment/blob/master/Makefile)
+to simplify several tasks. To make use of it under Windows, install [GNU Make](https://chocolatey.org/packages/make))
 
 # Eyetracking
 
