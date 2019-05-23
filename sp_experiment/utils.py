@@ -102,18 +102,65 @@ def get_final_choice_outcomes(df):
     return outcomes
 
 
-def _get_payoff_setting(df, trial):
-    """Get the payoff setting."""
-    # get the setting and reformat it to fit with internal usage in
-    # `define_payoff_settings.py`
-    # NOTE: always take the last available setting, because the previous ones
-    #       (if there are any) have been dropped due to an error (if there was
-    #       one)
+def _get_payoff_setting(df, trial, experienced=False):
+    """Get the payoff setting.
+
+    Get the setting and reformat it to fit with internal usage in
+    `define_payoff_settings.py`. That is, the columns are organized as:
+    outcome 1.1, outcome 1.2, probability 1.1, probability 1.2, outcome 2.1,
+    outcome 2.2, probability 2.1, probability 2.2.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+    trial : int
+    experienced : bool
+        if True, get the experienced payoff_setting instead of the true one
+
+    Notes
+    -----
+    Always take the last available setting, because the previous ones (if there
+    are any) have been dropped due to an error (if there was one)
+
+    """
+    trigger_dict = provide_trigger_dict()
+    error_trig = ord(trigger_dict['trig_error'])
+    df = remove_error_rows(df, error_trig)
     tmp_df = df[(df['trial'] == trial)]
-    tmp_df = tmp_df.loc[:,  'mag0_1':'prob1_2'].dropna()
-    wrong_format_setting = tmp_df.iloc[-1].tolist()
+    if not experienced:
+        tmp_df = tmp_df.loc[:,  'mag0_1':'prob1_2'].dropna()
+        # wrong format is mag, prob, mag, prob, ...
+        wrong_format_setting = tmp_df.iloc[-1].tolist()
+
+    elif experienced:
+        # outcome is always 2 events after sample action
+        sample_idx = tmp_df[tmp_df['action_type'] == 'sample'].index
+        outcome_idx = sample_idx + 2
+        sides = tmp_df.loc[sample_idx, 'action'].values
+        outcomes = tmp_df.loc[outcome_idx, 'outcome'].values
+
+        # experienced expected values for left and right option
+        payoff_dict = {side: list(outcomes[sides == side]) for side in [0, 1]}
+
+        # Calculate probabilities for each outcome
+        wrong_format_setting = list()
+        for side in [0, 1]:
+            distr = payoff_dict[side]
+            outcomes = np.unique(distr)
+            # Special case if only one outcome sampled: add a 99 to be replaced
+            if len(outcomes) < 2:
+                outcomes = np.append(outcomes, np.array(99))
+            # Go though outcomes
+            for out_i in outcomes:
+                wrong_format_setting.append(out_i)
+                # Round it to one decimal
+                p = np.around(distr.count(out_i) / len(distr), 1)
+                wrong_format_setting.append(p)
+
+    # Correct format from mag, prob, mag, prob ... to mag, mag, prob, prob ...
     setting = np.array(wrong_format_setting)[[0, 2, 1, 3, 4, 6, 5, 7]]
     setting = np.expand_dims(setting, 0)
+
     # quick sanity check that we have proper roundings, for example 0.3 instead
     # of 0.29999999 ... 1., 2., 3., etc. would be fine (as magnitudes)
     for entry in setting[0]:
