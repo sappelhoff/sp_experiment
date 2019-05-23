@@ -17,6 +17,7 @@ GAZE_ERROR_THRESH = 4  # after how many fixation errors to cancel the trial
 
 # Experiment settings
 txt_color = (0.45, 0.45, 0.45)
+circ_color = (-0.45, -0.45, -0.45)
 
 tfeeddelay_ms = (200, 400)  # time for delaying feedback after an action
 toutmask_ms = (800, 800)  # time for masking an outcome ("show blob")

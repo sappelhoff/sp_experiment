@@ -20,6 +20,7 @@ from sp_experiment.define_settings import (KEYLIST_SAMPLES,
                                            GAZE_TOLERANCE,
                                            GAZE_ERROR_THRESH,
                                            txt_color,
+                                           circ_color,
                                            tfeeddelay_ms,
                                            toutmask_ms,
                                            toutshow_ms,
@@ -361,7 +362,6 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                          'in define_settings.py')
 
     # Mask and text for outcomes, properties will be set and reset below
-    circ_color = (-0.45, -0.45, -0.45)
     circ_stim = visual.Circle(win,
                               pos=(0, 0),
                               units='deg',
