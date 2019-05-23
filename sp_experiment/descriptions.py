@@ -9,6 +9,7 @@ import os.path as op
 import pandas as pd
 import numpy as np
 from psychopy import visual, event, core
+import tobii_research as tr
 
 import sp_experiment
 from sp_experiment.define_ttl_triggers import provide_trigger_dict
@@ -21,6 +22,10 @@ from sp_experiment.utils import (_get_payoff_setting,
                                  Fake_serial,
                                  get_jittered_waitframes,
                                  log_data)
+from sp_experiment.define_eyetracker import (find_eyetracker,
+                                             get_gaze_data_callback,
+                                             gaze_dict,
+                                             )
 from sp_experiment.define_settings import (KEYLIST_DESCRIPTION,
                                            EXPECTED_FPS,
                                            txt_color,
@@ -58,6 +63,49 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
         Path to the output data file
 
     """
+    # prepare logging and read in present data
+    df = pd.read_csv(events_file, sep='\t')
+    head, tail = op.split(events_file)
+    sub_part = tail.split('_task')[0]
+    fname = sub_part + '_task-description_events.tsv'
+    data_file = op.join(head, fname)
+
+    variable_meanings_dict = make_description_task_json()
+    variables = list(variable_meanings_dict.keys())
+    with open(data_file, 'w') as fout:
+        header = '\t'.join(variables)
+        fout.write(header + '\n')
+
+    # Prepare eyetracking
+    try:
+        eyetracker = find_eyetracker()
+        track_eyes = True
+    except RuntimeError:
+        print('Not using eyetracking. Did not find a tracker')
+        track_eyes = False
+
+    if track_eyes:
+        print('Using eyetracker. Starting data collection now.')
+        head, tail = op.split(data_file)
+        if 'events' in tail:
+            eyetrack_fname = tail.replace('events', 'eyetracking')
+        else:
+            eyetrack_fname = 'eyetracking' + tail
+        eyetrack_fpath = op.join(head, eyetrack_fname)
+        # This callback and the subscription method call will regularly
+        # update the gaze_dict['gaze'] tuple with the left and right gaze point
+        # However, the initial state should be 0
+        assert gaze_dict['gaze'][0][0] == 0
+        assert gaze_dict['gaze'][1][0] == 0
+        gaze_data_callback = get_gaze_data_callback(eyetrack_fpath)
+        eyetracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, gaze_data_callback,
+                                as_dictionary=True)
+        # Collect for a bit and confirm that we truly get the gaze data
+        core.wait(1)
+        assert gaze_dict['gaze'][0][0] != 0
+        assert gaze_dict['gaze'][1][0] != 0
+        assert op.exists(eyetrack_fpath)
+
     # Trigger meanings and values
     trig_dict = provide_trigger_dict()
 
@@ -123,19 +171,6 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
     txt_stim.draw()
     win.flip()
     event.waitKeys()
-
-    # prepare logging and read in present data
-    df = pd.read_csv(events_file, sep='\t')
-    head, tail = op.split(events_file)
-    sub_part = tail.split('_task')[0]
-    fname = sub_part + '_task-description_events.tsv'
-    data_file = op.join(head, fname)
-
-    variable_meanings_dict = make_description_task_json()
-    variables = list(variable_meanings_dict.keys())
-    with open(data_file, 'w') as fout:
-        header = '\t'.join(variables)
-        fout.write(header + '\n')
 
     # set height for stimuli to be shown below
     txt_stim.height = 4
