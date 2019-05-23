@@ -518,27 +518,23 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
             current_nsamples += 1
             action = KEYLIST_SAMPLES.index(key)
             if action == 0 and current_nsamples <= max_nsamples:
-                ser.write(trig_dict['trig_left_choice'])
                 value = trig_dict['trig_left_choice']
             elif action == 1 and current_nsamples <= max_nsamples:
-                ser.write(trig_dict['trig_right_choice'])
                 value = trig_dict['trig_right_choice']
             elif action == 2 and current_nsamples > 1:
-                ser.write(trig_dict['trig_final_choice'])
                 value = trig_dict['trig_final_choice']
             elif action in [0, 1] and current_nsamples > max_nsamples:
                 # sampling too much, final choice is being forced
-                ser.write(trig_dict['trig_forced_stop'])
                 value = trig_dict['trig_forced_stop']
                 action = 5 if action == 0 else 6
             elif action == 2 and current_nsamples <= 1:
                 # premature final choice. will lead to error
-                ser.write(trig_dict['trig_premature_stop'])
                 value = trig_dict['trig_premature_stop']
                 action = 7
             elif action == 3:
                 core.quit()
 
+            ser.write(value)
             log_data(data_file, onset=exp_timer.getTime(), trial=current_ntrls,
                      action=action, response_time=rt, value=value)
 
@@ -711,16 +707,15 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                 key, rt = keys_rts[0]
                 action = KEYLIST_FINCHOICE.index(key)
                 if action == 0:
-                    ser.write(trig_dict['trig_left_final_choice'])
                     value = trig_dict['trig_left_final_choice']
                 elif action == 1:
-                    ser.write(trig_dict['trig_right_final_choice'])
                     value = trig_dict['trig_right_final_choice']
                 elif action == 2:
                     core.quit()
 
                 # NOTE: add 3 to "action" to distinguish final choice from
                 # sampling
+                ser.write(value)
                 log_data(data_file, onset=exp_timer.getTime(),
                          trial=current_ntrls, action=action+3,
                          response_time=rt, value=value)
