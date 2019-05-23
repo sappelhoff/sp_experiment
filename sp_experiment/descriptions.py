@@ -10,17 +10,27 @@ import pandas as pd
 from psychopy import visual, event, core
 
 import sp_experiment
+from sp_experiment.define_ttl_triggers import provide_trigger_dict
 from sp_experiment.define_variable_meanings import make_description_task_json
 from sp_experiment.define_instructions import instruct_str_descriptions
 from sp_experiment.utils import (_get_payoff_setting,
-                                 get_fixation_stim)
+                                 get_fixation_stim,
+                                 set_fixstim_color,
+                                 Fake_serial,
+                                 get_jittered_waitframes,
+                                 log_data)
 from sp_experiment.define_settings import (KEYLIST_DESCRIPTION,
                                            EXPECTED_FPS,
-                                           txt_color
+                                           txt_color,
+                                           color_newtrl,
+                                           color_standard,
+                                           ser,
+                                           tdisplay_ms
                                            )
 
 
-def run_descriptions(events_file, monitor='testMonitor', font='', lang='de'):
+def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
+                     font='', lang='de'):
     """Run decisions from descriptions.
 
     Parameters
@@ -28,13 +38,20 @@ def run_descriptions(events_file, monitor='testMonitor', font='', lang='de'):
     events_file : str
         Path to sub-{id:02d}_task-spactive_events.tsv file for
         a given subject id.
-
+    monitor : str
+        Monitor definitionto be used, see define_monitors.py
+    ser : str | instance of Fake_serial. Defaults to None.
+        Either string address to a serial port for sending triggers, or
+        a Fake_serial object, see utils.py. Defaults to Fake_serial.
     Returns
     -------
     data_file : str
         Path to the output data file
 
     """
+    # Trigger meanings and values
+    trig_dict = provide_trigger_dict()
+
     # Define monitor specific window object
     win = visual.Window(color=(0, 0, 0),  # Background color: RGB [-1,1]
                         fullscr=True,  # Fullscreen for better timing
@@ -106,9 +123,20 @@ def run_descriptions(events_file, monitor='testMonitor', font='', lang='de'):
     ntrials = int(df['trial'].max())+1
     for trial in range(ntrials):
 
+        # Start new trial
         [stim.setAutoDraw(True) for stim in fixation_stim_parts]
-        # set_fixstim_color(inner, color_newtrl)
+        set_fixstim_color(inner, color_newtrl)
+        win.callOnFlip(ser.write, trig_dict['trig_new_trl'])
+        frames = get_jittered_waitframes(*tdisplay_ms)
+        for frame in range(frames):
+            win.flip()
+            if frame == 0:
+                log_data(data_file, onset=exp_timer.getTime(),
+                         trial=trial,
+                         value=trig_dict['trig_new_trl'], duration=frames)
 
+        # Present lotteries
+        set_fixstim_color(inner, color_standard)
         setting = _get_payoff_setting(df, trial)
         setting[0, [2, 3, 6, 7]] *= 10  # multiply probs to be in percent
         setting = setting.astype(int)
@@ -150,6 +178,10 @@ def run_descriptions(events_file, monitor='testMonitor', font='', lang='de'):
 
 
 if __name__ == '__main__':
+    # Check serial
+    if ser is None:
+        ser = Fake_serial()
+
     init_dir = op.dirname(sp_experiment.__file__)
     fname = 'sub-999_task-spactive_events.tsv'
     fpath = op.join(init_dir, 'tests', 'data', fname)
