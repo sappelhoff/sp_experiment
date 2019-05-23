@@ -7,10 +7,12 @@ import os
 import os.path as op
 
 import pandas as pd
+import numpy as np
 from psychopy import visual, event, core
 
 import sp_experiment
 from sp_experiment.define_ttl_triggers import provide_trigger_dict
+from sp_experiment.define_payoff_settings import get_random_payoff_dict
 from sp_experiment.define_variable_meanings import make_description_task_json
 from sp_experiment.define_instructions import instruct_str_descriptions
 from sp_experiment.utils import (_get_payoff_setting,
@@ -22,15 +24,19 @@ from sp_experiment.utils import (_get_payoff_setting,
 from sp_experiment.define_settings import (KEYLIST_DESCRIPTION,
                                            EXPECTED_FPS,
                                            txt_color,
+                                           circ_color,
                                            color_newtrl,
                                            color_standard,
                                            ser,
-                                           tdisplay_ms
+                                           tdisplay_ms,
+                                           tfeeddelay_ms,
+                                           toutmask_ms,
+                                           toutshow_ms
                                            )
 
 
 def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
-                     font='', lang='de'):
+                     font='', lang='de', experienced=False):
     """Run decisions from descriptions.
 
     Parameters
@@ -43,6 +49,9 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
     ser : str | instance of Fake_serial. Defaults to None.
         Either string address to a serial port for sending triggers, or
         a Fake_serial object, see utils.py. Defaults to Fake_serial.
+    experienced : bool
+        Whether to base lotteries on true or on experienced distributions.
+
     Returns
     -------
     data_file : str
@@ -81,6 +90,7 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
                                pos=(-5, 0))
     txt_left.height = 1
     txt_left.font = font
+    txt_left.color = (1, 0, 0)
 
     txt_right = visual.TextStim(win,
                                 color=txt_color,
@@ -88,6 +98,15 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
                                 pos=(5, 0))
     txt_right.height = 1
     txt_right.font = font
+
+    # Prepare circle stim for presenting outcomes
+    circ_stim = visual.Circle(win,
+                              pos=(0, 0),
+                              units='deg',
+                              fillColor=circ_color,
+                              lineColor=circ_color,
+                              radius=2.5,
+                              edges=128)
 
     # Get the objects for the fixation stim
     outer, inner, horz, vert = get_fixation_stim(win, stim_color=txt_color)
@@ -119,10 +138,13 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
         header = '\t'.join(variables)
         fout.write(header + '\n')
 
+    # set height for stimuli to be shown below
+    txt_stim.height = 4
+
     # Now collect the data
     ntrials = int(df['trial'].max())+1
-    for trial in range(ntrials):
-
+    for trial in range(ntrials+10):  # XXX
+        trial = 0  # XXX
         # Start new trial
         [stim.setAutoDraw(True) for stim in fixation_stim_parts]
         set_fixstim_color(inner, color_newtrl)
@@ -130,30 +152,45 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
         frames = get_jittered_waitframes(*tdisplay_ms)
         for frame in range(frames):
             win.flip()
-            if frame == 0:
-                log_data(data_file, onset=exp_timer.getTime(),
-                         trial=trial,
-                         value=trig_dict['trig_new_trl'], duration=frames)
 
-        # Present lotteries
-        set_fixstim_color(inner, color_standard)
+        # Prepare lotteries
+        # Extract the true magnitudes and probabilities
         setting = _get_payoff_setting(df, trial)
-        setting[0, [2, 3, 6, 7]] *= 10  # multiply probs to be in percent
+        payoff_dict, __ = get_random_payoff_dict(setting)
+        setting[0, [2, 3, 6, 7]] *= 100  # multiply probs to be in percent
         setting = setting.astype(int)
 
+        # Magnitudes are always set
         mag0_1 = setting[0, 0]
-        prob0_1 = setting[0, 2] * 10
         mag0_2 = setting[0, 1]
-        prob0_2 = setting[0, 3] * 10
         mag1_1 = setting[0, 4]
-        prob1_1 = setting[0, 6] * 10
         mag1_2 = setting[0, 5]
-        prob1_2 = setting[0, 7] * 10
+
+        # Setting of probabilities depends on argument `experienced`
+        if experienced:
+            # Get experienced probabilities (magnitudes are the same)
+            exp_setting = _get_payoff_setting(df, trial, experienced)
+            exp_setting[0, [2, 3, 6, 7]] *= 100  # multiply probs to percent
+            exp_setting = exp_setting.astype(int)
+
+            prob0_1 = exp_setting[0, 2]
+            prob0_2 = exp_setting[0, 3]
+            prob1_1 = exp_setting[0, 6]
+            prob1_2 = exp_setting[0, 7]
+        else:
+            # Use true probabilities
+            prob0_1 = setting[0, 2]
+            prob0_2 = setting[0, 3]
+            prob1_1 = setting[0, 6]
+            prob1_2 = setting[0, 7]
+
+        # Present lotteries
         txt_left.text = '{} - {}%\n{} - {}%'.format(mag0_1, prob0_1,
                                                     mag0_2, prob0_2)
         txt_right.text = '{} - {}%\n{} - {}%'.format(mag1_1, prob1_1,
                                                      mag1_2, prob1_2)
 
+        set_fixstim_color(inner, color_standard)
         txt_left.draw()
         txt_right.draw()
         rt_clock.reset()
@@ -164,13 +201,65 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
                                   keyList=KEYLIST_DESCRIPTION,
                                   timeStamped=rt_clock)
         key, rt = keys_rts[0]
-        if key == 'x':
+        action = KEYLIST_DESCRIPTION.index(key)
+
+        if action == 0:
+            value = trig_dict['trig_left_choice']
+            trig_val_mask = trig_dict['trig_mask_out_l']
+            trig_val_show = trig_dict['trig_show_out_l']
+            pos = (-5, 0)
+        elif action == 1:
+            value = trig_dict['trig_right_choice']
+            trig_val_mask = trig_dict['trig_mask_out_r']
+            trig_val_show = trig_dict['trig_show_out_r']
+            pos = (5, 0)
+        elif action == 2:
             win.close()
             core.quit()
 
-        side = KEYLIST_DESCRIPTION.index(key)
+        ser.write(value)
+
+        # Draw outcome
+        outcome = np.random.choice(payoff_dict[action])
+
+        # Prepare feedback
+        circ_stim.pos = pos
+        txt_stim.pos = pos
+        txt_stim.text = str(outcome)
+        # manually push text to center of circle
+        txt_stim.pos += (0, 0.3)
+
+        # delay feedback
+        frames = get_jittered_waitframes(*tfeeddelay_ms)
+        for frame in range(frames):
+            win.flip()
+
+        # Show feedback
+        win.callOnFlip(ser.write, trig_val_mask)
+        frames = get_jittered_waitframes(*toutmask_ms)
+        for frame in range(frames):
+            circ_stim.draw()
+            win.flip()
+            if frame == 0:
+                log_data(data_file, onset=exp_timer.getTime(),
+                         trial=trial, duration=frames,
+                         value=trig_val_mask)
+
+        win.callOnFlip(ser.write, trig_val_show)
+        frames = get_jittered_waitframes(*toutshow_ms)
+        for frame in range(frames):
+            circ_stim.draw()
+            txt_stim.draw()
+            win.flip()
+            if frame == 0:
+                log_data(data_file, onset=exp_timer.getTime(),
+                         trial=trial, duration=frames,
+                         outcome=outcome,
+                         value=trig_val_show)
+
+        # Log the data
         with open(data_file, 'a') as fout:
-            values = [onset, rt, trial, side]
+            values = [onset, rt, trial, action]
             values = [str(val) for val in values]
             fout.write('\t'.join(values))
 
@@ -185,5 +274,5 @@ if __name__ == '__main__':
     init_dir = op.dirname(sp_experiment.__file__)
     fname = 'sub-999_task-spactive_events.tsv'
     fpath = op.join(init_dir, 'tests', 'data', fname)
-    data_file = run_descriptions(fpath)
+    data_file = run_descriptions(fpath, experienced=True)
     os.remove(data_file)
