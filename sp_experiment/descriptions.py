@@ -80,22 +80,21 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
     txt_stim = visual.TextStim(win,
                                color=txt_color,
                                units='deg',
-                               pos=(-0.5, 0))
+                               pos=(0, 0))
     txt_stim.height = 1
     txt_stim.font = font
 
     txt_left = visual.TextStim(win,
                                color=txt_color,
                                units='deg',
-                               pos=(-5, 0))
+                               pos=(-2, 0))
     txt_left.height = 1
     txt_left.font = font
-    txt_left.color = (1, 0, 0)
 
     txt_right = visual.TextStim(win,
                                 color=txt_color,
                                 units='deg',
-                                pos=(5, 0))
+                                pos=(2, 0))
     txt_right.height = 1
     txt_right.font = font
 
@@ -185,10 +184,10 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
             prob1_2 = setting[0, 7]
 
         # Present lotteries
-        txt_left.text = '{} - {}%\n{} - {}%'.format(mag0_1, prob0_1,
-                                                    mag0_2, prob0_2)
-        txt_right.text = '{} - {}%\n{} - {}%'.format(mag1_1, prob1_1,
-                                                     mag1_2, prob1_2)
+        txt_left.text = '{}|{}\n{}|{}'.format(mag0_1, prob0_1,
+                                              mag0_2, prob0_2)
+        txt_right.text = '{}|{}\n{}|{}'.format(mag1_1, prob1_1,
+                                               mag1_2, prob1_2)
 
         set_fixstim_color(inner, color_standard)
         txt_left.draw()

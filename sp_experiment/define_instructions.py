@@ -322,7 +322,7 @@ def instruct_str_descriptions(lang='en'):
                         'zu entscheiden, die Sie spielen wollen. '
                         'Danach wird ihnen ihr Gewinn angezeigt.'
                         '\n\nBeispiel für eine Lotterie:\n\n')
-        instruct_str += '1 - 90%\n5 - 10%'
+        instruct_str += '1|90\n5|10'
         instruct_str += '\n\n'
         instruct_str += ('Diese Lotterie bedeutet: 1 Punkt mit 90%iger oder '
                          '5 Punkte mit 10%iger Chance')
