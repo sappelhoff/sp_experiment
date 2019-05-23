@@ -10,6 +10,9 @@ import numpy as np
 import pandas as pd
 
 import sp_experiment
+from sp_experiment.define_settings import (EXPECTED_FPS,
+                                           KEYLIST_SAMPLES
+                                           )
 from sp_experiment.utils import (Fake_serial,
                                  calc_bonus_payoff,
                                  get_final_choice_outcomes,
@@ -17,8 +20,6 @@ from sp_experiment.utils import (Fake_serial,
                                  get_passive_action,
                                  get_passive_outcome,
                                  get_jittered_waitframes,
-                                 UTILS_FPS,
-                                 KEYLIST_SAMPLES,
                                  log_data
                                  )
 from sp_experiment.define_payoff_settings import (get_payoff_settings,
@@ -132,7 +133,7 @@ def test_get_jittered_waitframes():
     n = 100
     for i in range(n):
         wait_frames = get_jittered_waitframes(1000, 2000)
-        assert wait_frames >= UTILS_FPS and wait_frames <= UTILS_FPS*2
+        assert wait_frames >= EXPECTED_FPS and wait_frames <= EXPECTED_FPS*2
 
 
 def test_log_data():

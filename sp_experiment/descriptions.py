@@ -13,8 +13,11 @@ import sp_experiment
 from sp_experiment.define_variable_meanings import make_description_task_json
 from sp_experiment.define_instructions import instruct_str_descriptions
 from sp_experiment.utils import (_get_payoff_setting,
-                                 KEYLIST_DESCRIPTION,
                                  get_fixation_stim)
+from sp_experiment.define_settings import (KEYLIST_DESCRIPTION,
+                                           EXPECTED_FPS,
+                                           txt_color
+                                           )
 
 
 def run_descriptions(events_file, monitor='testMonitor', font='', lang='de'):
@@ -41,8 +44,13 @@ def run_descriptions(events_file, monitor='testMonitor', font='', lang='de'):
     # Hide the cursor
     win.mouseVisible = False
 
+    # On which frame rate are we operating?
+    fps = int(round(win.getActualFrameRate()))
+    if EXPECTED_FPS != fps:
+        raise ValueError('Please adjust the EXPECTED_FPS variable '
+                         'in define_settings.py')
+
     # prepare text objects
-    txt_color = (0.45, 0.45, 0.45)
     txt_stim = visual.TextStim(win,
                                color=txt_color,
                                units='deg',

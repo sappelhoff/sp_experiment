@@ -14,13 +14,39 @@ import pandas as pd
 from psychopy import visual, event, core, gui
 import tobii_research as tr
 
+from sp_experiment.define_settings import (KEYLIST_SAMPLES,
+                                           KEYLIST_FINCHOICE,
+                                           EXPECTED_FPS,
+                                           GAZE_TOLERANCE,
+                                           GAZE_ERROR_THRESH,
+                                           txt_color,
+                                           tfeeddelay_ms,
+                                           toutmask_ms,
+                                           toutshow_ms,
+                                           tdisplay_ms,
+                                           expected_value_diff,
+                                           color_standard,
+                                           color_newtrl,
+                                           color_finchoice,
+                                           color_error,
+                                           monitor,
+                                           ser,
+                                           max_ntrls,
+                                           max_nsamples,
+                                           block_size,
+                                           maxwait,
+                                           exchange_rate,
+                                           lang,
+                                           font,
+                                           test_max_ntrls,
+                                           test_max_nsamples,
+                                           test_block_size,
+                                           yoke_map,
+                                           )
 from sp_experiment.define_variable_meanings import (make_events_json_dict,
                                                     make_data_dir
                                                     )
-from sp_experiment.utils import (KEYLIST_SAMPLES,
-                                 KEYLIST_FINCHOICE,
-                                 UTILS_FPS,
-                                 get_fixation_stim,
+from sp_experiment.utils import (get_fixation_stim,
                                  calc_bonus_payoff,
                                  set_fixstim_color,
                                  get_jittered_waitframes,
@@ -286,9 +312,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
         raise ValueError('Please provide a data_file path.')
 
     # Prepare eyetracking
-    gaze_tolerance = 0.1  # in psychopy norm units: the window where gaze is OK
     gaze__error_count = 0  # a counter for fixation errors
-    gaze_error_thresh = 4  # after how many fixation errors to cancel the trial
     try:
         eyetracker = find_eyetracker()
         track_eyes = True
@@ -332,9 +356,9 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
 
     # On which frame rate are we operating?
     fps = int(round(win.getActualFrameRate()))
-    assert fps == 60
-    if UTILS_FPS != fps:
-        raise ValueError('Please adjust the UTILS_FPS variable in utils.py')
+    if EXPECTED_FPS != fps:
+        raise ValueError('Please adjust the EXPECTED_FPS variable '
+                         'in define_settings.py')
 
     # Mask and text for outcomes, properties will be set and reset below
     circ_color = (-0.45, -0.45, -0.45)
@@ -346,7 +370,6 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                               radius=2.5,
                               edges=128)
 
-    txt_color = (0.45, 0.45, 0.45)
     txt_stim = visual.TextStim(win,
                                units='deg',
                                color=txt_color)
@@ -365,25 +388,13 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
 
     # Experiment settings
     # ===================
+    # for more, see `define_settings.py`
     # Make sure block settings are fine
     assert max_ntrls % block_size == 0
     nblocks = int(max_ntrls/block_size)
 
-    tfeeddelay_ms = (200, 400)  # time for delaying feedback after an action
-    toutmask_ms = (800, 800)  # time for masking an outcome ("show blob")
-    toutshow_ms = (500, 500)  # time for showing an outcome ("show number")
-    tdisplay_ms = (1000, 1000)  # show color: new trial, error, final choice
-
     maxwait_samples = maxwait  # Maximum seconds we wait for a sample
     maxwait_finchoice = maxwait  # can also be float('inf') to wait forever
-
-    expected_value_diff = 0.1  # For payoff settings to be used
-
-    # Set the fixation_stim colors for signalling state of the experiment
-    color_standard = txt_color  # prompt for an action
-    color_newtrl = (0, 1, 0)  # wait: a new trial is starting
-    color_finchoice = (0, 0, 1)  # wait: next action will be "final choice"
-    color_error = (1, 0, 0)  # wait: you did an error ... we have to restart
 
     # Start the experimental flow
     # ===========================
@@ -588,9 +599,9 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                 dist_norm = np.linalg.norm(gazepoint)
 
                 # Is gaze not within our tolerance?
-                if dist_norm >= gaze_tolerance:
+                if dist_norm >= GAZE_TOLERANCE:
                     gaze__error_count += 1
-                    if gaze__error_count > gaze_error_thresh:
+                    if gaze__error_count > GAZE_ERROR_THRESH:
                         gaze__error_count = 0
                         set_fixstim_color(inner, color_error)
                         win.callOnFlip(ser.write, trig_dict['trig_error'])
@@ -805,7 +816,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
 
     # Stop recording eye data and reset gaze to default
     eyetracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, gaze_data_callback)
-    gaze_dict['gaze'] = (0, 0)
+    gaze_dict['gaze'] = ((0, 0), (0, 0))
     win.close()
 
 
@@ -876,28 +887,9 @@ def run_test_trials(monitor, condition, lang, max_ntrls, max_nsamples,
 
 
 if __name__ == '__main__':
-    # EXPERIMENT SETTINGS,  including yoke_map to determine which participant
-    # gets yoked to which
-    monitor = 'room26'
-    ser = Fake_serial()
-    max_ntrls = 100
-    max_nsamples = 12
-    block_size = 20
-    maxwait = 3
-    exchange_rate = 0.005
-    lang = 'de'
-    font = 'Liberation Sans'
-
-    # Settings for training
-    test_max_ntrls = 1
-    test_max_nsamples = 12
-    test_block_size = 1
-
-    # First 10 subjs are mapped to themselves
-    yoke_map = OrderedDict(zip(list(range(1, 11)), list(range(1, 11))))
-    # Next 10 are mapped to first ten
-    for i, j in zip(list(range(11, 21)), list(range(1, 11))):
-        yoke_map[i] = j
+    # Check serial
+    if ser is None:
+        ser = Fake_serial()
 
     # Navigate
     run, auto = navigation(lang=lang, yoke_map=yoke_map, max_ntrls=max_ntrls,

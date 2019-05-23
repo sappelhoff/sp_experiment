@@ -17,17 +17,9 @@ import tobii_research as tr
 import sp_experiment
 from sp_experiment.define_payoff_settings import get_random_payoff_dict
 from sp_experiment.define_ttl_triggers import provide_trigger_dict
-
-
-# CONSTANTS
-# Frames per second. Change depending on your hardware.
-UTILS_FPS = 60
-
-# Keylists for responses
-# replace "__" with "f" to allow final choices
-KEYLIST_SAMPLES = ['s', 'd', '__', 'x']  # press x to quit
-KEYLIST_FINCHOICE = ['s', 'd', 'x']
-KEYLIST_DESCRIPTION = ['s', 'd', 'x']
+from sp_experiment.define_settings import (KEYLIST_SAMPLES,
+                                           EXPECTED_FPS
+                                           )
 
 
 class Fake_serial():
@@ -235,7 +227,7 @@ def get_passive_outcome(df, trial, sample):
     return outcome
 
 
-def get_jittered_waitframes(min_wait, max_wait, fps=UTILS_FPS):
+def get_jittered_waitframes(min_wait, max_wait, fps=EXPECTED_FPS):
     """From a uniform distribution, determine a waiting time within an interval.
 
     Parameters
@@ -259,7 +251,7 @@ def get_jittered_waitframes(min_wait, max_wait, fps=UTILS_FPS):
 
 def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
              outcome='n/a', response_time='n/a', value='n/a',
-             payoff_dict='n/a', fps=UTILS_FPS,
+             payoff_dict='n/a', fps=EXPECTED_FPS,
              version=sp_experiment.__version__, reset=False):
     """Write data to the log file.
 
@@ -273,7 +265,7 @@ def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
         onset of the event in seconds
     duration : int | 0
         duration of the event in frames. Will then be converted to seconds by
-        dividing with `UTILS_FPS`.
+        dividing with `EXPECTED_FPS`.
     trial : int | 'n/a'
         the number of the trial in which this event happened.
     action : int, one of [1, 2, 3] | 'n/a'

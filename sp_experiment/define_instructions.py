@@ -7,6 +7,7 @@ import tobii_research as tr
 
 import sp_experiment
 from sp_experiment.utils import get_final_choice_outcomes
+from sp_experiment.define_settings import txt_color
 
 
 def run_instructions(kind, monitor='testMonitor', font='', lang='en',
@@ -54,7 +55,6 @@ def run_instructions(kind, monitor='testMonitor', font='', lang='en',
     win.mouseVisible = False
 
     # prepare text object
-    txt_color = (0.45, 0.45, 0.45)
     txt_stim = visual.TextStim(win,
                                units='deg',
                                color=txt_color)
