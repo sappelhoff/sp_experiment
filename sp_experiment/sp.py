@@ -405,10 +405,11 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     txt_stim.draw()
     win.flip()
     event.waitKeys()
-    ser.write(trig_dict['trig_begin_experiment'])
+    value = trig_dict['trig_begin_experiment']
+    ser.write(value)
     exp_timer = core.MonotonicClock()
     log_data(data_file, onset=exp_timer.getTime(),
-             value=trig_dict['trig_begin_experiment'])
+             value=value)
     txt_stim.height = 4  # set height for stimuli to be shown below
 
     # Get general payoff settings
@@ -453,25 +454,26 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
         # Starting a new trial
         [stim.setAutoDraw(True) for stim in fixation_stim_parts]
         set_fixstim_color(inner, color_newtrl)
-        win.callOnFlip(ser.write, trig_dict['trig_new_trl'])
+        value = trig_dict['trig_new_trl']
+        win.callOnFlip(ser.write, value)
         frames = get_jittered_waitframes(*tdisplay_ms)
         for frame in range(frames):
             win.flip()
             if frame == 0:
                 log_data(data_file, onset=exp_timer.getTime(),
-                         trial=current_ntrls,
-                         value=trig_dict['trig_new_trl'], duration=frames)
+                         trial=current_ntrls, value=value, duration=frames)
 
         # Within this trial, allow sampling
         current_nsamples = 0
         while True:
             # Starting a new sample by setting the fix stim to standard color
             set_fixstim_color(inner, color_standard)
-            win.callOnFlip(ser.write, trig_dict['trig_sample_onset'])
+            value = trig_dict['trig_sample_onset']
+            win.callOnFlip(ser.write, value)
             win.flip()
             rt_clock.reset()
             log_data(data_file, onset=exp_timer.getTime(), trial=current_ntrls,
-                     value=trig_dict['trig_sample_onset'])
+                     value=value)
 
             if condition == 'active':
                 # Wait for an action of the participant
@@ -803,10 +805,10 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     txt_stim.height = 1
 
     txt_stim.draw()
-    win.callOnFlip(ser.write, trig_dict['trig_end_experiment'])
+    value = trig_dict['trig_end_experiment']
+    win.callOnFlip(ser.write, value)
     win.flip()
-    log_data(data_file, onset=exp_timer.getTime(),
-             value=trig_dict['trig_end_experiment'])
+    log_data(data_file, onset=exp_timer.getTime(), value=value)
     event.waitKeys()
 
     # Stop recording eye data and reset gaze to default

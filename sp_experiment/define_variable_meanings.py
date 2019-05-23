@@ -10,27 +10,38 @@ from sp_experiment.define_ttl_triggers import provide_trigger_dict
 
 
 def make_description_task_json():
-    """Provide variable meanings for description task."""
-    events_json_dict = OrderedDict()
+    """Provide variable meanings for description task.
 
-    # Start populating the dict
-    events_json_dict['onset'] = {
-        'Description': 'onset of a lottery selection screen',
-        'Units': 'seconds'
-    }
+    This is heavily based on the sampling paradigm tasks. We overwrite a few
+    of the descriptions to make more sense for the description task.
 
-    events_json_dict['duration'] = {
-        'Description': ('duration until a button press was recorded while '
-                        'showing the lottery selection screen.'),
-        'Units': 'seconds'
-    }
+    """
+    events_json_dict = make_events_json_dict()
 
-    events_json_dict['trial'] = {
-        'Description': ('zero indexed trial counter, where a trial index '
-                        'points to the lottery setting that was used in this '
-                        'event by comparing with the trial column in the '
-                        'spactive task.')
-    }
+    # Overwrite some values
+    events_json_dict['trial']['Description'] = ('zero indexed trial counter, where a trial index '  # noqa: E501
+                                                'points to the lottery setting that was used in this '  # noqa: E501
+                                                'event by comparing with the trial column in the '  # noqa: E501
+                                                'spactive task.')
+
+    for level in ['sample', 'stop', 'forced_stop', 'premature_stop']:
+        events_json_dict['action_type']['Levels'].pop(level)
+
+    for level in ['2']:
+        events_json_dict['action']['Levels'].pop(level)
+
+    trigger_dict = provide_trigger_dict()
+    for level in [ord(trigger_dict['trig_sample_onset']),
+                  ord(trigger_dict['trig_left_choice']),
+                  ord(trigger_dict['trig_right_choice']),
+                  ord(trigger_dict['trig_final_choice']),
+                  ord(trigger_dict['trig_mask_out_l']),
+                  ord(trigger_dict['trig_show_out_r']),
+                  ord(trigger_dict['trig_new_final_choice']),
+                  ord(trigger_dict['trig_forced_stop']),
+                  ord(trigger_dict['trig_premature_stop']),
+                  ord(trigger_dict['trig_block_feedback'])]:
+        events_json_dict['value']['Levels'].pop(level)
 
     return events_json_dict
 
@@ -65,9 +76,9 @@ def make_events_json_dict():
                        'option'),
             'stop': ('the subject decided to stop sampling the options and '
                      'instead use the next action for a final choice'),
-            'foced_stop': ('the subject took a maximum of samples and wanted '
-                           'to take another one, so we force stopped in this '
-                           'turn'),
+            'forced_stop': ('the subject took a maximum of samples and wanted '
+                            'to take another one, so we force stopped in this '
+                            'turn'),
             'premature_stop': ('the subject tried to stop sampling before '
                                'taking a single sample. This lead to an '
                                'error.'),

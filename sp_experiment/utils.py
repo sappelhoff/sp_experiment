@@ -323,9 +323,10 @@ def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
         the time it took the subject to respond after the onset of the event
     value : byte | 'n/a'
         the TTL trigger value (=EEG marker value) associated with an event
-    payoff_dict : collections.OrderedDict | 'n/a'
+    payoff_dict : collections.OrderedDict | 'n/a' | np.ndarray
         Dictionary containing the reward distribution setting of the current
-        trial.
+        trial. Can also be a numpy array of shape (8,) containing the variables
+        "mag0_1, prob0_1, mag0_2, prob0_2, mag1_1, prob1_1, mag1_2, prob1_2"
     fps : int
         frames per second used in this experiment
     version : str
@@ -360,7 +361,7 @@ def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
         action = (action - 3) if action in [3, 4] else action
 
     # Reformat reward distribution settings
-    if payoff_dict != 'n/a':
+    if isinstance(payoff_dict, dict):
         assert len(payoff_dict) == 2
         setting = list()
         for i in range(2):
@@ -370,7 +371,9 @@ def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
                 prob_i = payoff_dict[i].count(out_i) / len(payoff_dict[i])
                 setting.append(out_i)
                 setting.append(prob_i)
-    else:
+    elif isinstance(payoff_dict, np.ndarray):
+        setting = payoff_dict
+    elif payoff_dict == 'n/a':
         setting = ['n/a'] * 8
     (mag0_1, prob0_1, mag0_2, prob0_2, mag1_1, prob1_1, mag1_2,
      prob1_2) = setting

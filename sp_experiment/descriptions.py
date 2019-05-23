@@ -3,7 +3,6 @@
 Based on a data file collected in the active SP condition, provide gambles
 from descriptions.
 """
-import os
 import os.path as op
 
 import pandas as pd
@@ -56,11 +55,6 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
         a Fake_serial object, see utils.py. Defaults to Fake_serial.
     experienced : bool
         Whether to base lotteries on true or on experienced distributions.
-
-    Returns
-    -------
-    data_file : str
-        Path to the output data file
 
     """
     # prepare logging and read in present data
@@ -163,14 +157,18 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
     # NOTE: Will be reset to 0 right before recording a button press
     rt_clock = core.Clock()
 
-    # Start a clock for general experiment time
-    exp_timer = core.MonotonicClock()
-
     # Print some instructions
     txt_stim.text = instruct_str_descriptions(lang)
     txt_stim.draw()
     win.flip()
     event.waitKeys()
+
+    # Start a clock for general experiment time
+    value = trig_dict['trig_begin_experiment']
+    ser.write(value)
+    exp_timer = core.MonotonicClock()
+    log_data(data_file, onset=exp_timer.getTime(),
+             value=value)
 
     # set height for stimuli to be shown below
     txt_stim.height = 4
@@ -179,15 +177,8 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
     ntrials = int(df['trial'].max())+1
     for trial in range(ntrials+10):  # XXX
         trial = 0  # XXX
-        # Start new trial
-        [stim.setAutoDraw(True) for stim in fixation_stim_parts]
-        set_fixstim_color(inner, color_newtrl)
-        win.callOnFlip(ser.write, trig_dict['trig_new_trl'])
-        frames = get_jittered_waitframes(*tdisplay_ms)
-        for frame in range(frames):
-            win.flip()
 
-        # Prepare lotteries
+        # Prepare lotteries for a new trial
         # Extract the true magnitudes and probabilities
         setting = _get_payoff_setting(df, trial)
         payoff_dict, __ = get_random_payoff_dict(setting)
@@ -218,6 +209,26 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
             prob1_1 = setting[0, 6]
             prob1_2 = setting[0, 7]
 
+        # log used setting and convert back probabilities back to proportions
+        used_setting = np.asarray([mag0_1, np.round(prob0_1/100, 1),
+                                   mag0_2, np.round(prob0_2/100, 1),
+                                   mag1_1, np.round(prob1_1/100, 1),
+                                   mag1_2, np.round(prob1_2/100, 1)])
+        log_data(data_file, onset=exp_timer.getTime(), trial=trial,
+                 payoff_dict=used_setting)
+
+        # Start new trial
+        [stim.setAutoDraw(True) for stim in fixation_stim_parts]
+        set_fixstim_color(inner, color_newtrl)
+        value = trig_dict['trig_new_trl']
+        win.callOnFlip(ser.write, value)
+        frames = get_jittered_waitframes(*tdisplay_ms)
+        for frame in range(frames):
+            win.flip()
+            if frame == 0:
+                log_data(data_file, onset=exp_timer.getTime(),
+                         trial=trial, value=value, duration=frames)
+
         # Present lotteries
         txt_left.text = '{}|{}\n{}|{}'.format(mag0_1, prob0_1,
                                               mag0_2, prob0_2)
@@ -227,9 +238,13 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
         set_fixstim_color(inner, color_standard)
         txt_left.draw()
         txt_right.draw()
+        value = trig_dict['trig_final_choice_onset']
+        win.callOnFlip(ser.write, value)
         rt_clock.reset()
-        onset = exp_timer.getTime()
+        log_data(data_file, onset=exp_timer.getTime(), trial=trial,
+                 value=value)
         win.flip()
+
         # Collect response
         keys_rts = event.waitKeys(maxWait=float('inf'),
                                   keyList=KEYLIST_DESCRIPTION,
@@ -238,21 +253,23 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
         action = KEYLIST_DESCRIPTION.index(key)
 
         if action == 0:
-            value = trig_dict['trig_left_choice']
-            trig_val_mask = trig_dict['trig_mask_out_l']
-            trig_val_show = trig_dict['trig_show_out_l']
+            value = trig_dict['trig_left_final_choice']
+            trig_val_mask = trig_dict['trig_mask_final_out_l']
+            trig_val_show = trig_dict['trig_show_final_out_l']
             pos = (-5, 0)
         elif action == 1:
-            value = trig_dict['trig_right_choice']
-            trig_val_mask = trig_dict['trig_mask_out_r']
-            trig_val_show = trig_dict['trig_show_out_r']
+            value = trig_dict['trig_right_final_choice']
+            trig_val_mask = trig_dict['trig_mask_final_out_r']
+            trig_val_show = trig_dict['trig_show_final_out_r']
             pos = (5, 0)
         elif action == 2:
             win.close()
             core.quit()
 
         ser.write(value)
-
+        # increment action by 3 to log a final choice instead of a "sample"
+        log_data(data_file, onset=exp_timer.getTime(), trial=trial,
+                 action=action+3, response_time=rt, value=value)
         # Draw outcome
         outcome = np.random.choice(payoff_dict[action])
 
@@ -275,9 +292,8 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
             circ_stim.draw()
             win.flip()
             if frame == 0:
-                log_data(data_file, onset=exp_timer.getTime(),
-                         trial=trial, duration=frames,
-                         value=trig_val_mask)
+                log_data(data_file, onset=exp_timer.getTime(), trial=trial,
+                         duration=frames, value=trig_val_mask)
 
         win.callOnFlip(ser.write, trig_val_show)
         frames = get_jittered_waitframes(*toutshow_ms)
@@ -286,18 +302,14 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
             txt_stim.draw()
             win.flip()
             if frame == 0:
-                log_data(data_file, onset=exp_timer.getTime(),
-                         trial=trial, duration=frames,
-                         outcome=outcome,
-                         value=trig_val_show)
+                log_data(data_file, onset=exp_timer.getTime(), trial=trial,
+                         duration=frames, outcome=outcome, value=trig_val_show)
 
-        # Log the data
-        with open(data_file, 'a') as fout:
-            values = [onset, rt, trial, action]
-            values = [str(val) for val in values]
-            fout.write('\t'.join(values))
-
-    return data_file
+    # We are done here
+    value = trig_dict['trig_end_experiment']
+    win.callOnFlip(ser.write, value)
+    win.flip()
+    log_data(data_file, onset=exp_timer.getTime(), value=value)
 
 
 if __name__ == '__main__':
@@ -308,5 +320,4 @@ if __name__ == '__main__':
     init_dir = op.dirname(sp_experiment.__file__)
     fname = 'sub-999_task-spactive_events.tsv'
     fpath = op.join(init_dir, 'tests', 'data', fname)
-    data_file = run_descriptions(fpath, experienced=True)
-    os.remove(data_file)
+    run_descriptions(fpath, experienced=True)
