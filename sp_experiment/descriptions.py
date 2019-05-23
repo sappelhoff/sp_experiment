@@ -17,7 +17,7 @@ from sp_experiment.utils import (_get_payoff_setting,
                                  get_fixation_stim)
 
 
-def run_descriptions(events_file, monitor='testMonitor', font='', lang='en'):
+def run_descriptions(events_file, monitor='testMonitor', font='', lang='de'):
     """Run decisions from descriptions.
 
     Parameters
