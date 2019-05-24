@@ -18,7 +18,7 @@ def run_instructions(kind, monitor='testMonitor', font='', lang='en',
     Parameters
     ----------
     kind : str
-        Can be 'general', 'active', and 'passive'.
+        Can be 'general', 'active', 'passive', or 'description'
     monitor : str
         Name of monitor to be used
     font : str
@@ -71,13 +71,15 @@ def run_instructions(kind, monitor='testMonitor', font='', lang='en',
 
     # START INSTRUCTIONS
     if kind == 'general':
-        txt_stim.text = _provide_general_instr_str(lang=lang)
-        txt_stim.draw()
-        win.flip()
-        core.wait(2)  # force some wait time
-        key = event.waitKeys()
-        if key[0] == 'x':
-            core.quit()
+        texts = _provide_general_instr_str(lang=lang)
+        for text in texts:
+            txt_stim.text = text
+            txt_stim.draw()
+            win.flip()
+            core.wait(2)  # force some wait time
+            key = event.waitKeys()
+            if key[0] == 'x':
+                break
 
     elif kind == 'active':
         texts = _provide_active_instr_strs(lang, max_ntrls, max_nsamples,
@@ -152,6 +154,19 @@ def run_instructions(kind, monitor='testMonitor', font='', lang='en',
             key = event.waitKeys()
             if key[0] == 'x':
                 break
+
+    elif kind == 'description':
+        texts = _provide_description_instr_str(lang=lang)
+        for text in texts:
+            txt_stim.text = text
+            txt_stim.draw()
+
+            win.flip()
+            core.wait(2)  # force some wait time
+            key = event.waitKeys()
+            if key[0] == 'x':
+                break
+
     win.close()
 
 
@@ -218,8 +233,9 @@ def _provide_passive_instr_strs(lang, max_ntrls, max_nsamples, block_size,
 
 def _provide_general_instr_str(lang):
     """Provide a welcome screen text."""
+    texts = list()
     if lang == 'de':
-        welcome_str = ('Wilkommen! Sie werden zwei Aufgaben nacheinander '
+        welcome_str = ('Wilkommen! Sie werden drei Aufgaben nacheinander '
                        'ausführen. Im Folgenden bekommen Sie Anweisungen zur '
                        'ersten Aufgabe. Dann dürfen Sie einen Test der '
                        'ersten Aufgabe durchführen. Danach wird die erste '
@@ -227,17 +243,20 @@ def _provide_general_instr_str(lang):
                        'fertig sind, wird die zweite Aufgabe in den selben '
                        'Schritten durchgeführt. Das heißt: Erst Anweisung, '
                        'dann Test, dann Durchführung der Aufgabe. '
+                       'Zum Schluss gibt es noch eine kurze dritte Aufgabe. '
                        'Drücken Sie eine beliebige Taste.')
     elif lang == 'en':
-        welcome_str = ('Welcome! You will perform two tasks, one after the '
+        welcome_str = ('Welcome! You will perform three tasks, one after the '
                        'other. In the following you will get instructions '
                        'for the first task. Then you are allowed to practice '
                        'the first task. Then you will perform the first task'
                        '. After you are done, the second task will be '
                        'started using the same procedure. That is, first '
                        'instructions, then practice, then execution of the '
-                       'second task. Press any button.')
-    return welcome_str
+                       'second task. Finally, there will be a short third '
+                       'task. Press any button.')
+    texts.append(welcome_str)
+    return texts
 
 
 def provide_blockfbk_str(data_file, current_nblocks, nblocks, lang):
@@ -288,7 +307,12 @@ def provide_blockfbk_str(data_file, current_nblocks, nblocks, lang):
 
 def provide_start_str(is_test, condition, lang):
     """Provide a string for beginning of the task."""
-    condi = 'A' if condition == 'active' else 'B'
+    if condition == 'active':
+        condi = 'A'
+    elif condition == 'passive':
+        condi = 'B'
+    else:
+        condi = 'C'
     mod = ' TEST ' if is_test else ' '
     if lang == 'de':
         start_str = ('Beginn der{}Aufgabe {}. Drücken Sie eine '
@@ -313,8 +337,9 @@ def provide_stop_str(is_test, lang):
     return stop_str
 
 
-def instruct_str_descriptions(lang='en'):
+def _provide_description_instr_str(lang='en'):
     """Provide instructions."""
+    texts = list()
     if lang == 'de':
         instruct_str = ('Im Folgenden werden Sie auf der linken und rechten '
                         'Seite jeweils eine Lotterie sehen. Benutzen Sie die '
@@ -328,6 +353,9 @@ def instruct_str_descriptions(lang='en'):
                          '5 Punkte mit 10%iger Chance')
         instruct_str += '\n\nDrücken Sie eine beliebige Taste um zu beginnen.'
 
+        texts.append(instruct_str)
+
     elif lang == 'en':
         raise RuntimeError('English language not yet implemented.')
-    return instruct_str
+
+    return texts

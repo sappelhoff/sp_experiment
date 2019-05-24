@@ -70,6 +70,7 @@ from sp_experiment.define_eyetracker import (gaze_dict,
                                              find_eyetracker,
                                              get_gaze_data_callback,
                                              get_normed_gazepoint)
+from sp_experiment.descriptions import run_descriptions
 
 
 def navigation(nav='initial', bonus='', lang='en', yoke_map=None,
@@ -125,7 +126,7 @@ def navigation(nav='initial', bonus='', lang='en', yoke_map=None,
                                                     'calculate bonus money',
                                                     'show instructions'])
         elif nav == 'inquire_condition':
-            myDlg.addField('Condition:', choices=['A', 'B'])
+            myDlg.addField('Condition:', choices=['A', 'B', 'C'])
             myDlg.addField('Language:', choices=['de', 'en'])
 
         elif nav == 'calc_bonus':
@@ -161,7 +162,12 @@ def navigation(nav='initial', bonus='', lang='en', yoke_map=None,
                                 test_block_size, maxwait)
                 core.quit()
             elif next == 'show':
-                condition = 'active' if ok_data[0] == 'A' else 'passive'
+                if ok_data[0] == 'A':
+                    condition = 'active'
+                elif ok_data[0] == 'B':
+                    condition = 'passive'
+                else:
+                    condition = 'description'
                 run_instructions(kind=condition, lang=ok_data[1])
                 core.quit()
             elif ok_data[0] == 'calculate bonus money':
@@ -589,8 +595,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                     if frame == 0:
                         log_data(data_file, onset=exp_timer.getTime(),
                                  trial=current_ntrls, duration=frames,
-                                 outcome=outcome,
-                                 value=trig_val_show)
+                                 outcome=outcome, value=trig_val_show)
 
                 # Gaze Fixation test
                 gazepoint = get_normed_gazepoint(gaze_dict)
@@ -602,7 +607,8 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                     if gaze__error_count > GAZE_ERROR_THRESH:
                         gaze__error_count = 0
                         set_fixstim_color(inner, color_error)
-                        win.callOnFlip(ser.write, trig_dict['trig_error'])
+                        value = trig_dict['trig_error']
+                        win.callOnFlip(ser.write, value)
                         frames = get_jittered_waitframes(*tdisplay_ms)
                         for frame in range(frames):
                             win.flip()
@@ -610,8 +616,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                                 # Log an event that we have to disregard all
                                 # prior events in this trial
                                 log_data(data_file, onset=exp_timer.getTime(),
-                                         trial=current_ntrls,
-                                         value=trig_dict['trig_error'],
+                                         trial=current_ntrls, value=value,
                                          duration=frames, reset=True)
                         # start a new trial without incrementing the trial
                         # counter
@@ -782,10 +787,10 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                     txt_stim.pos = (0, 0)
                     txt_stim.height = 1
                     txt_stim.draw()
-                    win.callOnFlip(ser.write, trig_dict['trig_block_feedback'])
+                    value = trig_dict['trig_block_feedback']
+                    win.callOnFlip(ser.write, value)
                     win.flip()
-                    log_data(data_file, onset=exp_timer.getTime(),
-                             value=trig_dict['trig_block_feedback'])
+                    log_data(data_file, onset=exp_timer.getTime(), value=value)
                     core.wait(1)  # wait for a bit so that this is not skipped
                     event.waitKeys()
 
