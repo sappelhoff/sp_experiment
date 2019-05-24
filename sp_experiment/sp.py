@@ -170,7 +170,8 @@ def navigation(nav='initial', bonus='', lang='en', yoke_map=None,
                     init_dir = op.dirname(sp_experiment.__file__)
                     fname = 'sub-999_task-spactive_events.tsv'
                     fpath = op.join(init_dir, 'tests', 'data', fname)
-                    run_descriptions(fpath, experienced=True, is_test=True)
+                    run_descriptions(fpath, experienced=True, is_test=True,
+                                     block_size=1)
                     core.quit()
 
                 # Only if condition != 'description'
@@ -983,7 +984,8 @@ if __name__ == '__main__':
                              monitor=monitor,
                              ser=ser,
                              lang=lang,
-                             experienced=DESCR_EXPERIENCED
+                             experienced=DESCR_EXPERIENCED,
+                             block_size=block_size
                              )
 
     # if auto, do a complete flow
@@ -1059,7 +1061,8 @@ if __name__ == '__main__':
         init_dir = op.dirname(sp_experiment.__file__)
         events_file = op.join(init_dir, 'experiment_data', fname)
         run_descriptions(events_file=events_file, monitor=monitor, ser=ser,
-                         font=font, lang=lang, experienced=DESCR_EXPERIENCED)
+                         font=font, lang=lang, experienced=DESCR_EXPERIENCED,
+                         block_size=block_size)
 
         # Print out earnings
         bonus = calc_bonus_payoff(sub_id, exchange_rate, lang=lang)

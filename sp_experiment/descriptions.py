@@ -15,7 +15,8 @@ from sp_experiment.define_ttl_triggers import provide_trigger_dict
 from sp_experiment.define_payoff_settings import get_random_payoff_dict
 from sp_experiment.define_variable_meanings import make_description_task_json
 from sp_experiment.define_instructions import (provide_start_str,
-                                               provide_stop_str
+                                               provide_stop_str,
+                                               provide_blockfbk_str
                                                )
 from sp_experiment.utils import (_get_payoff_setting,
                                  get_fixation_stim,
@@ -37,11 +38,13 @@ from sp_experiment.define_settings import (KEYLIST_DESCRIPTION,
                                            tdisplay_ms,
                                            tfeeddelay_ms,
                                            toutmask_ms,
-                                           toutshow_ms
+                                           toutshow_ms,
+                                           block_size
                                            )
 
 
 def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
+                     block_size=10,
                      font='', lang='de', experienced=False, is_test=False):
     """Run decisions from descriptions.
 
@@ -55,6 +58,8 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
     ser : str | instance of Fake_serial. Defaults to None.
         Either string address to a serial port for sending triggers, or
         a Fake_serial object, see utils.py. Defaults to Fake_serial.
+    block_size : int
+        Number of trials after which feedback is provided
     experienced : bool
         Whether to base lotteries on experienced distributions.
 
@@ -71,6 +76,11 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
     with open(data_file, 'w') as fout:
         header = '\t'.join(variables)
         fout.write(header + '\n')
+
+    # Check how many trials we have and whether that fits with blocks
+    ntrials = int(df['trial'].max())+1
+    assert ntrials % block_size == 0
+    nblocks = int(ntrials/block_size)
 
     # Prepare eyetracking
     try:
@@ -182,7 +192,7 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
     txt_stim.height = 4  # set height for stimuli to be shown below
 
     # Now collect the data
-    ntrials = int(df['trial'].max())+1
+    current_nblocks = 0
     for trial in range(ntrials):
 
         # Prepare lotteries for a new trial
@@ -322,8 +332,34 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
                 log_data(data_file, onset=exp_timer.getTime(), trial=trial,
                          duration=frames, outcome=outcome, value=trig_val_show)
 
-    # We are done here
+    # reset text color
     txt_stim.color = color_standard
+
+    # Is a block finished? If yes, display block feedback and
+    # provide a short break
+    if (trial+1) % block_size == 0:
+        current_nblocks += 1
+        [stim.setAutoDraw(False) for stim in fixation_stim_parts]
+        txt_stim.text = provide_blockfbk_str(data_file,
+                                             current_nblocks,
+                                             nblocks,
+                                             lang=lang)
+        txt_stim.pos = (0, 0)
+        txt_stim.height = 1
+        txt_stim.draw()
+        value = trig_dict['trig_block_feedback']
+        win.callOnFlip(ser.write, value)
+        win.flip()
+        log_data(data_file, onset=exp_timer.getTime(), value=value)
+        core.wait(1)  # wait for a bit so that this is not skipped
+        event.waitKeys()
+
+        # Reset stim settings for next block
+        [stim.setAutoDraw(True) for stim in fixation_stim_parts]
+        # set height for stimuli to be shown below
+        txt_stim.height = 4
+
+    # We are done here
     [stim.setAutoDraw(False) for stim in fixation_stim_parts]
     txt_stim.text = provide_stop_str(is_test=is_test, lang=lang)
     txt_stim.pos = (0, 0)
@@ -351,4 +387,4 @@ if __name__ == '__main__':
     init_dir = op.dirname(sp_experiment.__file__)
     fname = 'sub-999_task-spactive_events.tsv'
     fpath = op.join(init_dir, 'tests', 'data', fname)
-    run_descriptions(fpath, experienced=True)
+    run_descriptions(fpath, experienced=True, block_size=1)

@@ -39,8 +39,7 @@ def make_description_task_json():
                   ord(trigger_dict['trig_show_out_r']),
                   ord(trigger_dict['trig_new_final_choice']),
                   ord(trigger_dict['trig_forced_stop']),
-                  ord(trigger_dict['trig_premature_stop']),
-                  ord(trigger_dict['trig_block_feedback'])]:
+                  ord(trigger_dict['trig_premature_stop'])]:
         events_json_dict['value']['Levels'].pop(level)
 
     return events_json_dict
