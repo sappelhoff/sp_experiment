@@ -115,11 +115,19 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
     # Hide the cursor
     win.mouseVisible = False
 
-    # On which frame rate are we operating?
-    fps = int(round(win.getActualFrameRate()))
-    if EXPECTED_FPS != fps:
-        raise ValueError('Please adjust the EXPECTED_FPS variable '
-                         'in define_settings.py')
+    # On which frame rate are we operating? Try getting it several times
+    # because it can fluctuate a bit
+    fps_counter = 0
+    while True:
+        fps = int(round(win.getActualFrameRate()))
+        if EXPECTED_FPS == fps:
+            break
+        else:
+            fps_counter += 1
+            core.wait(1)
+        if fps_counter > 3:
+            raise ValueError('Please adjust the EXPECTED_FPS variable '
+                             'in define_settings.py')
 
     # prepare text objects
     txt_stim = visual.TextStim(win,

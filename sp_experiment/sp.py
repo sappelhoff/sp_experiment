@@ -412,11 +412,19 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     # Hide the cursor
     win.mouseVisible = False
 
-    # On which frame rate are we operating?
-    fps = int(round(win.getActualFrameRate()))
-    if EXPECTED_FPS != fps:
-        raise ValueError('Please adjust the EXPECTED_FPS variable '
-                         'in define_settings.py')
+    # On which frame rate are we operating? Try getting it several times
+    # because it can fluctuate a bit
+    fps_counter = 0
+    while True:
+        fps = int(round(win.getActualFrameRate()))
+        if EXPECTED_FPS == fps:
+            break
+        else:
+            fps_counter += 1
+            core.wait(1)
+        if fps_counter > 3:
+            raise ValueError('Please adjust the EXPECTED_FPS variable '
+                             'in define_settings.py')
 
     # Mask and text for outcomes, properties will be set and reset below
     circ_stim = visual.Circle(win,
