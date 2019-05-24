@@ -192,7 +192,10 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
 
         # Setting of probabilities depends on argument `experienced`
         if experienced:
-            # Get experienced probabilities (magnitudes are the same)
+            # Get experienced probabilities (magnitudes are the same ... or
+            # will be added if never experienced - either with p=0 and other
+            # *experienced* outcome p=1 ... or both with p=0.5 if both of the
+            # outcomes have not been experienced)
             exp_setting = _get_payoff_setting(df, trial, experienced)
             exp_setting[0, [2, 3, 6, 7]] *= 100  # multiply probs to percent
             exp_setting = exp_setting.astype(int)
@@ -270,6 +273,12 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
         log_data(data_file, onset=exp_timer.getTime(), trial=trial,
                  action=action+3, response_time=rt, value=value)
         # Draw outcome
+        # First need to re-engineer our payoff_dict with the actually used
+        # setting
+        wrong_format_used_setting = used_setting[[0, 2, 1, 3, 4, 6, 5, 7]]
+        wrong_format_used_setting = np.expand_dims(wrong_format_used_setting,
+                                                   0)
+        payoff_dict, __ = get_random_payoff_dict(wrong_format_used_setting)
         outcome = np.random.choice(payoff_dict[action])
 
         # Prepare feedback

@@ -43,15 +43,12 @@ lang = 'de'
 font = 'Liberation Sans'
 
 max_ntrls = 1
-max_nsamples = 1
+max_nsamples = 2
 block_size = 1
 # Settings for training
 test_max_ntrls = 1
 test_max_nsamples = 1
 test_block_size = 1
-
-
-
 
 # First 10 subjs are mapped to themselves
 yoke_map = OrderedDict(zip(list(range(1, 11)), list(range(1, 11))))

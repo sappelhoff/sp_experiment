@@ -146,8 +146,18 @@ def _get_payoff_setting(df, trial, experienced=False):
         wrong_format_setting = list()
         for side in [0, 1]:
             distr = payoff_dict[side]
+
+            # Special case 1 if only one distr sampled: at two 99s with
+            # each p=0.5 ... 99 will later be replaced with actual magnitudes
+            # based on true distrs in that trial
+            if len(distr) == 0:
+                for i in [99, 0.5, 99, 0.5]:
+                    wrong_format_setting.append(i)
+                continue
+
+            # Special case 2 if only one outcome sampled: add a 99
+            # to be replaced with a p=0
             outcomes = np.unique(distr)
-            # Special case if only one outcome sampled: add a 99 to be replaced
             if len(outcomes) < 2:
                 outcomes = np.append(outcomes, np.array(99))
             # Go though outcomes
