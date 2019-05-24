@@ -14,6 +14,7 @@ import pandas as pd
 from psychopy import visual, event, core, gui
 import tobii_research as tr
 
+import sp_experiment
 from sp_experiment.define_settings import (KEYLIST_SAMPLES,
                                            KEYLIST_FINCHOICE,
                                            EXPECTED_FPS,
@@ -43,6 +44,7 @@ from sp_experiment.define_settings import (KEYLIST_SAMPLES,
                                            test_max_nsamples,
                                            test_block_size,
                                            yoke_map,
+                                           DESCR_EXPERIENCED
                                            )
 from sp_experiment.define_variable_meanings import (make_events_json_dict,
                                                     make_data_dir
@@ -156,7 +158,19 @@ def navigation(nav='initial', bonus='', lang='en', yoke_map=None,
             elif next == 'test':
                 print('preparing test trials now')
                 # run test trials, then quit program
-                condition = 'active' if ok_data[0] == 'A' else 'passive'
+                if ok_data[0] == 'A':
+                    condition = 'active'
+                if ok_data[0] == 'B':
+                    condition = 'passive'
+                if ok_data[0] == 'C':
+                    condition = 'description'
+                    init_dir = op.dirname(sp_experiment.__file__)
+                    fname = 'sub-999_task-spactive_events.tsv'
+                    fpath = op.join(init_dir, 'tests', 'data', fname)
+                    run_descriptions(fpath, experienced=True, is_test=True)
+                    core.quit()
+
+                # Only if condition != 'description'
                 run_test_trials(monitor, condition, ok_data[1],
                                 test_max_ntrls, test_max_nsamples,
                                 test_block_size, maxwait)
@@ -203,7 +217,8 @@ def prep_logging(yoke_map, auto=False, gui_info=None):
     Returns
     -------
     data_file : str
-        path to the data file
+        path to the data file ... or if condition=='C', the path to the file
+        from which to display the data.
 
     """
     if not isinstance(gui_info, dict):
@@ -213,7 +228,7 @@ def prep_logging(yoke_map, auto=False, gui_info=None):
         myDlg.addField('Age:', choices=list(range(18, 80)))
         myDlg.addField('Sex:', choices=['Male', 'Female'])
         if not auto:
-            myDlg.addField('Condition:', choices=['A', 'B'])
+            myDlg.addField('Condition:', choices=['A', 'B', 'C'])
 
         # show dialog and wait for OK or Cancel
         ok_data = myDlg.show()
@@ -223,7 +238,12 @@ def prep_logging(yoke_map, auto=False, gui_info=None):
             sex = ok_data[2]
             yoke_to = yoke_map[sub_id]
             if not auto:
-                condition = 'active' if ok_data[3] == 'A' else 'passive'
+                if ok_data[3] == 'A':
+                    condition = 'active'
+                elif ok_data[3] == 'B':
+                    condition = 'passive'
+                elif ok_data[3] == 'C':
+                    condition = 'description'
             else:
                 condition = ('active' if sub_id == yoke_map[sub_id]
                              else 'passive')
@@ -237,35 +257,65 @@ def prep_logging(yoke_map, auto=False, gui_info=None):
 
     # Data logging
     # ============
-    fname = 'sub-{:02d}_task-sp{}_events.tsv'.format(sub_id, condition)
+    if condition == 'description':
+        # For description task we show what happened in active SP
+        fname_events = 'sub-{:02d}_task-spactive_events.tsv'.format(sub_id)
 
-    # Check directory is present and file name not yet used
-    init_dir, data_dir = make_data_dir()
+        # Make sure the file for descr exists ... but no associated data yet
+        init_dir, data_dir = make_data_dir()
+        events_file = op.join(data_dir, fname_events)
+        if not op.exists(events_file):
+            raise OSError('\n\nTo run task C, we need a data file "{}".'
+                          'But it does not exist.\n\n'
+                          .format(events_file))
 
-    data_file = op.join(data_dir, fname)
-    if op.exists(data_file):
-        raise OSError('\n\nA data file for ID "{}" already exists.\n\n'
-                      .format(sub_id))
+        # For descriptions task, the data file is not a new one to write, but
+        # an old one from which to get experienced data
+        # The log file will be created in `run_descriptions`
+        data_file = events_file
 
-    # Write header to the tab separated log file
-    variable_meanings_dict = make_events_json_dict()
-    variables = list(variable_meanings_dict.keys())
+        # Assert the log file does not yet exist
+        head, tail = op.split(events_file)
+        sub_part = tail.split('_task')[0]
+        fname = sub_part + '_task-description_events.tsv'
+        log_file = op.join(head, fname)
+        if op.exists(log_file):
+            raise OSError('\n\nA data file for ID "{}" already exists.\n\n'
+                          .format(sub_id))
 
-    with open(data_file, 'w') as fout:
-        header = '\t'.join(variables)
-        fout.write(header + '\n')
+        # No yoking in descriptions
+        yoke_to = None
 
-    # Write a brief log file for this participant ... only needs to be done
-    # once. If it is done twice, then you can check which condition was first
-    # by checking the starting time in the events.tsv file.
-    if not isinstance(gui_info, dict):
-        fname = 'log_{}_{}.txt'.format(sub_id, condition)
-        log_path = op.join(data_dir, fname)
-        prefixes = ['sub_id', 'age', 'sex', 'yoke_to']
-        with open(log_path, 'w') as fout:
-            for i, line in enumerate([sub_id, age, sex, yoke_to]):
-                fout.write('{}: {}'.format(prefixes[i], line))
-                fout.write('\n')
+    else:
+        fname = 'sub-{:02d}_task-sp{}_events.tsv'.format(sub_id, condition)
+
+        # Check directory is present and file name not yet used
+        init_dir, data_dir = make_data_dir()
+
+        data_file = op.join(data_dir, fname)
+        if op.exists(data_file):
+            raise OSError('\n\nA data file for ID "{}" already exists.\n\n'
+                          .format(sub_id))
+
+        # Write header to the tab separated log file
+        variable_meanings_dict = make_events_json_dict()
+        variables = list(variable_meanings_dict.keys())
+
+        with open(data_file, 'w') as fout:
+            header = '\t'.join(variables)
+            fout.write(header + '\n')
+
+        # Write a brief log file for this participant ... only needs to be done
+        # once. If it is done twice, then you can check which condition was
+        # first by checking the starting time in the events.tsv file.
+        if not isinstance(gui_info, dict):
+            fname = 'log_{}_{}.txt'.format(sub_id, condition)
+            log_path = op.join(data_dir, fname)
+            prefixes = ['sub_id', 'age', 'sex', 'yoke_to']
+            with open(log_path, 'w') as fout:
+                for i, line in enumerate([sub_id, age, sex, yoke_to]):
+                    fout.write('{}: {}'.format(prefixes[i], line))
+                    fout.write('\n')
 
     return sub_id, data_file, condition, yoke_to
 
@@ -902,16 +952,24 @@ if __name__ == '__main__':
     # Perhaps just run (no auto)
     if run and not auto:
         sub_id, data_file, condition, yoke_to = prep_logging(yoke_map)
-        run_flow(monitor=monitor,
-                 ser=ser,
-                 max_ntrls=max_ntrls,
-                 max_nsamples=max_nsamples,
-                 block_size=block_size,
-                 data_file=data_file,
-                 condition=condition,
-                 yoke_to=yoke_to,
-                 lang=lang,
-                 font=font)
+        if condition != 'description':
+            run_flow(monitor=monitor,
+                     ser=ser,
+                     max_ntrls=max_ntrls,
+                     max_nsamples=max_nsamples,
+                     block_size=block_size,
+                     data_file=data_file,
+                     condition=condition,
+                     yoke_to=yoke_to,
+                     lang=lang,
+                     font=font)
+        else:
+            run_descriptions(events_file=data_file,
+                             monitor=monitor,
+                             ser=ser,
+                             lang=lang,
+                             experienced=DESCR_EXPERIENCED
+                             )
 
     # if auto, do a complete flow
     if run and auto:

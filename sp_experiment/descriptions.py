@@ -42,7 +42,7 @@ from sp_experiment.define_settings import (KEYLIST_DESCRIPTION,
 
 
 def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
-                     font='', lang='de', experienced=False):
+                     font='', lang='de', experienced=False, is_test=False):
     """Run decisions from descriptions.
 
     Parameters
@@ -56,7 +56,7 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
         Either string address to a serial port for sending triggers, or
         a Fake_serial object, see utils.py. Defaults to Fake_serial.
     experienced : bool
-        Whether to base lotteries on true or on experienced distributions.
+        Whether to base lotteries on experienced distributions.
 
     """
     # prepare logging and read in present data
@@ -160,7 +160,7 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
     rt_clock = core.Clock()
 
     # Get ready to start the experiment. Start timing from next button press.
-    txt_stim.text = provide_start_str(is_test=False, condition='description',
+    txt_stim.text = provide_start_str(is_test=is_test, condition='description',
                                       lang=lang)
     txt_stim.draw()
     win.flip()
@@ -307,7 +307,7 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
     # We are done here
     txt_stim.color = color_standard
     [stim.setAutoDraw(False) for stim in fixation_stim_parts]
-    txt_stim.text = provide_stop_str(is_test=False, lang=lang)
+    txt_stim.text = provide_stop_str(is_test=is_test, lang=lang)
     txt_stim.pos = (0, 0)
     txt_stim.height = 1
     txt_stim.draw()

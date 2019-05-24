@@ -24,7 +24,7 @@ toutmask_ms = (800, 800)  # time for masking an outcome ("show blob")
 toutshow_ms = (500, 500)  # time for showing an outcome ("show number")
 tdisplay_ms = (1000, 1000)  # show color: new trial, error, final choice
 
-expected_value_diff = 0.1  # For payoff settings to be used
+expected_value_diff = 0.9  # For payoff settings to be used
 
 # Set the fixation_stim colors for signalling state of the experiment
 color_standard = txt_color  # prompt for an action
@@ -54,3 +54,6 @@ yoke_map = OrderedDict(zip(list(range(1, 11)), list(range(1, 11))))
 # Next 10 are mapped to first ten
 for i, j in zip(list(range(11, 21)), list(range(1, 11))):
     yoke_map[i] = j
+
+# In description: Show experienced lotteries?
+DESCR_EXPERIENCED = True
