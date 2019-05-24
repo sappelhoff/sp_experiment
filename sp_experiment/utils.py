@@ -164,7 +164,8 @@ def _get_payoff_setting(df, trial, experienced=False):
     # quick sanity check that we have proper roundings, for example 0.3 instead
     # of 0.29999999 ... 1., 2., 3., etc. would be fine (as magnitudes)
     for entry in setting[0]:
-        assert len(str(entry)) in [2, 3]  # 2 for magnitudes, 3 for probs
+        # 2 for magnitudes, 3 for probs ... or special entry "99" (experienced)
+        assert (len(str(entry)) in [2, 3]) or entry==99
     return setting
 
 
