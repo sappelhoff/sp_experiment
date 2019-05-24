@@ -34,20 +34,24 @@ color_error = (1, 0, 0)  # wait: you did an error ... we have to restart
 
 # EXPERIMENT SETTINGS,  including yoke_map to determine which participant
 # gets yoked to which
+twait_show_instr = 0  # how long to force instruction screen
 monitor = 'room26'
 ser = None  # either address to serial port or None
-max_ntrls = 100
-max_nsamples = 12
-block_size = 20
 maxwait = 3
 exchange_rate = 0.005
 lang = 'de'
 font = 'Liberation Sans'
 
+max_ntrls = 1
+max_nsamples = 1
+block_size = 1
 # Settings for training
 test_max_ntrls = 1
-test_max_nsamples = 12
+test_max_nsamples = 1
 test_block_size = 1
+
+
+
 
 # First 10 subjs are mapped to themselves
 yoke_map = OrderedDict(zip(list(range(1, 11)), list(range(1, 11))))

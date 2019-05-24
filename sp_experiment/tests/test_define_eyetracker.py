@@ -6,6 +6,7 @@ import ast
 import numpy as np
 import pandas as pd
 
+import sp_experiment
 from sp_experiment.define_eyetracker import (find_eyetracker,
                                              get_gaze_data_callback,
                                              gaze_dict,
@@ -22,6 +23,12 @@ def test_find_eyetracker():
 def test_get_normed_gazepoint():
     """Test gazepoint conversion."""
     # Tobii has a system with (0, 0) in upper left
+    # First take "default" gaze_dict
+    gaze_dict = sp_experiment.define_eyetracker.gaze_dict
+    gazepoint = get_normed_gazepoint(gaze_dict)
+    np.testing.assert_array_equal(gazepoint, np.array((0, 0)))
+
+    # Now try other "gazes"
     gaze_dict = {'gaze': ((0, 0), (0, 0))}
     gazepoint = get_normed_gazepoint(gaze_dict)
     np.testing.assert_array_equal(gazepoint, np.array((-1, 1)))
@@ -45,10 +52,10 @@ def test_get_gaze_data_callback():
     fname = 'tmp_ba0a6dd03443308b2ef5caa84ed30726fc2e368b.tsv'
 
     # Check the initial gaze
-    assert gaze_dict['gaze'][0][0] == 0
-    assert gaze_dict['gaze'][0][1] == 0
-    assert gaze_dict['gaze'][1][0] == 0
-    assert gaze_dict['gaze'][1][1] == 0
+    assert gaze_dict['gaze'][0][0] == 0.5
+    assert gaze_dict['gaze'][0][1] == 0.5
+    assert gaze_dict['gaze'][1][0] == 0.5
+    assert gaze_dict['gaze'][1][1] == 0.5
 
     # Make our callback function
     gaze_data_callback = get_gaze_data_callback(fname)

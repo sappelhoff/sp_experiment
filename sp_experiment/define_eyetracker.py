@@ -12,8 +12,9 @@ import numpy as np
 import tobii_research as tr
 
 # global gaze_dict allows us to share the gazepoint of the left and right eye
-# as tuples. By default it's set to be at (0, 0) for each eye
-gaze_dict = {'gaze': ((0, 0), (0, 0))}
+# as tuples. By default it's set to be at (0.5, 0.5) for each eye, which
+# corresponds to the center of the screen in the tobii coordinate system
+gaze_dict = {'gaze': ((0.5, 0.5), (0.5, 0.5))}
 
 
 def find_eyetracker():

@@ -387,16 +387,17 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
         eyetrack_fpath = op.join(head, eyetrack_fname)
         # This callback and the subscription method call will regularly
         # update the gaze_dict['gaze'] tuple with the left and right gaze point
-        # However, the initial state should be 0
-        assert gaze_dict['gaze'][0][0] == 0
-        assert gaze_dict['gaze'][1][0] == 0
+        # However, the initial state should be 0.5 (center according to tobii
+        # coordinate system)
+        assert gaze_dict['gaze'][0][0] == 0.5
+        assert gaze_dict['gaze'][1][0] == 0.5
         gaze_data_callback = get_gaze_data_callback(eyetrack_fpath)
         eyetracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, gaze_data_callback,
                                 as_dictionary=True)
         # Collect for a bit and confirm that we truly get the gaze data
         core.wait(1)
-        assert gaze_dict['gaze'][0][0] != 0
-        assert gaze_dict['gaze'][1][0] != 0
+        assert gaze_dict['gaze'][0][0] != 0.5
+        assert gaze_dict['gaze'][1][0] != 0.5
         assert op.exists(eyetrack_fpath)
 
     # Get PsychoPy stimuli ready
@@ -652,6 +653,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                 dist_norm = np.linalg.norm(gazepoint)
 
                 # Is gaze not within our tolerance?
+                print(gaze_dict, dist_norm, GAZE_TOLERANCE)
                 if dist_norm >= GAZE_TOLERANCE:
                     gaze__error_count += 1
                     if gaze__error_count > GAZE_ERROR_THRESH:
@@ -867,8 +869,10 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     event.waitKeys()
 
     # Stop recording eye data and reset gaze to default
-    eyetracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, gaze_data_callback)
-    gaze_dict['gaze'] = ((0, 0), (0, 0))
+    if track_eyes:
+        eyetracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA,
+                                    gaze_data_callback)
+    gaze_dict['gaze'] = ((0.5, 0.5), (0.5, 0.5))
     win.close()
 
 
@@ -1036,6 +1040,15 @@ if __name__ == '__main__':
                  yoke_to=yoke_to,
                  lang=lang,
                  font=font)
+
+        # Run third condition
+        run_instructions(kind='description', monitor=monitor, lang=lang,
+                         font=font)
+        fname = 'sub-{:02d}_task-spactive_events.tsv'.format(sub_id)
+        init_dir = op.dirname(sp_experiment.__file__)
+        events_file = op.join(init_dir, 'experiment_data', fname)
+        run_descriptions(events_file=events_file, monitor=monitor, ser=ser,
+                         font=font, lang=lang, experienced=DESCR_EXPERIENCED)
 
         # Print out earnings
         bonus = calc_bonus_payoff(sub_id, exchange_rate, lang=lang)

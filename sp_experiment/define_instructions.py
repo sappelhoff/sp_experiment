@@ -7,7 +7,7 @@ import tobii_research as tr
 
 import sp_experiment
 from sp_experiment.utils import get_final_choice_outcomes
-from sp_experiment.define_settings import txt_color
+from sp_experiment.define_settings import txt_color, twait_show_instr
 
 
 def run_instructions(kind, monitor='testMonitor', font='', lang='en',
@@ -76,7 +76,7 @@ def run_instructions(kind, monitor='testMonitor', font='', lang='en',
             txt_stim.text = text
             txt_stim.draw()
             win.flip()
-            core.wait(2)  # force some wait time
+            core.wait(twait_show_instr)  # force some wait time
             key = event.waitKeys()
             if key[0] == 'x':
                 break
@@ -113,7 +113,7 @@ def run_instructions(kind, monitor='testMonitor', font='', lang='en',
                 img_stim.image = op.join(img_dir, 'fix_stims.png')
                 img_stim.draw()
             win.flip()
-            core.wait(2)  # force some wait time
+            core.wait(twait_show_instr)  # force some wait time
             key = event.waitKeys()
             if key[0] == 'x':
                 break
@@ -150,7 +150,7 @@ def run_instructions(kind, monitor='testMonitor', font='', lang='en',
                 img_stim.image = op.join(img_dir, 'fix_stims.png')
                 img_stim.draw()
             win.flip()
-            core.wait(2)  # force some wait time
+            core.wait(twait_show_instr)  # force some wait time
             key = event.waitKeys()
             if key[0] == 'x':
                 break
@@ -162,7 +162,7 @@ def run_instructions(kind, monitor='testMonitor', font='', lang='en',
             txt_stim.draw()
 
             win.flip()
-            core.wait(2)  # force some wait time
+            core.wait(twait_show_instr)  # force some wait time
             key = event.waitKeys()
             if key[0] == 'x':
                 break

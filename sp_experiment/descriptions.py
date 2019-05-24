@@ -90,16 +90,17 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
         eyetrack_fpath = op.join(head, eyetrack_fname)
         # This callback and the subscription method call will regularly
         # update the gaze_dict['gaze'] tuple with the left and right gaze point
-        # However, the initial state should be 0
-        assert gaze_dict['gaze'][0][0] == 0
-        assert gaze_dict['gaze'][1][0] == 0
+        # However, the initial state should be 0.5 (center according to tobii
+        # coordinate system)
+        assert gaze_dict['gaze'][0][0] == 0.5
+        assert gaze_dict['gaze'][1][0] == 0.5
         gaze_data_callback = get_gaze_data_callback(eyetrack_fpath)
         eyetracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, gaze_data_callback,
                                 as_dictionary=True)
         # Collect for a bit and confirm that we truly get the gaze data
         core.wait(1)
-        assert gaze_dict['gaze'][0][0] != 0
-        assert gaze_dict['gaze'][1][0] != 0
+        assert gaze_dict['gaze'][0][0] != 0.5
+        assert gaze_dict['gaze'][1][0] != 0.5
         assert op.exists(eyetrack_fpath)
 
     # Trigger meanings and values
@@ -318,8 +319,10 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
     event.waitKeys()
 
     # Stop recording eye data and reset gaze to default
-    eyetracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, gaze_data_callback)
-    gaze_dict['gaze'] = ((0, 0), (0, 0))
+    if track_eyes:
+        eyetracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA,
+                                    gaze_data_callback)
+    gaze_dict['gaze'] = ((0.5, 0.5), (0.5, 0.5))
     win.close()
 
 
