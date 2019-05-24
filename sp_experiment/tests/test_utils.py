@@ -43,10 +43,12 @@ def test_calc_bonus_payoff():
     """Test bonus calculation."""
     # Check for non-present data
     bonus = calc_bonus_payoff(998)
-    assert bonus == 'did not yet complete task "A".'
+    assert isinstance(bonus, list)
+    assert len(bonus) == 4
+    assert bonus[0] == 'did not yet complete task "A".'
 
     bonus = calc_bonus_payoff(999)
-    assert bonus == 'did not yet complete task "B".'
+    assert bonus[1] == 'did not yet complete task "B".'
 
     # present data ... temporarily copy over a test file
     tmp_fpath1 = op.join(data_dir, 'sub-998_task-spactive_events.tsv')
@@ -59,8 +61,7 @@ def test_calc_bonus_payoff():
     # remove tmp files
     os.remove(tmp_fpath1)
     os.remove(tmp_fpath2)
-
-    assert bonus == 'earned 3 Euros as bonus.'
+    assert bonus[-1] == '4 Euros'
 
 
 def test_get_final_choice_outcomes():

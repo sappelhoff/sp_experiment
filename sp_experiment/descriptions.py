@@ -38,13 +38,12 @@ from sp_experiment.define_settings import (KEYLIST_DESCRIPTION,
                                            tdisplay_ms,
                                            tfeeddelay_ms,
                                            toutmask_ms,
-                                           toutshow_ms,
-                                           block_size
+                                           toutshow_ms
                                            )
 
 
 def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
-                     block_size=10,
+                     block_size=1,
                      font='', lang='de', experienced=False, is_test=False):
     """Run decisions from descriptions.
 
