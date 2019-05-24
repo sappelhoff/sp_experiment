@@ -44,37 +44,66 @@ def calc_bonus_payoff(sub_id, exchange_rate=0.01, lang='en'):
 
     Returns
     -------
-    bonus : str
-        A String stating the bonus in Euros, or that a condition has not yet
-        been completed.
+    bonus : list of str
+        A list containing strings for each condition with the bonus in Euros,
+        or that a condition has not yet been completed.
 
     """
     data_dir = op.join(op.dirname(sp_experiment.__file__), 'experiment_data')
-    points = 0
-    for condition in ['active', 'passive']:
-        fname = 'sub-{:02d}_task-sp{}_events.tsv'.format(sub_id, condition)
+    bonus = list()
+    total_money = list()
+    # Check how much was earned in each task
+    for condition in ['active', 'passive', 'description']:
+        if condition == 'description':
+            fname = 'sub-{:02d}_task-description_events.tsv'.format(sub_id)
+        else:
+            fname = 'sub-{:02d}_task-sp{}_events.tsv'.format(sub_id, condition)
         fpath = op.join(data_dir, fname)
+
+        # In case task was not done, tell it so
         if not op.exists(fpath):
-            modstr = 'A' if condition == 'active' else 'B'
+            if condition == 'active':
+                modstr = 'A'
+            elif condition == 'passive':
+                modstr = 'B'
+            else:
+                modstr = 'C'
             if lang == 'de':
-                bonus = ('Aufgabe "{}" wurde noch nicht durchgeführt.'
-                         .format(modstr))
+                bonus_str = ('Aufgabe "{}" wurde noch nicht durchgeführt.'
+                             .format(modstr))
             elif lang == 'en':
-                bonus = 'did not yet complete task "{}".'.format(modstr)
-            return bonus
+                bonus_str = 'did not yet complete task "{}".'.format(modstr)
+
+            # Task not done, means no money earned
+            total_money.append(0)
+
+        # If task was done, get all earned points
         else:
             df = pd.read_csv(fpath, sep='\t')
             trig_dict = provide_trigger_dict()
             trig_fin_out = [ord(trig_dict['trig_show_final_out_l']),
                             ord(trig_dict['trig_show_final_out_r'])]
             vals = df[df['value'].isin(trig_fin_out)]['outcome'].values
-            points += np.sum(vals)
+            points = np.sum(vals)
 
-    money = int(np.ceil(points * exchange_rate))
-    if lang == 'de':
-        bonus = '{} Euro wurden als Bonus verdient.'.format(money)
-    elif lang == 'en':
-        bonus = 'earned {} Euros as bonus.'.format(money)
+            # Convert points to money for this task
+            money = int(np.ceil(points * exchange_rate))
+            if lang == 'de':
+                bonus_str = '{} Euro wurden als Bonus verdient.'.format(money)
+            elif lang == 'en':
+                bonus_str = 'earned {} Euros as bonus.'.format(money)
+
+            # keep a tally for computing total later on
+            total_money.append(money)
+
+        # append this task's bonus to all bonus_strs
+        bonus.append(bonus_str)
+
+    # make one more str for TOTAL
+    total = np.sum(total_money)
+    bonus_str = '{} Euros'.format(total)
+    bonus.append(bonus_str)
+
     return bonus
 
 

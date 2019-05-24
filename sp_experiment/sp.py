@@ -136,7 +136,10 @@ def navigation(nav='initial', bonus='', lang='en', yoke_map=None,
             myDlg.addField('Language:', choices=['de', 'en'])
 
         elif nav == 'show_bonus':
-            myDlg.addFixedField('Bonus:', bonus)
+            myDlg.addFixedField('Task A:', bonus[0])
+            myDlg.addFixedField('Task B:', bonus[1])
+            myDlg.addFixedField('Task C:', bonus[2])
+            myDlg.addFixedField('TOTAL:', bonus[3])
             nav = 'quit'
 
         # Get data
