@@ -14,7 +14,9 @@ import sp_experiment
 from sp_experiment.define_ttl_triggers import provide_trigger_dict
 from sp_experiment.define_payoff_settings import get_random_payoff_dict
 from sp_experiment.define_variable_meanings import make_description_task_json
-from sp_experiment.define_instructions import instruct_str_descriptions
+from sp_experiment.define_instructions import (provide_start_str,
+                                               provide_stop_str
+                                               )
 from sp_experiment.utils import (_get_payoff_setting,
                                  get_fixation_stim,
                                  set_fixstim_color,
@@ -157,26 +159,22 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
     # NOTE: Will be reset to 0 right before recording a button press
     rt_clock = core.Clock()
 
-    # Print some instructions
-    txt_stim.text = instruct_str_descriptions(lang)
+    # Get ready to start the experiment. Start timing from next button press.
+    txt_stim.text = provide_start_str(is_test=False, condition='description',
+                                      lang=lang)
     txt_stim.draw()
     win.flip()
     event.waitKeys()
-
-    # Start a clock for general experiment time
     value = trig_dict['trig_begin_experiment']
     ser.write(value)
     exp_timer = core.MonotonicClock()
     log_data(data_file, onset=exp_timer.getTime(),
              value=value)
-
-    # set height for stimuli to be shown below
-    txt_stim.height = 4
+    txt_stim.height = 4  # set height for stimuli to be shown below
 
     # Now collect the data
     ntrials = int(df['trial'].max())+1
-    for trial in range(ntrials+10):  # XXX
-        trial = 0  # XXX
+    for trial in range(ntrials):
 
         # Prepare lotteries for a new trial
         # Extract the true magnitudes and probabilities
@@ -279,6 +277,7 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
         txt_stim.text = str(outcome)
         # manually push text to center of circle
         txt_stim.pos += (0, 0.3)
+        txt_stim.color = (0, 1, 0)  # make green, because it is consequential
 
         # delay feedback
         frames = get_jittered_waitframes(*tfeeddelay_ms)
@@ -306,10 +305,22 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
                          duration=frames, outcome=outcome, value=trig_val_show)
 
     # We are done here
+    txt_stim.color = color_standard
+    [stim.setAutoDraw(False) for stim in fixation_stim_parts]
+    txt_stim.text = provide_stop_str(is_test=False, lang=lang)
+    txt_stim.pos = (0, 0)
+    txt_stim.height = 1
+    txt_stim.draw()
     value = trig_dict['trig_end_experiment']
     win.callOnFlip(ser.write, value)
     win.flip()
     log_data(data_file, onset=exp_timer.getTime(), value=value)
+    event.waitKeys()
+
+    # Stop recording eye data and reset gaze to default
+    eyetracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, gaze_data_callback)
+    gaze_dict['gaze'] = ((0, 0), (0, 0))
+    win.close()
 
 
 if __name__ == '__main__':
