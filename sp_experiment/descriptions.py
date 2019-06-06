@@ -249,10 +249,15 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
                          trial=trial, value=value, duration=frames)
 
         # Present lotteries
-        txt_left.text = '{}|{}\n{}|{}'.format(mag0_1, prob0_1,
-                                              mag0_2, prob0_2)
-        txt_right.text = '{}|{}\n{}|{}'.format(mag1_1, prob1_1,
-                                               mag1_2, prob1_2)
+        prob0_1 = '|' + str(prob0_1)
+        prob0_2 = '|' + str(prob0_2)
+        prob1_1 = '|' + str(prob1_1)
+        prob1_2 = '|' + str(prob1_2)
+
+        txt_left.text = '{}{}\n{}{}'.format(mag0_1, prob0_1,
+                                            mag0_2, prob0_2)
+        txt_right.text = '{}{}\n{}{}'.format(mag1_1, prob1_1,
+                                             mag1_2, prob1_2)
 
         set_fixstim_color(inner, color_standard)
         txt_left.draw()
