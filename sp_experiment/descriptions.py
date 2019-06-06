@@ -58,8 +58,10 @@ from sp_experiment.define_settings import (KEYLIST_DESCRIPTION,
 
 
 def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
-                     block_size=1,
-                     font='', lang='de', experienced=False, is_test=False):
+                     block_size=1, font='', lang='de', experienced=False,
+                     is_test=False, xpos1=2.5, xpos2=1.5,
+                     colmag=(1, 0, 0), colprob=(0, 0, 1),
+                     height=1):
     """Run decisions from descriptions.
 
     Parameters
@@ -76,6 +78,14 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
         Number of trials after which feedback is provided
     experienced : bool
         Whether to base lotteries on experienced distributions.
+    xpos1, xpos2 : float
+        X-axis positions of the two Text stimuli that make up one lottery.
+        The difference between xpos1 and xpos2 determines the space between
+        the displayed magnitude and associated probability
+    colmag, colprob: tuple
+        Color tuples of how to display magnitude text and probability text
+    height: int
+        Height of the text stimuli
 
     """
     # prepare logging and read in present data
@@ -161,19 +171,15 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
     txt_stim.height = 1
     txt_stim.font = font
 
-    txt_left = visual.TextStim(win,
-                               color=txt_color,
-                               units='deg',
-                               pos=(-2, 0))
-    txt_left.height = 1
-    txt_left.font = font
+    txt_left1 = visual.TextStim(win, color=colmag, units='deg',
+                                pos=(-xpos1, 0), height=height, font=font)
+    txt_left2 = visual.TextStim(win, color=colprob, units='deg',
+                                pos=(-xpos2, 0), height=height, font=font)
 
-    txt_right = visual.TextStim(win,
-                                color=txt_color,
-                                units='deg',
-                                pos=(2, 0))
-    txt_right.height = 1
-    txt_right.font = font
+    txt_right1 = visual.TextStim(win, color=colmag, units='deg',
+                                 pos=(xpos2, 0), height=height, font=font)
+    txt_right2 = visual.TextStim(win, color=colprob, units='deg',
+                                 pos=(xpos1, 0), height=height, font=font)
 
     # Prepare circle stim for presenting outcomes
     circ_stim = visual.Circle(win,
@@ -301,19 +307,23 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
         mag1_2 = mag1_2 if not np.isnan(mag1_2) else ''
 
         # make probs of not-encountered magnitudes an empty string as well
-        prob0_1 = '|' + str(prob0_1) if not np.isnan(prob0_1) else ''
-        prob0_2 = '|' + str(prob0_2) if not np.isnan(prob0_2) else ''
-        prob1_1 = '|' + str(prob1_1) if not np.isnan(prob1_1) else ''
-        prob1_2 = '|' + str(prob1_2) if not np.isnan(prob1_2) else ''
+        prob0_1 = str(prob0_1) if not np.isnan(prob0_1) else ''
+        prob0_2 = str(prob0_2) if not np.isnan(prob0_2) else ''
+        prob1_1 = str(prob1_1) if not np.isnan(prob1_1) else ''
+        prob1_2 = str(prob1_2) if not np.isnan(prob1_2) else ''
 
-        txt_left.text = '{}{}\n{}{}'.format(mag0_1, prob0_1,
-                                            mag0_2, prob0_2)
-        txt_right.text = '{}{}\n{}{}'.format(mag1_1, prob1_1,
-                                             mag1_2, prob1_2)
+        txt_left1.text = '{}\n{}'.format(mag0_1, mag0_2)
+        txt_left2.text = '{}\n{}'.format(prob0_1, prob0_2)
+
+        txt_right1.text = '{}\n{}'.format(mag1_1, mag1_2)
+        txt_right2.text = '{}\n{}'.format(prob1_1, prob1_2)
+
 
         set_fixstim_color(inner, color_standard)
-        txt_left.draw()
-        txt_right.draw()
+        txt_left1.draw()
+        txt_left2.draw()
+        txt_right1.draw()
+        txt_right2.draw()
         value = trig_dict['trig_final_choice_onset']
         win.callOnFlip(ser.write, value)
         rt_clock.reset()

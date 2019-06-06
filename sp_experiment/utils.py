@@ -149,7 +149,7 @@ def _get_payoff_setting(df, trial, experienced=False):
     Returns
     -------
     setting : ndarray, shape(8,)
-    
+
     Notes
     -----
     Always take the last available setting, because the previous ones (if there
@@ -206,7 +206,7 @@ def _get_payoff_setting(df, trial, experienced=False):
     # of 0.29999999 ... 1., 2., 3., etc. would be fine (as magnitudes)
     for entry in setting[0]:
         # 2 for magnitudes, 3 for probs ... or special entry "99" (experienced)
-        assert (len(str(entry)) in [2, 3]) or entry == 99
+        assert (len(str(entry)) in [2, 3]) or entry in [98, 99]
     return setting
 
 
