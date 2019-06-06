@@ -146,6 +146,10 @@ def _get_payoff_setting(df, trial, experienced=False):
     experienced : bool
         if True, get the experienced payoff_setting instead of the true one
 
+    Returns
+    -------
+    setting : ndarray, shape(8,)
+    
     Notes
     -----
     Always take the last available setting, because the previous ones (if there
@@ -176,19 +180,17 @@ def _get_payoff_setting(df, trial, experienced=False):
         for side in [0, 1]:
             distr = payoff_dict[side]
 
-            # Special case 1 if only one distr sampled: at two 99s with
-            # each p=0.5 ... 99 will later be replaced with actual magnitudes
-            # based on true distrs in that trial
+            # Special case 1 if only one distr sampled: add two 99s with
+            # each p=99
             if len(distr) == 0:
-                for i in [99, 0.5, 99, 0.5]:
+                for i in [99, 99, 99, 99]:
                     wrong_format_setting.append(i)
                 continue
 
-            # Special case 2 if only one outcome sampled: add a 99
-            # to be replaced with a p=0
+            # Special case 2 if only one outcome sampled: add a 98 with p=0
             outcomes = np.unique(distr)
             if len(outcomes) < 2:
-                outcomes = np.append(outcomes, np.array(99))
+                outcomes = np.append(outcomes, np.array(98))
             # Go though outcomes
             for out_i in outcomes:
                 wrong_format_setting.append(out_i)

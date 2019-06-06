@@ -2,6 +2,21 @@
 
 Based on a data file collected in the active SP condition, provide gambles
 from descriptions.
+
+Notes
+-----
+When we display the description task according to *experienced* data, it might
+happen that during the experienced condition (i) a distribution was not sampled
+or (ii) not all outcomes were encountered while sampling a distribution. We
+deal with this as such:
+
+(i) we simply display all probabilities as if they were from the true condition
+    (i.e., the true underlying probabilities) ... then we can later drop that
+    trial from the data before analysis. This will not disrupt the paradigm
+    flow ... and it's an event that is expected to happen very rarely
+(ii) we show only the outcomes that WERE encountered, and if they were the
+     only ones for a distribution, we assign them the probability of 1
+
 """
 import os.path as op
 
@@ -221,6 +236,36 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
             prob0_2 = exp_setting[0, 3]
             prob1_1 = exp_setting[0, 6]
             prob1_2 = exp_setting[0, 7]
+
+            # If a distribution has not been sampled, display standard probs
+            # we can drop the trial from analysis
+            if 99 in exp_setting:
+                prob0_1 = setting[0, 2]
+                prob0_2 = setting[0, 3]
+                prob1_1 = setting[0, 6]
+                prob1_2 = setting[0, 7]
+
+            # Else, if not all 4 outcomes were observed, adjust probabilities
+            # to simulate "safe" lotteries
+            elif 98 in exp_setting:
+                if exp_setting[0, 0] == 98:
+                    mag0_1 = np.nan
+                    prob0_1 = np.nan
+                    prob0_2 = 100
+                if exp_setting[0, 1] == 98:
+                    mag0_2 = np.nan
+                    prob0_2 = np.nan
+                    prob0_1 = 100
+                if exp_setting[0, 4] == 98:
+                    mag1_1 = np.nan
+                    prob1_1 = np.nan
+                    prob1_2 = 100
+                if exp_setting[0, 5] == 98:
+                    mag1_2 = np.nan
+                    prob1_2 = np.nan
+                    prob1_1 = 100
+
+        # If not running in experienced mode ...
         else:
             # Use true probabilities
             prob0_1 = setting[0, 2]
@@ -249,10 +294,17 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
                          trial=trial, value=value, duration=frames)
 
         # Present lotteries
-        prob0_1 = '|' + str(prob0_1)
-        prob0_2 = '|' + str(prob0_2)
-        prob1_1 = '|' + str(prob1_1)
-        prob1_2 = '|' + str(prob1_2)
+        # make not encountered magnitudes an empty string so they don't show
+        mag0_1 = mag0_1 if not np.isnan(mag0_1) else ''
+        mag0_2 = mag0_2 if not np.isnan(mag0_2) else ''
+        mag1_1 = mag1_1 if not np.isnan(mag1_1) else ''
+        mag1_2 = mag1_2 if not np.isnan(mag1_2) else ''
+
+        # make probs of not-encountered magnitudes an empty string as well
+        prob0_1 = '|' + str(prob0_1) if not np.isnan(prob0_1) else ''
+        prob0_2 = '|' + str(prob0_2) if not np.isnan(prob0_2) else ''
+        prob1_1 = '|' + str(prob1_1) if not np.isnan(prob1_1) else ''
+        prob1_2 = '|' + str(prob1_2) if not np.isnan(prob1_2) else ''
 
         txt_left.text = '{}{}\n{}{}'.format(mag0_1, prob0_1,
                                             mag0_2, prob0_2)
