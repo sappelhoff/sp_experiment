@@ -173,10 +173,23 @@ def get_random_payoff_dict(payoff_settings, pseudorand=False, df=None):
     # Form a payoff dictionary from the selected setting
     payoff_setting = payoff_settings[selected_row_idx, :]
     payoff_dict = OrderedDict()
-    payoff_dict[0] = [int(payoff_setting[0])] * int(payoff_setting[2]*10)
-    payoff_dict[0] += [int(payoff_setting[1])] * int(payoff_setting[3]*10)
-    payoff_dict[1] = [int(payoff_setting[4])] * int(payoff_setting[6]*10)
-    payoff_dict[1] += [int(payoff_setting[5])] * int(payoff_setting[7]*10)
+
+    # Need special way to deal with NaNs in payoff setting (related to
+    # descriptions.py  when displaying distributions where not all outcomes
+    # were encountered)
+    def _nanint(x, prob=False):
+        if np.isnan(x):
+            return np.nan if prob==False else 1
+        else:
+            return int(x)
+
+    left_distr = [_nanint(payoff_setting[0])] * _nanint(payoff_setting[2]*10, True)  # noqa: E501
+    left_distr += [_nanint(payoff_setting[1])] * _nanint(payoff_setting[3]*10,  True)  # noqa: E501
+    right_distr = [_nanint(payoff_setting[4])] * _nanint(payoff_setting[6]*10, True)  # noqa: E501
+    right_distr += [_nanint(payoff_setting[5])] * _nanint(payoff_setting[7]*10, True)  # noqa: E501
+
+    payoff_dict[0] = [i for i in left_distr if ~np.isnan(i)]
+    payoff_dict[1] = [i for i in right_distr if ~np.isnan(i)]
 
     # Remore the selected setting from all settings (no replacement)
     payoff_settings = np.delete(payoff_settings, [selected_row_idx], axis=0)
