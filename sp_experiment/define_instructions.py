@@ -161,6 +161,17 @@ def run_instructions(kind, monitor='testMonitor', font='', lang='en',
             txt_stim.text = text
             txt_stim.draw()
 
+            # Draw red and blue lottery
+            txt_stim1 = visual.TextStim(win, units='deg', color=(1, 0, 0),
+                                        height=1, font=font, text='1\n5',
+                                        pos=(-0.5, -7))
+            txt_stim2 = visual.TextStim(win, units='deg', color=(0, 0, 1),
+                                        height=1, font=font, text='90\n10',
+                                        pos=(0.5, -7))
+
+            txt_stim1.draw()
+            txt_stim2.draw()
+            # Flip and go
             win.flip()
             core.wait(twait_show_instr)  # force some wait time
             key = event.waitKeys()
@@ -345,13 +356,13 @@ def _provide_description_instr_str(lang='en'):
                         'Seite jeweils eine Lotterie sehen. Benutzen Sie die '
                         'linke oder rechte Taste, um sich für die Lotterie '
                         'zu entscheiden, die Sie spielen wollen. '
-                        'Danach wird ihnen ihr Gewinn angezeigt.'
-                        '\n\nBeispiel für eine Lotterie:\n\n')
-        instruct_str += '1|90\n5|10'
-        instruct_str += '\n\n'
-        instruct_str += ('Diese Lotterie bedeutet: 1 Punkt mit 90%iger oder '
-                         '5 Punkte mit 10%iger Chance')
-        instruct_str += '\n\nDrücken Sie eine beliebige Taste um zu beginnen.'
+                        'Danach wird ihnen ihr Gewinn angezeigt.')
+        instruct_str += ('Unten sehen Sie ein Beispiel für *eine* Lotterie. '
+                         'Diese Lotterie bedeutet: 1 Punkt mit 90%iger oder '
+                         '5 Punkte mit 10%iger Chance. Die Punktzahl wird '
+                         'in rot angezeigt, die Wahrscheinlichkeit in blau.')
+        instruct_str += ('\n\n\n\n\nDrücken Sie eine beliebige Taste um zu '
+                         'beginnen.')
 
         texts.append(instruct_str)
 

@@ -1,10 +1,4 @@
-"""Implement the experimental flow of the sampling paradigm.
-
-To do
------
-- incorporate task "from description"
-
-"""
+"""Implement the experimental flow of the sampling paradigm."""
 import os
 import os.path as op
 from collections import OrderedDict
@@ -665,7 +659,6 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                 dist_norm = np.linalg.norm(gazepoint)
 
                 # Is gaze not within our tolerance?
-                print(gaze_dict, dist_norm, GAZE_TOLERANCE)
                 if dist_norm >= GAZE_TOLERANCE:
                     gaze__error_count += 1
                     if gaze__error_count > GAZE_ERROR_THRESH:
