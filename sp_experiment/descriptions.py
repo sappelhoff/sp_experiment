@@ -243,7 +243,18 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
             prob1_1 = exp_setting[0, 6]
             prob1_2 = exp_setting[0, 7]
 
-            # Need to make sure it always sums to 1
+            # Need to make sure it always sums to 100
+            def _adjust_to_100(p1, p2):
+                if p1 + p2 != 100:
+                    cointoss = np.random.choice([0, 1])
+                    if cointoss == 0:
+                        p1 += 1
+                    else:
+                        p2 += 1
+                assert p1 + p2 == 100
+                return p1, p2
+            prob0_1, prob0_2 = _adjust_to_100(prob0_1, prob0_2)
+            prob1_1, prob1_2 = _adjust_to_100(prob1_1, prob1_2)
 
             # If a distribution has not been sampled, display standard probs
             # we can drop the trial from analysis
