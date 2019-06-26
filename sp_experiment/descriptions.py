@@ -243,6 +243,8 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
             prob1_1 = exp_setting[0, 6]
             prob1_2 = exp_setting[0, 7]
 
+            # Need to make sure it always sums to 1
+
             # If a distribution has not been sampled, display standard probs
             # we can drop the trial from analysis
             if 99 in exp_setting:
@@ -317,7 +319,6 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
 
         txt_right1.text = '{}\n{}'.format(mag1_1, mag1_2)
         txt_right2.text = '{}\n{}'.format(prob1_1, prob1_2)
-
 
         set_fixstim_color(inner, color_standard)
         txt_left1.draw()

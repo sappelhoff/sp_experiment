@@ -142,7 +142,9 @@ def _get_payoff_setting(df, trial, experienced=False):
     Parameters
     ----------
     df : pandas.DataFrame
+        The data from which to obtain payoff settings.
     trial : int
+        The trial within the data for which to retrieve the payoff setting.
     experienced : bool
         if True, get the experienced payoff_setting instead of the true one
 
@@ -195,7 +197,7 @@ def _get_payoff_setting(df, trial, experienced=False):
             for out_i in outcomes:
                 wrong_format_setting.append(out_i)
                 # Round it to one decimal
-                p = np.around(distr.count(out_i) / len(distr), 1)
+                p = np.around(distr.count(out_i) / len(distr), 2)
                 wrong_format_setting.append(p)
 
     # Correct format from mag, prob, mag, prob ... to mag, mag, prob, prob ...
@@ -205,8 +207,9 @@ def _get_payoff_setting(df, trial, experienced=False):
     # quick sanity check that we have proper roundings, for example 0.3 instead
     # of 0.29999999 ... 1., 2., 3., etc. would be fine (as magnitudes)
     for entry in setting[0]:
-        # 2 for magnitudes, 3 for probs ... or special entry "99" (experienced)
-        assert (len(str(entry)) in [2, 3]) or entry in [98, 99]
+        # 2 for magnitudes, 3 or 4 for probs ... or special entry "99"
+        # (experienced)
+        assert (len(str(entry)) in [2, 3, 4]) or entry in [98, 99]
     return setting
 
 
