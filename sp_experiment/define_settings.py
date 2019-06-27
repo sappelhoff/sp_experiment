@@ -44,7 +44,7 @@ font = 'Liberation Sans'
 
 max_ntrls = 1
 max_nsamples = 2
-block_size = 1
+block_size = 20
 # Settings for training
 test_max_ntrls = 1
 test_max_nsamples = 1
@@ -58,4 +58,4 @@ for i, j in zip(list(range(11, 21)), list(range(1, 11))):
 
 # In description
 DESCR_EXPERIENCED = True  # Show experienced lotteries?
-fraction_to_run = .05  # what fraction of all trials to run?
+fraction_to_run = 1.  # what fraction of all trials to run?
