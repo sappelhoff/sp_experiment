@@ -439,33 +439,33 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
                 log_data(data_file, onset=exp_timer.getTime(), trial=trial,
                          duration=frames, outcome=outcome, value=trig_val_show)
 
-    # reset text color
-    txt_stim.color = color_standard
+        # reset text color
+        txt_stim.color = color_standard
 
-    # Is a block finished? If yes, display block feedback and
-    # provide a short break
-    nth_trial = trials_to_run.index(trial) + 1
-    if nth_trial % block_size == 0:
-        current_nblocks += 1
-        [stim.setAutoDraw(False) for stim in fixation_stim_parts]
-        txt_stim.text = provide_blockfbk_str(data_file,
-                                             current_nblocks,
-                                             nblocks,
-                                             lang=lang)
-        txt_stim.pos = (0, 0)
-        txt_stim.height = 1
-        txt_stim.draw()
-        value = trig_dict['trig_block_feedback']
-        win.callOnFlip(ser.write, value)
-        win.flip()
-        log_data(data_file, onset=exp_timer.getTime(), value=value)
-        core.wait(1)  # wait for a bit so that this is not skipped
-        event.waitKeys()
+        # Is a block finished? If yes, display block feedback and
+        # provide a short break
+        nth_trial = trials_to_run.index(trial) + 1
+        if nth_trial % block_size == 0:
+            current_nblocks += 1
+            [stim.setAutoDraw(False) for stim in fixation_stim_parts]
+            txt_stim.text = provide_blockfbk_str(data_file,
+                                                 current_nblocks,
+                                                 nblocks,
+                                                 lang=lang)
+            txt_stim.pos = (0, 0)
+            txt_stim.height = 1
+            txt_stim.draw()
+            value = trig_dict['trig_block_feedback']
+            win.callOnFlip(ser.write, value)
+            win.flip()
+            log_data(data_file, onset=exp_timer.getTime(), value=value)
+            core.wait(1)  # wait for a bit so that this is not skipped
+            event.waitKeys()
 
-        # Reset stim settings for next block
-        [stim.setAutoDraw(True) for stim in fixation_stim_parts]
-        # set height for stimuli to be shown below
-        txt_stim.height = 4
+            # Reset stim settings for next block
+            [stim.setAutoDraw(True) for stim in fixation_stim_parts]
+            # set height for stimuli to be shown below
+            txt_stim.height = 4
 
     # We are done here
     [stim.setAutoDraw(False) for stim in fixation_stim_parts]
