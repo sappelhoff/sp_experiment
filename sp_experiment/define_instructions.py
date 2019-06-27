@@ -7,7 +7,8 @@ import tobii_research as tr
 
 import sp_experiment
 from sp_experiment.utils import get_final_choice_outcomes
-from sp_experiment.define_settings import txt_color, twait_show_instr
+from sp_experiment.define_settings import (txt_color, twait_show_instr,
+                                           color_magnitude, color_probability)
 
 
 def run_instructions(kind, monitor='testMonitor', font='', lang='en',
@@ -162,10 +163,12 @@ def run_instructions(kind, monitor='testMonitor', font='', lang='en',
             txt_stim.draw()
 
             # Draw red and blue lottery
-            txt_stim1 = visual.TextStim(win, units='deg', color=(1, 0, 0),
+            txt_stim1 = visual.TextStim(win, units='deg',
+                                        color=color_magnitude,
                                         height=1, font=font, text='1\n5',
                                         pos=(-0.5, -7))
-            txt_stim2 = visual.TextStim(win, units='deg', color=(0, 0, 1),
+            txt_stim2 = visual.TextStim(win, units='deg',
+                                        color=color_probability,
                                         height=1, font=font, text='90\n10',
                                         pos=(0.5, -7))
 
@@ -360,7 +363,7 @@ def _provide_description_instr_str(lang='en'):
         instruct_str += ('Unten sehen Sie ein Beispiel für *eine* Lotterie. '
                          'Diese Lotterie bedeutet: 1 Punkt mit 90%iger oder '
                          '5 Punkte mit 10%iger Chance. Die Punktzahl wird '
-                         'in rot angezeigt, die Wahrscheinlichkeit in blau.')
+                         'in pink angezeigt, die Wahrscheinlichkeit in blau.')
         instruct_str += ('\n\n\n\n\nDrücken Sie eine beliebige Taste um zu '
                          'beginnen.')
 

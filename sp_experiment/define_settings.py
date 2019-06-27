@@ -59,3 +59,5 @@ for i, j in zip(list(range(11, 21)), list(range(1, 11))):
 # In description
 DESCR_EXPERIENCED = True  # Show experienced lotteries?
 fraction_to_run = 1.  # what fraction of all trials to run?
+color_magnitude = (1, 0, 1)
+color_probability = (0, 0, 1)

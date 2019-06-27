@@ -50,6 +50,8 @@ from sp_experiment.define_settings import (KEYLIST_DESCRIPTION,
                                            circ_color,
                                            color_newtrl,
                                            color_standard,
+                                           color_magnitude,
+                                           color_probability,
                                            ser,
                                            tdisplay_ms,
                                            tfeeddelay_ms,
@@ -62,7 +64,7 @@ from sp_experiment.define_settings import (KEYLIST_DESCRIPTION,
 def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
                      block_size=1, font='', lang='de', experienced=False,
                      is_test=False, xpos1=2.5, xpos2=1.5,
-                     colmag=(1, 0, 0), colprob=(0, 0, 1),
+                     colmag=color_magnitude, colprob=color_probability,
                      height=1, fraction_to_run=fraction_to_run):
     """Run decisions from descriptions.
 
