@@ -19,6 +19,7 @@ deal with this as such:
 
 """
 import os.path as op
+import warnings
 
 import pandas as pd
 import numpy as np
@@ -263,17 +264,26 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
             prob1_2 = exp_setting[0, 7]
 
             # Need to make sure it always sums to 100
-            def _adjust_to_100(p1, p2):
+            def _adjust_to_100(p1, p2, trial):
+                """If p1 and p2 do not sum to 100, adjust them."""
                 if p1 + p2 != 100:
                     cointoss = np.random.choice([0, 1])
                     if cointoss == 0:
-                        p1 += 1
+                        p1 = 100 - p2
                     else:
-                        p2 += 1
-                assert p1 + p2 == 100
+                        p2 = 100 - p1
+                try:
+                    assert p1 + p2 == 100
+                    assert p1 >= 0 and p1 <= 100
+                    assert p2 >= 0 and p2 <= 100
+                except AssertionError:
+                    warnings.warn('Probabilities do not add to 100. '
+                                  'Trial:{}, p1={}, p2={}'
+                                  .format(trial, p1, p2))
                 return p1, p2
-            prob0_1, prob0_2 = _adjust_to_100(prob0_1, prob0_2)
-            prob1_1, prob1_2 = _adjust_to_100(prob1_1, prob1_2)
+
+            prob0_1, prob0_2 = _adjust_to_100(prob0_1, prob0_2, trial)
+            prob1_1, prob1_2 = _adjust_to_100(prob1_1, prob1_2, trial)
 
             # If a distribution has not been sampled, display standard probs
             # we can drop the trial from analysis
@@ -312,10 +322,10 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
             prob1_2 = setting[0, 7]
 
         # log used setting and convert back probabilities back to proportions
-        used_setting = np.asarray([mag0_1, np.round(prob0_1/100, 1),
-                                   mag0_2, np.round(prob0_2/100, 1),
-                                   mag1_1, np.round(prob1_1/100, 1),
-                                   mag1_2, np.round(prob1_2/100, 1)])
+        used_setting = np.asarray([mag0_1, np.round(prob0_1/100, 2),
+                                   mag0_2, np.round(prob0_2/100, 2),
+                                   mag1_1, np.round(prob1_1/100, 2),
+                                   mag1_2, np.round(prob1_2/100, 2)])
         log_data(data_file, onset=exp_timer.getTime(), trial=trial,
                  payoff_dict=used_setting)
 

@@ -198,7 +198,7 @@ def _get_payoff_setting(df, trial, experienced=False):
             for out_i in outcomes:
                 wrong_format_setting.append(out_i)
                 # Round it to one decimal
-                p = np.around(distr.count(out_i) / len(distr), 2)
+                p = np.round(distr.count(out_i) / len(distr), 2)
                 wrong_format_setting.append(p)
 
     # Correct format from mag, prob, mag, prob ... to mag, mag, prob, prob ...
