@@ -53,7 +53,8 @@ from sp_experiment.define_settings import (KEYLIST_DESCRIPTION,
                                            tdisplay_ms,
                                            tfeeddelay_ms,
                                            toutmask_ms,
-                                           toutshow_ms
+                                           toutshow_ms,
+                                           fraction_to_run
                                            )
 
 
@@ -61,7 +62,7 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
                      block_size=1, font='', lang='de', experienced=False,
                      is_test=False, xpos1=2.5, xpos2=1.5,
                      colmag=(1, 0, 0), colprob=(0, 0, 1),
-                     height=1):
+                     height=1, fraction_to_run=fraction_to_run):
     """Run decisions from descriptions.
 
     Parameters
@@ -86,6 +87,9 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
         Color tuples of how to display magnitude text and probability text
     height: int
         Height of the text stimuli
+    fraction_to_run : float
+        Fraction of all trials to run. Must be > 0 and <= 1. If smaller than 1,
+        will make a random selection of trials to run.
 
     """
     # prepare logging and read in present data
@@ -101,10 +105,25 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
         header = '\t'.join(variables)
         fout.write(header + '\n')
 
-    # Check how many trials we have and whether that fits with blocks
+    # How many trials can we present at most?
     ntrials = int(df['trial'].max())+1
-    assert ntrials % block_size == 0
-    nblocks = int(ntrials/block_size)
+
+    # In case we only want a subset of all possible trials in description
+    if fraction_to_run == 1:
+        trials_to_run = list(range(ntrials))
+    elif fraction_to_run <= 0 or fraction_to_run > 1:
+        raise ValueError('fraction_to_run must be > 0 and <=1 but is {}'
+                         .format(fraction_to_run))
+    else:
+        # fraction is > 0 but < 1
+        rand_selection = np.random.permutation(ntrials)
+        count = int(np.ceil(ntrials * fraction_to_run))
+        trials_to_run_arr = rand_selection[:count]
+        trials_to_run = sorted(trials_to_run_arr)
+
+    # Maker sure our number of trials fits with number of blocks
+    assert len(trials_to_run) % block_size == 0
+    nblocks = int(len(trials_to_run)/block_size)
 
     # Prepare eyetracking
     try:
@@ -213,7 +232,7 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
 
     # Now collect the data
     current_nblocks = 0
-    for trial in range(ntrials):
+    for trial in trials_to_run:
 
         # Prepare lotteries for a new trial
         # Extract the true magnitudes and probabilities
@@ -415,7 +434,8 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
 
     # Is a block finished? If yes, display block feedback and
     # provide a short break
-    if (trial+1) % block_size == 0:
+    nth_trial = trials_to_run.index(trial) + 1
+    if nth_trial % block_size == 0:
         current_nblocks += 1
         [stim.setAutoDraw(False) for stim in fixation_stim_parts]
         txt_stim.text = provide_blockfbk_str(data_file,

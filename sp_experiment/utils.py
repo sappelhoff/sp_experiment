@@ -121,12 +121,13 @@ def get_final_choice_outcomes(df):
         vector of outcomes final choices.
 
     """
-    ntrials = int(df['trial'].max()+1)
-    outcomes = np.zeros(ntrials) * np.nan
-    for trial in range(ntrials):
+    trial_list = [int(i) for i in df['trial'].dropna().unique()]
+    outcomes = list()
+    for trial in trial_list:
         tmp_df = df[df['trial'] == trial]
         # The last outcome recorded in a trial is final choice outcome
-        outcomes[trial] = tmp_df['outcome'].dropna().tolist()[-1]
+        outcomes.append(tmp_df['outcome'].dropna().tolist()[-1])
+    outcomes = np.asarray(outcomes)
 
     return outcomes
 

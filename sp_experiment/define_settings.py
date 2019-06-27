@@ -56,5 +56,6 @@ yoke_map = OrderedDict(zip(list(range(1, 11)), list(range(1, 11))))
 for i, j in zip(list(range(11, 21)), list(range(1, 11))):
     yoke_map[i] = j
 
-# In description: Show experienced lotteries?
-DESCR_EXPERIENCED = True
+# In description
+DESCR_EXPERIENCED = True  # Show experienced lotteries?
+fraction_to_run = .05  # what fraction of all trials to run?

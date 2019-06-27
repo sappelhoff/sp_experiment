@@ -38,7 +38,8 @@ from sp_experiment.define_settings import (KEYLIST_SAMPLES,
                                            test_max_nsamples,
                                            test_block_size,
                                            yoke_map,
-                                           DESCR_EXPERIENCED
+                                           DESCR_EXPERIENCED,
+                                           fraction_to_run
                                            )
 from sp_experiment.define_variable_meanings import (make_events_json_dict,
                                                     make_data_dir
@@ -978,7 +979,8 @@ if __name__ == '__main__':
                              ser=ser,
                              lang=lang,
                              experienced=DESCR_EXPERIENCED,
-                             block_size=block_size
+                             block_size=block_size,
+                             fraction_to_run=fraction_to_run
                              )
 
     # if auto, do a complete flow
@@ -1055,7 +1057,8 @@ if __name__ == '__main__':
         events_file = op.join(init_dir, 'experiment_data', fname)
         run_descriptions(events_file=events_file, monitor=monitor, ser=ser,
                          font=font, lang=lang, experienced=DESCR_EXPERIENCED,
-                         block_size=block_size)
+                         block_size=block_size,
+                         fraction_to_run=fraction_to_run)
 
         # Print out earnings
         bonus = calc_bonus_payoff(sub_id, exchange_rate, lang=lang)
