@@ -1,4 +1,5 @@
 """Functions that either provide an instruction flow or a string to display."""
+import os
 import os.path as op
 
 import numpy as np
@@ -12,9 +13,35 @@ from sp_experiment.define_settings import (txt_color, twait_show_instr,
                                            OPTIONAL_STOPPING)
 
 
-def run_instructions(kind, monitor='testMonitor', font='', lang='en',
+def print_human_readable_instrs(kind, fpath=None):
+    """Print the instructions in readable format.
+
+    Parameters
+    ----------
+    kind : str
+        Can be 'active', 'passive', or 'description'
+    fpath : str | None
+        Path to the file to be written. If None, will print to console. If
+        file already exists, it will be deleted.
+
+    """
+    texts = run_instructions(kind, return_text_only=True)
+
+    if fpath is None:
+        for text in texts:
+            print(text)
+    else:
+        if op.exists(fpath):
+            os.remove(fpath)
+        with open(fpath, 'w', encoding='utf-8') as fout:
+            for text in texts:
+                fout.write(text + '\n\n')
+
+
+def run_instructions(kind, monitor='testMonitor', font='', lang='de',
                      max_ntrls=100, max_nsamples=12, block_size=25, maxwait=3,
-                     exchange_rate=0.01):
+                     exchange_rate=0.01, opt_stop=OPTIONAL_STOPPING,
+                     return_text_only=False, track_eyes=False):
     """Show experiment instructions on the screen.
 
     Parameters
@@ -37,43 +64,54 @@ def run_instructions(kind, monitor='testMonitor', font='', lang='en',
         Maximum time to wait for a response until time out
     exchange_rate : float
         Conversion rate of points to Euros
+    opt_stop : bool
+        True if optional stopping is allowed in this run, False otherwise ...
+        see the experiment settings in define_settings.py
+    return_text_only : bool
+        If True, will only return the texts. No impact if False
+    track_eyes : bool
+        Defaults to False: will not change the instruction strings to
+        accommodate for eyetracking. Will automatically switch to True if an
+        eyetracker is detected in Runtime
 
     """
-    from psychopy import visual, event, core
+    if not return_text_only:
+        from psychopy import visual, event, core
 
-    # Check if we have an eyetracker
-    track_eyes = False
-    found_eyetrackers = tr.find_all_eyetrackers()
-    if len(found_eyetrackers) > 0:
-        track_eyes = True
+        # Check if we have an eyetracker
+        found_eyetrackers = tr.find_all_eyetrackers()
+        if len(found_eyetrackers) > 0:
+            track_eyes = True
 
-    # Define monitor specific window object
-    win = visual.Window(color=(0, 0, 0),  # Background color: RGB [-1,1]
-                        fullscr=True,  # Fullscreen for better timing
-                        monitor=monitor,
-                        winType='pyglet')
+        # Define monitor specific window object
+        win = visual.Window(color=(0, 0, 0),  # Background color: RGB [-1,1]
+                            fullscr=True,  # Fullscreen for better timing
+                            monitor=monitor,
+                            winType='pyglet')
 
-    # Hide the cursor
-    win.mouseVisible = False
+        # Hide the cursor
+        win.mouseVisible = False
 
-    # prepare text object
-    txt_stim = visual.TextStim(win,
-                               units='deg',
-                               color=txt_color)
-    txt_stim.height = 1
-    txt_stim.font = font
+        # prepare text object
+        txt_stim = visual.TextStim(win,
+                                   units='deg',
+                                   color=txt_color)
+        txt_stim.height = 1
+        txt_stim.font = font
 
-    # prepare image stim
-    img_stim = visual.ImageStim(win)
-    img_stim.pos = (0.5, 0)
+        # prepare image stim
+        img_stim = visual.ImageStim(win)
+        img_stim.pos = (0.5, 0)
 
-    # general image directorys
-    init_dir = op.dirname(sp_experiment.__file__)
-    img_dir = op.join(init_dir, 'image_data')
+        # general image directorys
+        init_dir = op.dirname(sp_experiment.__file__)
+        img_dir = op.join(init_dir, 'image_data')
 
     # START INSTRUCTIONS
     if kind == 'general':
         texts = _provide_general_instr_str(lang=lang)
+        if return_text_only:
+            return texts
         for text in texts:
             txt_stim.text = text
             txt_stim.draw()
@@ -86,7 +124,9 @@ def run_instructions(kind, monitor='testMonitor', font='', lang='en',
     elif kind == 'active':
         texts = _provide_active_instr_strs(lang, max_ntrls, max_nsamples,
                                            block_size, maxwait, exchange_rate,
-                                           track_eyes)
+                                           track_eyes, opt_stop)
+        if return_text_only:
+            return texts
         for text in texts:
             txt_stim.text = text
             txt_stim.draw()
@@ -123,7 +163,9 @@ def run_instructions(kind, monitor='testMonitor', font='', lang='en',
     elif kind == 'passive':
         texts = _provide_passive_instr_strs(lang, max_ntrls, max_nsamples,
                                             block_size, maxwait, exchange_rate,
-                                            track_eyes)
+                                            track_eyes, opt_stop)
+        if return_text_only:
+            return texts
         for text in texts:
             txt_stim.text = text
             txt_stim.draw()
@@ -159,6 +201,8 @@ def run_instructions(kind, monitor='testMonitor', font='', lang='en',
 
     elif kind == 'description':
         texts = _provide_description_instr_str(lang=lang)
+        if return_text_only:
+            return texts
         for text in texts:
             txt_stim.text = text
             txt_stim.draw()
@@ -187,8 +231,9 @@ def run_instructions(kind, monitor='testMonitor', font='', lang='en',
 
 def _provide_active_instr_strs(lang, max_ntrls, max_nsamples, block_size,
                                maxwait, exchange_rate, track_eyes,
-                               stop_opt=OPTIONAL_STOPPING):
+                               opt_stop=OPTIONAL_STOPPING):
     """Provide active instr texts."""
+    # Eyetracking special replacement strings
     if track_eyes:
         eyetrackstr1 = ' Wenn Sie während eines Versuchs wiederholt nicht ausreichend fixieren, muss der Versuch erneut gestartet werden.'  # noqa: E501
         eyetrackstr2 = ' Die Farbe wechselt auch zu rot, wenn Sie wiederholt nicht ausreichend den zentralen Stimulus fixiert haben.'  # noqa: E501
@@ -197,29 +242,32 @@ def _provide_active_instr_strs(lang, max_ntrls, max_nsamples, block_size,
         eyetrackstr1 = ''
         eyetrackstr2 = ''
         eyetrackstr3 = ''
-    if stop_opt:
-        stopoptstr1 = 'bis zu einem Maximum von {}'.format(max_nsamples)
-        stopoptstr2 = 'von Ihnen gewählte Anzahl an Kugeln (bis zu maximal {})'.format(max_nsamples)  # noqa: E501
-        stopoptstr3 = 'nach dem Drücken der "Stopp" Taste oder '
-        stopoptstr4 = 'maximal {}'.format(max_nsamples)
+
+    # Optional stopping special replacement strings
+    if opt_stop:
+        opt_stop_str1 = 'bis zu einem Maximum von {}'.format(max_nsamples)
+        opt_stop_str2 = 'von Ihnen gewählte Anzahl an Kugeln (bis zu maximal {})'.format(max_nsamples)  # noqa: E501
+        opt_stop_str3 = 'nach dem Drücken der "Stopp" Taste oder '
+        opt_stop_str4 = 'maximal {}'.format(max_nsamples)
     else:
-        stopoptstr1 = max_nsamples
-        stopoptstr2 = '{} Kugeln'.format(max_nsamples)
-        stopoptstr3 = ''
-        stopoptstr4 = '{}'.format(max_nsamples)
+        opt_stop_str1 = max_nsamples
+        opt_stop_str2 = '{} Kugeln'.format(max_nsamples)
+        opt_stop_str3 = ''
+        opt_stop_str4 = '{}'.format(max_nsamples)
+
     texts = list()
     if lang == 'de':
         texts.append('Instruktionen Aufgabe A. Bitte lesen Sie aufmerksam den folgenden Text. Drücken Sie eine beliebige Taste um fortzufahren. Achten Sie auf die Details in der Beschreibung! In dieser Aufgabe werden Sie selbst nach Informationen suchen.')  # noqa: E501
         texts.append('Bitte fixieren Sie während des Experiments mit ihrem Blick immer den zentralen Stimulus in der Bildschirmmitte.{}'.format(eyetrackstr1))  # noqa: E501
         texts.append('Links und rechts von dem zentralen Stimulus befinden sich zwei unsichtbare Urnen. In den Urnen befinden sich jeweils zehn Kugeln mit Zahlen darauf. Die Zahlen stehen für Spielpunkte, die zu einem Wechselkurs von {} in Euro umgewandelt werden. Dieses Geld in Euro wird Ihnen am Ende des Experimentes als Bonus ausgezahlt.'.format(exchange_rate))  # noqa: E501
-        texts.append('Es gibt in dieser Aufgabe viele Durchgänge. In jedem Durchgang gibt es neue Urnen, und ihre Aufgabe wird jedes Mal sein, sich am Ende der Aufgabe für eine der beiden Urnen zu entscheiden. Um etwas über den Inhalt der Urnen zu erfahren, dürfen Sie in jedem Durchgang zunächst insgesamt {} mal blind eine Kugel ziehen. Dies können Sie tun, indem Sie die linke oder die rechte Taste drücken. Sie können also jedes Mal selbst wählen, aus welcher Urne die nächste Kugel gezogen wird. Die Kugel wird jedesmal  zufällig aus der jeweiligen Urne gezogen und Ihnen kurz gezeigt. Danach wird die Kugel zurück in die ursprüngliche Urne gelegt. Es sind also IMMER 10 Kugeln in jeder Urne. In anderen Worten, der Inhalt der Urnen wird durch Ihre Ziehung(en) nicht verändert.'.format(stopoptstr1))  # noqa: E501 E999
-        if stop_opt:
+        texts.append('Es gibt in dieser Aufgabe viele Durchgänge. In jedem Durchgang gibt es neue Urnen, und ihre Aufgabe wird jedes Mal sein, sich am Ende der Aufgabe für eine der beiden Urnen zu entscheiden. Um etwas über den Inhalt der Urnen zu erfahren, dürfen Sie in jedem Durchgang zunächst insgesamt {} mal blind eine Kugel ziehen. Dies können Sie tun, indem Sie die linke oder die rechte Taste drücken. Sie können also jedes Mal selbst wählen, aus welcher Urne die nächste Kugel gezogen wird. Die Kugel wird jedesmal  zufällig aus der jeweiligen Urne gezogen und Ihnen kurz gezeigt. Danach wird die Kugel zurück in die ursprüngliche Urne gelegt. Es sind also IMMER 10 Kugeln in jeder Urne. In anderen Worten, der Inhalt der Urnen wird durch Ihre Ziehung(en) nicht verändert.'.format(opt_stop_str1))  # noqa: E501 E999
+        if opt_stop:
             # If optional stopping, append an extra explanation on how to stop
             texts.append('Wie bereits erwähnt können Sie in jedem Durchgang maximal {} mal blind eine Kugel ziehen, um mehr über die Urnen zu lernen. Sie können jedoch auch schon früher aufhören, Kugeln zu ziehen. Das können Sie mit der Taste über der rechten Tase anzeigen. Beim Drücken der dieser "Stopp" Taste wird sofort die nächste Phase des momentanen Durchgangs eingeleitet, wie im Folgenden beschrieben.')  # noqa: E501
-        texts.append('Nachdem Sie sich die {} angeschaut haben, müssen Sie sich final für eine der Urnen entscheiden. Ihr Ziel sollte natürlich sein, dabei immer die jeweils bessere Urne zu wählen. Nach dieser finalen Entscheidung wird aus der gewählten Urne nochmals eine Kugel (zufällig) gezogen. Die Punkte auf dieser finalen Kugel werden Ihrem Konto gutgeschrieben. Dies wird durch die grüne Farbe der Punkte gezeigt. Danach beginnt ein neuer Durchgang mit komplett neuen Urnen. Insgesamt gibt es {} Durchgänge und alle {} Durchgänge werden Sie Zeit für eine kurze Pause haben.'.format(stopoptstr2, max_ntrls, block_size))  # noqa: E501
+        texts.append('Nachdem Sie sich die {} angeschaut haben, müssen Sie sich final für eine der Urnen entscheiden. Ihr Ziel sollte natürlich sein, dabei immer die jeweils bessere Urne zu wählen. Nach dieser finalen Entscheidung wird aus der gewählten Urne nochmals eine Kugel (zufällig) gezogen. Die Punkte auf dieser finalen Kugel werden Ihrem Konto gutgeschrieben. Dies wird durch die grüne Farbe der Punkte gezeigt. Danach beginnt ein neuer Durchgang mit komplett neuen Urnen. Insgesamt gibt es {} Durchgänge und alle {} Durchgänge werden Sie Zeit für eine kurze Pause haben.'.format(opt_stop_str2, max_ntrls, block_size))  # noqa: E501
         texts.append('Als Hilfestellung zeigt Ihnen die Farbe des zentralen Stimulus an, was während der Durchgänge als nächstes passiert: Zu Beginn eines Durchgangs ist der Stimulus kurz grün und dann weiß. Das bedeutet, dass neue unsichtbaren Urnen links und rechts aufgestellt wurden.')  # noqa: E501
         texts.append('Danach bleibt die Farbe des zentralen Stimulus weiß. Das bedeutet, dass Sie jetzt eine Kugel aus einer der Urnen ziehen können, durch Drücken der linken oder der rechten Taste. Während Sie darauf warten, dass die Kugel gezeigt wird, wird die Farbe des zentralen Stimulus auch noch weiß sein.')  # noqa: E501
-        texts.append('Wenn Sie {}nach {} Zügen ein weiteres Mal die linke oder rechte Taste drücken, wechselt die Farbe des zentralen Stimulus kurz zu blau und wird dann wieder weiß. Das bedeutet, dass Sie sich nun final zwischen den Urnen entscheiden müssen. Zur Erinnerung: Nur die Kugel die nach der finalen Entscheidung gezogen wird bestimmt, wie viele Punkte ihrem Konto hinzugefügt werden.'.format(stopoptstr3, stopoptstr4))  # noqa: E501
+        texts.append('Wenn Sie {}nach {} Zügen ein weiteres Mal die linke oder rechte Taste drücken, wechselt die Farbe des zentralen Stimulus kurz zu blau und wird dann wieder weiß. Das bedeutet, dass Sie sich nun final zwischen den Urnen entscheiden müssen. Zur Erinnerung: Nur die Kugel die nach der finalen Entscheidung gezogen wird bestimmt, wie viele Punkte ihrem Konto hinzugefügt werden.'.format(opt_stop_str3, opt_stop_str4))  # noqa: E501
         texts.append('Für Ihre Entscheidungen haben Sie jeweils {} Sekunden Zeit. Wenn Sie länger warten, wechselt die Farbe des zentralen Stimulus zu rot und der momentane Durchgang wird abgebrochen.{} Direkt danach wird ein neuer Durchgang gestartet.'.format(maxwait, eyetrackstr2))  # noqa: E501
         texts.append('Zusammenfassend bedeuten die Farben das folgende:\n\ngrün: neuer Durchgang mit neuen Urnen\n\nweiß: Urne wählen oder auf zufällig gezogene Kugel warten\n\nblau: nächste Entscheidung ist die finale Entscheidung für diesen Durchgang\n\nrot: Sie haben länger als {} Sekunden gewartet {}und der Durchgang wird abgebrochen'.format(maxwait, eyetrackstr3))  # noqa: E501
         texts.append('Die Instruktionen sind abgeschlossen. Drücken Sie eine beliebige Taste um fortzufahren.')  # noqa: E501
@@ -231,8 +279,9 @@ def _provide_active_instr_strs(lang, max_ntrls, max_nsamples, block_size,
 
 def _provide_passive_instr_strs(lang, max_ntrls, max_nsamples, block_size,
                                 maxwait, exchange_rate, track_eyes,
-                                stop_opt=OPTIONAL_STOPPING):
+                                opt_stop=OPTIONAL_STOPPING):
     """Provide passive instr texts."""
+    # Eyetracking special replacement strings
     if track_eyes:
         eyetrackstr1 = ' Wenn Sie während eines Versuchs wiederholt nicht ausreichend fixieren, muss der Versuch erneut gestartet werden.'  # noqa: E501
         eyetrackstr2 = ' Die Farbe wechselt auch zu rot, wenn Sie wiederholt nicht ausreichend den zentralen Stimulus fixiert haben.'  # noqa: E501
@@ -241,13 +290,26 @@ def _provide_passive_instr_strs(lang, max_ntrls, max_nsamples, block_size,
         eyetrackstr1 = ''
         eyetrackstr2 = ''
         eyetrackstr3 = ''
+
+    # Optional stopping special replacement strings
+    if opt_stop:
+        opt_stop_str1 = 'bis zu einem Maximum von {}'.format(max_nsamples)
+        opt_stop_str2 = 'vom Computer gewählte Anzahl an Kugeln (bis zu maximal {})'.format(max_nsamples)  # noqa: E501
+        opt_stop_str3 = 'nach dem Drücken der "Stopp" Taste oder '
+        opt_stop_str4 = 'maximal {}'.format(max_nsamples)
+    else:
+        opt_stop_str1 = max_nsamples
+        opt_stop_str2 = '{} Kugeln'.format(max_nsamples)
+        opt_stop_str3 = ''
+        opt_stop_str4 = '{}'.format(max_nsamples)
+
     texts = list()
     if lang == 'de':
         texts.append('Instruktionen Aufgabe B. Bitte lesen Sie aufmerksam den folgenden Text. Drücken Sie eine beliebige Taste um fortzufahren. Achten Sie auf die Details in der Beschreibung! In dieser Aufgabe wird der Computer Sie mit Informationen versorgen.')  # noqa: E501
         texts.append('Bitte fixieren Sie während des Experiments mit ihrem Blick immer den zentralen Stimulus in der Bildschirmmitte.{}'.format(eyetrackstr1))  # noqa: E501
         texts.append('Links und rechts von dem zentralen Stimulus befinden sich zwei unsichtbare Urnen. In den Urnen befinden sich jeweils zehn Kugeln mit Zahlen darauf. Die Zahlen stehen für Spielpunkte, die zu einem Wechselkurs von {} in Euro umgewandelt werden. Dieses Geld in Euro wird Ihnen am Ende des Experimentes als Bonus ausgezahlt.'.format(exchange_rate))  # noqa: E501
-        texts.append('Es gibt in dieser Aufgabe viele Durchgänge. In jedem Durchgang gibt es neue Urnen, und ihre Aufgabe wird jedes Mal sein, sich am Ende der Aufgabe für eine der beiden Urnen zu entscheiden. Der Computer wird zunächst insgesamt {} mal blind eine Kugel ziehen. Hierzu wird der Computer entscheiden,  aus welcher Urne die nächste Kugel gezogen wird. Die Kugel wird jedesmal  zufällig aus der jeweiligen Urne gezogen und Ihnen kurz gezeigt. Danach wird die Kugel zurück in die ursprüngliche Urne gelegt. Es sind also IMMER 10 Kugeln in jeder Urne. In anderen Worten, der Inhalt der Urnen wird durch Ihre Ziehung(en) nicht verändert.'.format(max_nsamples))  # noqa: E501
-        texts.append('Nachdem Sie sich die {} Kugeln angeschaut haben, müssen Sie sich final für eine der Urnen entscheiden. Dies können Sie tun, indem Sie die linke oder die rechte Taste drücken. Ihr Ziel sollte natürlich sein, dabei immer die jeweils bessere Urne zu wählen. Nach dieser finalen Entscheidung wird aus der gewählten Urne nochmals eine Kugel (zufällig) gezogen. Die Punkte auf dieser finalen Kugel werden Ihrem Konto gutgeschrieben.'.format(max_nsamples))  # noqa: E501
+        texts.append('Es gibt in dieser Aufgabe viele Durchgänge. In jedem Durchgang gibt es neue Urnen, und ihre Aufgabe wird jedes Mal sein, sich am Ende der Aufgabe für eine der beiden Urnen zu entscheiden. Der Computer wird zunächst insgesamt {} mal blind eine Kugel ziehen. Hierzu wird der Computer entscheiden,  aus welcher Urne die nächste Kugel gezogen wird. Die Kugel wird jedesmal  zufällig aus der jeweiligen Urne gezogen und Ihnen kurz gezeigt. Danach wird die Kugel zurück in die ursprüngliche Urne gelegt. Es sind also IMMER 10 Kugeln in jeder Urne. In anderen Worten, der Inhalt der Urnen wird durch Ihre Ziehung(en) nicht verändert.'.format(opt_stop_str1))  # noqa: E501
+        texts.append('Nachdem Sie sich die {} angeschaut haben, müssen Sie sich final für eine der Urnen entscheiden. Dies können Sie tun, indem Sie die linke oder die rechte Taste drücken. Ihr Ziel sollte natürlich sein, dabei immer die jeweils bessere Urne zu wählen. Nach dieser finalen Entscheidung wird aus der gewählten Urne nochmals eine Kugel (zufällig) gezogen. Die Punkte auf dieser finalen Kugel werden Ihrem Konto gutgeschrieben.'.format(opt_stop_str2))  # noqa: E501
         texts.append('Dies wird durch die grüne Farbe der Punkte gezeigt. Danach beginnt ein neuer Durchgang mit komplett neuen Urnen. Insgesamt gibt es {} Durchgänge und alle {} Durchgänge werden Sie Zeit für eine kurze Pause haben.'.format(max_ntrls, block_size))  # noqa: E501
         texts.append('Als Hilfestellung zeigt Ihnen die Farbe des zentralen Stimulus an, was während der Durchgänge als nächstes passiert: Zu Beginn eines Durchgangs ist der Stimulus kurz grün und dann weiß. Das bedeutet, dass neue unsichtbaren Urnen links und rechts aufgestellt wurden.')  # noqa: E501
         texts.append('Danach bleibt die Farbe des zentralen Stimulus weiß. Das bedeutet, dass der Computer jetzt eine Kugel aus einer der Urnen ziehen wird. Während Sie darauf warten, dass die Kugel gezeigt wird, wird die Farbe des zentralen Stimulus auch noch weiß sein.')  # noqa: E501
@@ -367,7 +429,7 @@ def provide_stop_str(is_test, lang):
     return stop_str
 
 
-def _provide_description_instr_str(lang='en'):
+def _provide_description_instr_str(lang='de'):
     """Provide instructions."""
     texts = list()
     if lang == 'de':

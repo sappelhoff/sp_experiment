@@ -1,10 +1,13 @@
 """Simple tests for the instructions that do not rely on psychopy."""
+import os
 import os.path as op
+import shutil as sh
 
 import sp_experiment
 from sp_experiment.define_instructions import (provide_start_str,
                                                provide_stop_str,
-                                               provide_blockfbk_str)
+                                               provide_blockfbk_str,
+                                               print_human_readable_instrs)
 
 
 def test_provide_start_str():
@@ -32,3 +35,18 @@ def test_provide_blockfdb_str():
 
     s = provide_blockfbk_str(data_file, 1, 1, 'de')
     assert 'Block 1/1 beendet' in s
+
+
+def test_print_human_readable_instrs():
+    """Test printing the instructions, and actually do so."""
+    init_dir = op.dirname(sp_experiment.__file__)
+    root_dir = op.abspath(op.join(init_dir, '..'))
+    instr_dir = op.join(root_dir, 'instructions')
+    # Remove existing instructions
+    if op.exists(instr_dir):
+        sh.rmtree(instr_dir)
+    os.makedirs(instr_dir)
+    # Write anew
+    for kind in ['general', 'active', 'passive', 'description']:
+        fpath = op.join(instr_dir, 'instructions_{}.txt'.format(kind))
+        print_human_readable_instrs(kind, fpath)

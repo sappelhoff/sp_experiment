@@ -1,0 +1,7 @@
+Im Folgenden werden Sie auf der linken und rechten Seite jeweils eine Lotterie sehen. Benutzen Sie die linke oder rechte Taste, um sich für die Lotterie zu entscheiden, die Sie spielen wollen. Danach wird ihnen ihr Gewinn angezeigt.Unten sehen Sie ein Beispiel für *eine* Lotterie. Diese Lotterie bedeutet: 1 Punkt mit 90%iger oder 5 Punkte mit 10%iger Chance. Die Punktzahl wird in pink angezeigt, die Wahrscheinlichkeit in blau.
+
+
+
+
+Drücken Sie eine beliebige Taste um zu beginnen.
+

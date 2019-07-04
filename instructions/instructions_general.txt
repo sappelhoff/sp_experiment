@@ -1,0 +1,2 @@
+Wilkommen! Sie werden drei Aufgaben nacheinander ausführen. Im Folgenden bekommen Sie Anweisungen zur ersten Aufgabe. Dann dürfen Sie einen Test der ersten Aufgabe durchführen. Danach wird die erste Aufgabe gestartet. Wenn Sie mit dieser Aufgabe fertig sind, wird die zweite Aufgabe in den selben Schritten durchgeführt. Das heißt: Erst Anweisung, dann Test, dann Durchführung der Aufgabe. Zum Schluss gibt es noch eine kurze dritte Aufgabe. Drücken Sie eine beliebige Taste.
+
