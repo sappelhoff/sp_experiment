@@ -1,61 +1,289 @@
-onset	duration	trial	action_type	action	outcome	response_time	value	mag0_1	prob0_1	mag0_2	prob0_2	mag1_1	prob1_1	mag1_2	prob1_2	version	reset
-2.1570000399151468e-06	0.0	n/a	n/a	n/a	n/a	n/a	1	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-0.38027572600003623	0.0	0	n/a	n/a	n/a	n/a	n/a	1	0.2	9	0.8	8	0.3	7	0.7	0.1.0-dev	0
-0.3833530570000221	1.0	0	n/a	n/a	n/a	n/a	3	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-1.3724193110000442	0.0	0	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-1.6982984100000067	0.0	0	sample	0	n/a	0.3258081610000545	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-2.039520181000057	0.8	0	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-2.8391728530000364	0.5	0	n/a	n/a	1	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-3.338875270000017	0.0	0	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-3.7905231430000867	0.0	0	sample	0	n/a	0.45159982300003776	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-3.9891149190000306	0.8	0	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-4.789081624999994	0.5	0	n/a	n/a	9	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-5.288903267000023	0.0	0	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-5.699229897000009	0.0	0	sample	1	n/a	0.41025930199998584	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-6.022132241000008	0.8	0	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-6.821896705000086	0.5	0	n/a	n/a	8	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-7.321801667000045	0.0	0	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-7.844201575000056	0.0	0	sample	0	n/a	0.5223540320000666	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-8.039124003000097	0.8	0	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-8.838319032000072	0.5	0	n/a	n/a	1	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-9.338401277999992	0.0	0	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-9.644910600999992	0.0	0	sample	0	n/a	0.3064635629999657	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-9.905033677999995	0.8	0	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-10.705220834000102	0.5	0	n/a	n/a	9	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-11.204843280000091	0.0	0	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-11.495273928000074	0.0	0	sample	0	n/a	0.29036455899995417	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-11.721821607000038	0.8	0	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-12.521403310000096	0.5	0	n/a	n/a	9	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-13.021374972000103	0.0	0	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-13.270233387000076	0.0	0	sample	0	n/a	0.24881019000008564	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-13.60462265600006	0.8	0	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-14.405211106000024	0.5	0	n/a	n/a	9	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-14.904644351000002	0.0	0	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-15.184397630000035	0.0	0	sample	1	n/a	0.2796833059999244	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-15.487718947000076	0.8	0	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-16.287722384000062	0.5	0	n/a	n/a	7	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-16.787828291000096	0.0	0	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-17.0143877270001	0.0	0	sample	1	n/a	0.2265083779999486	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-17.271586882000065	0.8	0	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-18.07085565	0.5	0	n/a	n/a	7	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-18.57082092600001	0.0	0	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-18.806347920000007	0.0	0	sample	1	n/a	0.23547987699998885	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-19.087678761000006	0.8	0	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-19.92074354700003	0.5	0	n/a	n/a	8	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-20.42067682000004	0.0	0	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-20.647935569000083	0.0	0	sample	1	n/a	0.22719035299996904	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-20.93710231500006	0.8	0	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-21.737129224	0.5	0	n/a	n/a	7	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-22.23718025300002	0.0	0	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-22.489161379000052	0.0	0	sample	0	n/a	0.2519341340000665	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-22.88712797900007	0.8	0	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-23.686950561999993	0.5	0	n/a	n/a	9	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-24.186925143000053	0.0	0	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-24.343530342000008	0.0	0	forced_stop	0	n/a	0.15655912700003682	21	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-24.34603810200008	1.0	0	n/a	n/a	n/a	n/a	12	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-25.336857581999993	0.0	0	n/a	n/a	n/a	n/a	13	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-25.70731726100007	0.0	0	final_choice	1	n/a	0.3703942439999537	15	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-25.987376670000003	0.8	0	n/a	n/a	n/a	n/a	18	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-26.786973626000076	0.5	0	n/a	n/a	7	n/a	19	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-27.3906119720001	0.0	n/a	n/a	n/a	n/a	n/a	23	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
-29.732386759000065	0.0	n/a	n/a	n/a	n/a	n/a	2	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.1.0-dev	0
+onset	duration	trial	action_type	action	outcome	response_time	value	mag0_1	prob0_1	mag0_2	prob0_2	mag1_1	prob1_1	mag1_2	prob1_2	version	reset	system_time_stamp
+2.909091563196853e-06	0.0	n/a	n/a	n/a	n/a	n/a	1	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15415112384
+0.43115975757609704	0.0	0	n/a	n/a	n/a	n/a	n/a	9	0.5	2	0.5	8	0.6	4	0.4	0.3.0.dev0	0	15415543539
+0.44078642424210557	1.0	0	n/a	n/a	n/a	n/a	3	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15415553247
+1.4309473939392774	0.0	0	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15416543497
+1.9378816969692707	0.0	0	sample	1	n/a	0.5062167272735678	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15417050277
+2.280966303031164	0.8	0	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15417393736
+3.080940606061631	0.5	0	n/a	n/a	8	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15418193592
+3.58102400000098	0.0	0	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15418693482
+4.2584513939400495	0.0	0	sample	1	n/a	0.6773226666664414	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15419370820
+4.630853818182004	0.8	0	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15419743443
+5.430688969698167	0.5	0	n/a	n/a	8	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15420543456
+5.930880484849695	0.0	0	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15421043490
+7.554295757576256	0.0	0	sample	1	n/a	1.6232703030309494	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15422666592
+7.880815515150971	0.8	0	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15422993428
+8.680752484848199	0.5	0	n/a	n/a	8	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15423793293
+9.180788363637475	0.0	0	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15424293333
+9.505856969697561	0.0	0	sample	0	n/a	0.32468945454456843	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15424618265
+9.714384484848779	0.8	0	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15424826973
+10.514522181818393	0.5	0	n/a	n/a	9	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15425626981
+11.014430545454161	0.0	0	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15426127072
+11.345972363636974	0.0	0	sample	0	n/a	0.33111030303007283	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15426458382
+11.564273939393388	0.8	0	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15426676966
+12.364230303030126	0.5	0	n/a	n/a	9	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15427476742
+12.864136727273944	0.0	0	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15427976666
+13.121357575757429	0.0	0	sample	0	n/a	0.25703466666709573	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15428233800
+13.480737454545306	0.8	0	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15428593297
+14.280882909091815	0.5	0	n/a	n/a	9	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15429393470
+14.780885333333572	0.0	0	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15429893491
+15.060034424242986	0.0	0	sample	0	n/a	0.27906618181805243	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15430172409
+15.397916121211892	0.8	0	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15430510776
+16.197542787878774	0.5	0	n/a	n/a	9	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15431310090
+16.697854060606915	0.0	0	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15431810314
+16.850271030303702	0.0	0	sample	0	n/a	0.15231030303039006	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15431962634
+17.197688242424192	0.8	0	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15432310318
+17.99733672727234	0.5	0	n/a	n/a	2	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15433109787
+18.497709090908756	0.0	0	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15433610291
+18.705910787879475	0.0	0	sample	1	n/a	0.20778763636371878	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15433818361
+18.997611636363217	0.8	0	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15434110153
+19.79755684848533	0.5	0	n/a	n/a	8	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15434910096
+20.297518060606308	0.0	0	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15435410061
+20.546010666666916	0.0	0	sample	1	n/a	0.24838593939421116	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15435658417
+20.88088436363614	0.8	0	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15435993490
+21.680861090910184	0.5	0	n/a	n/a	8	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15436793438
+22.180765090908608	0.0	0	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15437293268
+22.449837575757556	0.0	0	sample	1	n/a	0.2687146666667104	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15437562224
+22.68078787878767	0.8	0	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15437793365
+23.48090327272803	0.5	0	n/a	n/a	4	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15438593546
+23.981385212122404	0.0	0	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15439093863
+24.241961696969156	0.0	0	sample	0	n/a	0.260249696970277	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15439354387
+24.4480014545461	0.8	0	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15439560515
+25.24766933333376	0.5	0	n/a	n/a	2	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15440360233
+25.747489939394654	0.0	0	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15440860043
+26.06649406060569	0.0	0	forced_stop	0	n/a	0.31892412121305824	21	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15441178850
+26.070660363637217	1.0	0	n/a	n/a	n/a	n/a	12	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15441183149
+27.06432290909106	0.0	0	n/a	n/a	n/a	n/a	13	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15442176923
+27.345628606060927	0.0	0	final_choice	1	n/a	0.2809561212125118	15	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15442458129
+27.680892606060297	0.8	0	n/a	n/a	n/a	n/a	18	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15442793525
+28.480988606061146	0.5	0	n/a	n/a	8	n/a	19	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15443593423
+28.97302836363633	0.0	1	n/a	n/a	n/a	n/a	n/a	1	0.1	7	0.9	8	0.5	3	0.5	0.3.0.dev0	0	15444085589
+28.98077575757634	1.0	1	n/a	n/a	n/a	n/a	3	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15444093278
+29.980730181818217	0.0	1	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15445093178
+30.40234036363654	0.0	1	sample	1	n/a	0.4215098181812209	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15445514703
+30.61425454545497	0.8	1	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15445726773
+31.414439272728487	0.5	1	n/a	n/a	8	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15446527094
+31.91448145454524	0.0	1	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15447026940
+32.19408387878866	0.0	1	sample	0	n/a	0.27878981818139437	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15447306466
+32.56436848484918	0.8	1	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15447676953
+33.3644193939399	0.5	1	n/a	n/a	7	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15448477023
+33.86434860606096	0.0	1	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15448976872
+34.13012509090913	0.0	1	sample	1	n/a	0.265041454546008	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15449242513
+34.53048581818257	0.8	1	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15449642980
+35.33082036363703	0.5	1	n/a	n/a	3	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15450443411
+35.83073890909145	0.0	1	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15450943249
+35.921376484848224	0.0	1	sample	0	n/a	0.09042375757599075	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15451033774
+36.281228121211825	0.8	1	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15451394090
+37.08080048484953	0.5	1	n/a	n/a	7	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15452193363
+37.5808557575765	0.0	1	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15452693292
+37.777423515151895	0.0	1	sample	1	n/a	0.1964523636361264	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15452889890
+38.18099151515162	0.8	1	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15453293588
+38.9807786666679	0.5	1	n/a	n/a	8	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15454093362
+39.48100024242376	0.0	1	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15454593643
+39.554382545455155	0.0	1	sample	0	n/a	0.07330084848399565	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15454666726
+39.78076654545475	0.8	1	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15454893275
+40.58089696969728	0.5	1	n/a	n/a	7	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15455693525
+41.080922181818096	0.0	1	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15456193537
+41.33034230303019	0.0	1	sample	1	n/a	0.24928484848533117	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15456442647
+41.71430448484898	0.8	1	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15456826733
+42.514382060606295	0.5	1	n/a	n/a	3	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15457626901
+43.014384000000064	0.0	1	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15458126969
+43.2501066666664	0.0	1	sample	0	n/a	0.23533090909040766	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15458362471
+43.547863757576124	0.8	1	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15458660336
+44.347623757576	0.5	1	n/a	n/a	7	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15459460158
+44.84742545454537	0.0	1	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15459959920
+45.05778230303076	0.0	1	sample	1	n/a	0.20974496969756729	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15460170168
+45.44754521212235	0.8	1	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15460560119
+46.24752242424256	0.5	1	n/a	n/a	8	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15461360041
+46.74804799999947	0.0	1	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15461860507
+46.898085333334166	0.0	1	sample	0	n/a	0.14931684848488658	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15462010533
+47.14759466666692	0.8	1	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15462260061
+47.94816242424349	0.5	1	n/a	n/a	7	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15463060592
+48.44724751515241	0.0	1	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15463559747
+48.72170812121294	0.0	1	sample	1	n/a	0.2742962424235884	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15463834125
+49.06450181818218	0.8	1	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15464176943
+49.86446351515224	0.5	1	n/a	n/a	8	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15464976928
+50.364387878787966	0.0	1	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15465476939
+50.52960436363719	0.0	1	sample	0	n/a	0.16486448484829452	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15465641985
+50.76434521212104	0.8	1	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15465876825
+51.58085236363695	0.5	1	n/a	n/a	7	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15466693307
+52.08124896969639	0.0	1	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15467193886
+52.4341866666673	0.0	1	forced_stop	0	n/a	0.35279563636322564	21	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15467546473
+52.438277333334554	1.0	1	n/a	n/a	n/a	n/a	12	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15467550635
+53.41464775757595	0.0	1	n/a	n/a	n/a	n/a	13	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15468527207
+53.74637187878761	0.0	1	final_choice	0	n/a	0.3316402424243279	14	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15468858800
+54.097655272727934	0.8	1	n/a	n/a	n/a	n/a	16	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15469210249
+54.897664484848065	0.5	1	n/a	n/a	7	n/a	17	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15470010246
+55.38608339393977	0.0	2	n/a	n/a	n/a	n/a	n/a	8	0.2	1	0.8	3	0.9	6	0.1	0.3.0.dev0	0	15470498483
+55.39871612121169	1.0	2	n/a	n/a	n/a	n/a	3	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15470511176
+56.39747054545478	0.0	2	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15471509950
+56.8179612121221	0.0	2	sample	1	n/a	0.41974642424247577	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15471930332
+57.064352000001236	0.8	2	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15472176894
+57.86446303030425	0.5	2	n/a	n/a	3	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15472976919
+58.364296242423734	0.0	2	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15473476807
+58.51388606060573	0.0	2	sample	0	n/a	0.149366303028728	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15473626209
+58.76429575757538	0.8	2	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15473876754
+59.56431806060573	0.5	2	n/a	n/a	8	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15474676858
+60.06453236363632	0.0	2	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15475176993
+60.30612121212107	0.0	2	sample	0	n/a	0.24146860606015252	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15475418497
+60.64755248484835	0.8	2	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15475760046
+61.44749527272688	0.5	2	n/a	n/a	1	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15476559945
+61.947540848485005	0.0	2	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15477060053
+62.4337202424249	0.0	2	sample	1	n/a	0.4858303030305251	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15477546146
+62.74764606060671	0.8	2	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15477860224
+63.547587393939466	0.5	2	n/a	n/a	3	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15478660215
+64.04759078787902	0.0	2	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15479160079
+64.3535369696965	0.0	2	sample	1	n/a	0.305612121212107	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15479465932
+64.73089406060717	0.8	2	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15479843436
+65.53070545454648	0.5	2	n/a	n/a	3	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15480643215
+66.0309168484855	0.0	2	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15481143517
+67.24974448484863	0.0	2	sample	1	n/a	1.2187161212132196	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15482362147
+67.63079175757593	0.8	2	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15482743247
+68.43099054545564	0.5	2	n/a	n/a	3	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15483543638
+68.93084654545419	0.0	2	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15484043411
+69.23436993939504	0.0	2	sample	1	n/a	0.30275975757649576	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15484346731
+69.61419636363644	0.8	2	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15484726636
+70.41441260606007	0.5	2	n/a	n/a	3	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15485527031
+70.91435006060601	0.0	2	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15486026810
+71.1372615757573	0.0	2	sample	1	n/a	0.22279612121201353	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15486249662
+71.4976800000004	0.8	2	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15486610236
+72.29763296969759	0.5	2	n/a	n/a	3	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15487410095
+72.79774109090977	0.0	2	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15487910215
+72.91381818181799	0.0	2	sample	1	n/a	0.11596218181875884	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15488026215
+73.2643486060606	0.8	2	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15488376916
+74.06428848484938	0.5	2	n/a	n/a	3	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15489176755
+74.56414933333326	0.0	2	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15489676602
+74.80207127272843	0.0	2	sample	1	n/a	0.23715733333301614	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15489914462
+75.03088242424201	0.8	2	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15490143464
+75.8306821818187	0.5	2	n/a	n/a	3	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15490943152
+76.33075878787895	0.0	2	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15491443270
+76.56213090909114	0.0	2	sample	0	n/a	0.23052169697075442	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15491674482
+76.88085672727357	0.8	2	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15491993280
+77.6808460606062	0.5	2	n/a	n/a	1	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15492793444
+78.18086060606038	0.0	2	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15493293340
+78.41724993939351	0.0	2	sample	0	n/a	0.2362884848498652	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15493529729
+78.7308174545451	0.8	2	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15493843410
+79.53094739393964	0.5	2	n/a	n/a	1	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15494643415
+80.03077236363606	0.0	2	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15495143300
+80.27409018181788	0.0	2	forced_stop	0	n/a	0.2432053333341173	21	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15495386467
+80.27861866666717	1.0	2	n/a	n/a	n/a	n/a	12	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15495391038
+81.28093042424189	0.0	2	n/a	n/a	n/a	n/a	13	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15496393407
+81.5541929696974	0.0	2	final_choice	1	n/a	0.2726943030302209	15	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15496666616
+81.81427878787872	0.8	2	n/a	n/a	n/a	n/a	18	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15496926857
+82.61431321212149	0.5	2	n/a	n/a	3	n/a	19	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15497726849
+83.10417600000073	0.0	3	n/a	n/a	n/a	n/a	n/a	1	0.1	7	0.9	9	0.5	2	0.5	0.3.0.dev0	0	15498216580
+83.11420993939464	1.0	3	n/a	n/a	n/a	n/a	3	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15498226634
+84.11447224242511	0.0	3	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15499226976
+84.53036896969752	0.0	3	sample	1	n/a	0.41575806060609466	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15499642727
+84.91425503030405	0.8	3	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15500026739
+85.71423175757627	0.5	3	n/a	n/a	9	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15500826682
+86.2141362424245	0.0	3	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15501326586
+86.41743369696997	0.0	3	sample	0	n/a	0.20316557575824845	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15501529880
+86.79756266666664	0.8	3	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15501910121
+87.59743466666623	0.5	3	n/a	n/a	1	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15502709919
+88.09752145454513	0.0	3	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15503210135
+88.25771539394009	0.0	3	sample	1	n/a	0.1596509090904874	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15503370120
+88.59753406060554	0.8	3	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15503710123
+89.3974157575758	0.5	3	n/a	n/a	9	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15504509973
+89.8975025454547	0.0	3	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15505010029
+90.29033696969782	0.0	3	sample	1	n/a	0.3921861818180332	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15505402711
+90.54763539393934	0.8	3	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15505660256
+91.34782884848573	0.5	3	n/a	n/a	2	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15506460368
+91.84756800000105	0.0	3	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15506960066
+92.13035684848546	0.0	3	sample	0	n/a	0.2826060606057581	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15507242664
+92.38079515151549	0.8	3	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15507493283
+93.18099103030363	0.5	3	n/a	n/a	7	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15508293449
+93.6810453333328	0.0	3	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15508793726
+93.92174690909087	0.0	3	sample	0	n/a	0.24044848484845716	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15509034141
+94.26428945454609	0.8	3	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15509376789
+95.0643466666661	0.5	3	n/a	n/a	7	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15510176947
+95.56428363636405	0.0	3	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15510676846
+95.89008533333435	0.0	3	sample	0	n/a	0.32570763636431366	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15511002448
+96.28077236363606	0.8	3	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15511393236
+97.08080484848506	0.5	3	n/a	n/a	1	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15512193394
+97.58075393939362	0.0	3	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15512693219
+97.73096339394033	0.0	3	sample	0	n/a	0.1500305454537738	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15512843258
+97.93083781818132	0.8	3	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15513043273
+98.730770909091	0.5	3	n/a	n/a	7	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15513843343
+99.23087272727389	0.0	3	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15514343335
+99.36236848484805	0.0	3	sample	0	n/a	0.1313793939389143	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15514474693
+99.68093672727264	0.8	3	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15514793435
+100.4808441212117	0.5	3	n/a	n/a	7	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15515593435
+100.98073115151601	0.0	3	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15516093274
+101.07375224242423	0.0	3	sample	0	n/a	0.09292993939379812	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15516186142
+101.44763103030346	0.8	3	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15516560202
+102.24757624242375	0.5	3	n/a	n/a	7	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15517360214
+102.74735757575763	0.0	3	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15517859824
+102.8821401212117	0.0	3	sample	1	n/a	0.13427393939309695	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15517994526
+103.08086109090982	0.8	3	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15518193319
+103.88077672727377	0.5	3	n/a	n/a	9	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15518993308
+104.38081648484876	0.0	3	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15519493355
+104.5941299393944	0.0	3	sample	1	n/a	0.21319612121260434	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15519706694
+104.8808547878798	0.8	3	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15519993389
+105.6809861818183	0.5	3	n/a	n/a	9	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15520793604
+106.18080436363744	0.0	3	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15521293240
+106.27368581818155	0.0	3	forced_stop	1	n/a	0.092384484847571	21	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15521386033
+106.27865406060664	1.0	3	n/a	n/a	n/a	n/a	12	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15521391125
+107.28071321212155	0.0	3	n/a	n/a	n/a	n/a	13	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15522393234
+107.66588896969733	0.0	3	final_choice	1	n/a	0.38505551515117986	15	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15522778272
+107.96427781818238	0.8	3	n/a	n/a	n/a	n/a	18	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15523076761
+108.76447127272695	0.5	3	n/a	n/a	9	n/a	19	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15523876956
+109.25863709091027	0.0	4	n/a	n/a	n/a	n/a	n/a	8	0.8	5	0.2	6	0.5	7	0.5	0.3.0.dev0	0	15524370995
+109.26506036363753	1.0	4	n/a	n/a	n/a	n/a	3	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15524377520
+110.2644024242436	0.0	4	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15525377045
+110.6896145454557	0.0	4	sample	1	n/a	0.4250598787875788	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15525802047
+111.03079515151512	0.8	4	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15526143248
+111.83074375757678	0.5	4	n/a	n/a	7	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15526943253
+112.33088824242441	0.0	4	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15527443542
+112.59416096969653	0.0	4	sample	0	n/a	0.26311078787875886	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15527706564
+112.9981871515156	0.8	4	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15528110626
+113.79802957575703	0.5	4	n/a	n/a	5	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15528910526
+114.29761163636431	0.0	4	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15529410138
+114.38625745454556	0.0	4	sample	0	n/a	0.08804945454539848	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15529498577
+114.7643423030313	0.8	4	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15529876876
+115.56437915151582	0.5	4	n/a	n/a	5	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15530676837
+116.06416484848523	0.0	4	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15531176689
+116.27418618181764	0.0	4	sample	0	n/a	0.20991806060555973	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15531386500
+116.68086981818306	0.8	4	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15531793484
+117.48079515151585	0.5	4	n/a	n/a	5	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15532593387
+117.98102787878815	0.0	4	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15533093457
+118.20932024242393	0.0	4	sample	0	n/a	0.22815806060680188	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15533321808
+118.59722521212097	0.8	4	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15533709760
+119.3975757575754	0.5	4	n/a	n/a	8	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15534510171
+119.89757284848565	0.0	4	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15535010052
+120.08222448484958	0.0	4	sample	1	n/a	0.184522666666453	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15535194599
+120.43089454545407	0.8	4	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15535543542
+121.23085381818237	0.5	4	n/a	n/a	7	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15536343311
+121.73093624242392	0.0	4	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15536843518
+121.96946084848605	0.0	4	sample	1	n/a	0.23837527272735315	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15537081864
+122.33075345454563	0.8	4	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15537443336
+123.13068848484909	0.5	4	n/a	n/a	6	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15538243270
+123.63073066666766	0.0	4	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15538743270
+123.89047175757696	0.0	4	sample	1	n/a	0.25892363636376103	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15539002820
+124.2145958787878	0.8	4	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15539327355
+125.0144824242434	0.5	4	n/a	n/a	6	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15540126947
+125.5142210909089	0.0	4	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15540626773
+125.80998739393908	0.0	4	sample	1	n/a	0.2950492121217394	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15540923258
+126.03072921212151	0.8	4	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15541143232
+126.83069139393956	0.5	4	n/a	n/a	7	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15541943113
+127.33087175757646	0.0	4	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15542443502
+127.63440290909057	0.0	4	sample	1	n/a	0.30337987878920103	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15542746748
+127.93088678787899	0.8	4	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15543043368
+128.73094933333414	0.5	4	n/a	n/a	7	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15543843414
+129.2307578181826	0.0	4	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15544343281
+129.45794618181935	0.0	4	sample	1	n/a	0.22643199999947683	6	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15544570322
+129.78088048484824	0.8	4	n/a	n/a	n/a	n/a	10	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15544893441
+130.58081696969748	0.5	4	n/a	n/a	6	n/a	11	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15545693356
+131.08085381818273	0.0	4	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15546193416
+131.28225890909198	0.0	4	sample	0	n/a	0.20132169696989877	5	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15546394600
+131.4975534545465	0.8	4	n/a	n/a	n/a	n/a	8	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15546610014
+132.29759369697058	0.5	4	n/a	n/a	8	n/a	9	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15547410054
+132.79757915151458	0.0	4	n/a	n/a	n/a	n/a	4	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15547910010
+133.07426375757677	0.0	4	forced_stop	0	n/a	0.2761139393933263	21	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15548186638
+133.07893333333413	1.0	4	n/a	n/a	n/a	n/a	12	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15548191388
+134.08083296969744	0.0	4	n/a	n/a	n/a	n/a	13	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15549193333
+134.35440921212103	0.0	4	final_choice	0	n/a	0.2734656969696516	14	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15549466724
+134.6309730909088	0.8	4	n/a	n/a	n/a	n/a	16	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15549743669
+135.43095854545572	0.5	4	n/a	n/a	8	n/a	17	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15550543641
+136.1383408484853	0.0	n/a	n/a	n/a	n/a	n/a	23	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15551250818
+138.9456087272738	0.0	n/a	n/a	n/a	n/a	n/a	2	n/a	n/a	n/a	n/a	n/a	n/a	n/a	n/a	0.3.0.dev0	0	15554058303
