@@ -17,8 +17,8 @@ steps:
   displayName: Add conda to PATH
 
 - script: |
-    conda update conda --yes
-    conda env create --quiet --file environment.yml --name testEnv
+    conda install conda=4.6.14 --yes
+    conda env create --quiet --file=environment.yml --name=testEnv
     call activate testEnv
     pip install -e .
   displayName: Setup python environment
@@ -26,10 +26,10 @@ steps:
 - script: |
     call activate testEnv
     pytest --cov=./sp_experiment --cov-report=xml --verbose
-  displayName: Testing and coverage via pytest / pytest --cov
+  displayName: Testing and coverage via pytest --cov
 
 - script: |
-    call activate testEnv
+    call activate sp_experiment
     flake8 .
   displayName: Linting via flake8
 

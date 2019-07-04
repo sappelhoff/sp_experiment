@@ -9,42 +9,6 @@ import sp_experiment
 from sp_experiment.define_ttl_triggers import provide_trigger_dict
 
 
-def make_description_task_json():
-    """Provide variable meanings for description task.
-
-    This is heavily based on the sampling paradigm tasks. We overwrite a few
-    of the descriptions to make more sense for the description task.
-
-    """
-    events_json_dict = make_events_json_dict()
-
-    # Overwrite some values
-    events_json_dict['trial']['Description'] = ('zero indexed trial counter, where a trial index '  # noqa: E501
-                                                'points to the lottery setting that was used in this '  # noqa: E501
-                                                'event by comparing with the trial column in the '  # noqa: E501
-                                                'spactive task.')
-
-    for level in ['sample', 'stop', 'forced_stop', 'premature_stop']:
-        events_json_dict['action_type']['Levels'].pop(level)
-
-    for level in ['2']:
-        events_json_dict['action']['Levels'].pop(level)
-
-    trigger_dict = provide_trigger_dict()
-    for level in [ord(trigger_dict['trig_sample_onset']),
-                  ord(trigger_dict['trig_left_choice']),
-                  ord(trigger_dict['trig_right_choice']),
-                  ord(trigger_dict['trig_final_choice']),
-                  ord(trigger_dict['trig_mask_out_l']),
-                  ord(trigger_dict['trig_show_out_r']),
-                  ord(trigger_dict['trig_new_final_choice']),
-                  ord(trigger_dict['trig_forced_stop']),
-                  ord(trigger_dict['trig_premature_stop'])]:
-        events_json_dict['value']['Levels'].pop(level)
-
-    return events_json_dict
-
-
 def make_events_json_dict():
     """Provide a dict to describe all collected variables."""
     # Get the trigger values
@@ -250,6 +214,47 @@ def make_events_json_dict():
                                                        in events_json_dict['value']['Levels'].items())  # noqa: E501
 
     # return
+    return events_json_dict
+
+
+def make_description_task_json():
+    """Provide variable meanings for description task.
+
+    This is heavily based on the sampling paradigm tasks. We overwrite a few
+    of the descriptions to make more sense for the description task.
+
+    """
+    # Get the definitions from sampling paradigm
+    events_json_dict = make_events_json_dict()
+
+    # Overwrite some values
+    events_json_dict['trial']['Description'] = ('zero indexed trial counter, where a trial index '  # noqa: E501
+                                                'points to the lottery setting that was used in this '  # noqa: E501
+                                                'event by comparing with the trial column in the '  # noqa: E501
+                                                'spactive task.')
+
+    # Remove all action types except "final choice"
+    for level in ['sample', 'stop', 'forced_stop', 'premature_stop']:
+        events_json_dict['action_type']['Levels'].pop(level)
+
+    # Remove possible action "2", indicating a stop: Stopping is not possible
+    # in the descriptions task. Only "0"(=pick left) and "1"(=pick right)
+    for level in ['2']:
+        events_json_dict['action']['Levels'].pop(level)
+
+    # Some trigger values are not occurring in the descriptions task
+    trigger_dict = provide_trigger_dict()
+    for level in [ord(trigger_dict['trig_sample_onset']),
+                  ord(trigger_dict['trig_left_choice']),
+                  ord(trigger_dict['trig_right_choice']),
+                  ord(trigger_dict['trig_final_choice']),
+                  ord(trigger_dict['trig_mask_out_l']),
+                  ord(trigger_dict['trig_show_out_r']),
+                  ord(trigger_dict['trig_new_final_choice']),
+                  ord(trigger_dict['trig_forced_stop']),
+                  ord(trigger_dict['trig_premature_stop'])]:
+        events_json_dict['value']['Levels'].pop(level)
+
     return events_json_dict
 
 
