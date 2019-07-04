@@ -60,9 +60,9 @@ max_ntrls = 100
 block_size = 20
 
 # Settings for training
-test_max_ntrls = 1
+test_max_ntrls = 2
 test_max_nsamples = max_nsamples
-test_block_size = 1
+test_block_size = test_max_ntrls
 
 # First 10 subjs are mapped to themselves
 yoke_map = OrderedDict(zip(list(range(1, 11)), list(range(1, 11))))

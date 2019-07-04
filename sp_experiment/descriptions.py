@@ -26,7 +26,6 @@ import numpy as np
 from psychopy import visual, event, core
 import tobii_research as tr
 
-import sp_experiment
 from sp_experiment.define_ttl_triggers import provide_trigger_dict
 from sp_experiment.define_payoff_settings import get_random_payoff_dict
 from sp_experiment.define_variable_meanings import make_description_task_json
@@ -52,7 +51,6 @@ from sp_experiment.define_settings import (KEYLIST_DESCRIPTION,
                                            color_standard,
                                            color_magnitude,
                                            color_probability,
-                                           ser,
                                            tdisplay_ms,
                                            tfeeddelay_ms,
                                            toutmask_ms,
@@ -65,7 +63,8 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
                      block_size=1, font='', lang='de', experienced=False,
                      is_test=False, xpos1=2.5, xpos2=1.5,
                      colmag=color_magnitude, colprob=color_probability,
-                     height=1, fraction_to_run=fraction_to_run):
+                     height=1, fraction_to_run=fraction_to_run,
+                     quit_after_n=None):
     """Run decisions from descriptions.
 
     Parameters
@@ -93,6 +92,9 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
     fraction_to_run : float
         Fraction of all trials to run. Must be > 0 and <= 1. If smaller than 1,
         will make a random selection of trials to run.
+    quit_after_n : None | int
+        Has no impact if None. If int, determines the number of trials to
+        run before quitting
 
     """
     # prepare logging and read in present data
@@ -125,7 +127,18 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
         trials_to_run = sorted(trials_to_run_arr)
 
     # Maker sure our number of trials fits with number of blocks
-    assert len(trials_to_run) % block_size == 0
+    raise_it = False
+    if quit_after_n:
+        if quit_after_n % block_size != 0:
+            raise_it = True
+    elif len(trials_to_run) % block_size != 0:
+        raise_it = True
+    if raise_it:
+        raise ValueError('block_size of {} and trials_to_run of len {} '
+                         'do not match.\n\nTrials to run: {}'
+                         .format(block_size, len(trials_to_run),
+                                 trials_to_run)
+                         )
     nblocks = int(len(trials_to_run)/block_size)
 
     # Prepare eyetracking
@@ -469,6 +482,11 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
             # set height for stimuli to be shown below
             txt_stim.height = 4
 
+        # If quit_after_n is defined, we might need to stop here
+        if quit_after_n:
+            if nth_trial >= quit_after_n:
+                break
+
     # We are done here
     [stim.setAutoDraw(False) for stim in fixation_stim_parts]
     txt_stim.text = provide_stop_str(is_test=is_test, lang=lang)
@@ -487,14 +505,3 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
                                     gaze_data_callback)
     gaze_dict['gaze'] = ((0.5, 0.5), (0.5, 0.5))
     win.close()
-
-
-if __name__ == '__main__':
-    # Check serial
-    if ser is None:
-        ser = Fake_serial()
-
-    init_dir = op.dirname(sp_experiment.__file__)
-    fname = 'sub-999_task-spactive_events.tsv'
-    fpath = op.join(init_dir, 'tests', 'data', fname)
-    run_descriptions(fpath, experienced=True, block_size=1)

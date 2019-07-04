@@ -162,14 +162,7 @@ def navigation(nav='initial', bonus='', lang='en', yoke_map=None,
                     condition = 'passive'
                 if ok_data[0] == 'C':
                     condition = 'description'
-                    init_dir = op.dirname(sp_experiment.__file__)
-                    fname = 'sub-999_task-spactive_events.tsv'
-                    fpath = op.join(init_dir, 'tests', 'data', fname)
-                    run_descriptions(fpath, experienced=True, is_test=True,
-                                     block_size=1)
-                    core.quit()
 
-                # Only if condition != 'description'
                 run_test_trials(monitor, condition, ok_data[1],
                                 test_max_ntrls, test_max_nsamples,
                                 test_block_size, maxwait)
@@ -948,6 +941,14 @@ def run_test_trials(monitor, condition, lang, max_ntrls, max_nsamples,
                  is_test=True,
                  lang=lang,
                  maxwait=maxwait)
+
+    elif condition == 'description':
+        init_dir = op.dirname(sp_experiment.__file__)
+        fname = 'sub-999_task-spactive_events.tsv'
+        fpath = op.join(init_dir, 'tests', 'data', fname)
+        run_descriptions(fpath, monitor=monitor, block_size=block_size,
+                         experienced=True, is_test=True,
+                         quit_after_n=max_ntrls)
 
     # Remove the test data and potential eyetracking test data
     os.remove(data_file)
