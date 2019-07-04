@@ -1060,8 +1060,13 @@ if __name__ == '__main__':
                  font=font)
 
         # Run third condition
+        # first the instructions
         run_instructions(kind='description', monitor=monitor, lang=lang,
                          font=font)
+        # Now the test trials
+        run_test_trials(monitor, 'description', lang, test_max_ntrls,
+                        test_max_nsamples, test_block_size, maxwait)
+        # And then the actual thing
         fname = 'sub-{:02d}_task-spactive_events.tsv'.format(sub_id)
         init_dir = op.dirname(sp_experiment.__file__)
         events_file = op.join(init_dir, 'experiment_data', fname)
