@@ -42,14 +42,14 @@ for the following information:
 - `Sex`: Dropdown menu to indicate the biological sex of the participant
 - `Condition`: Dropdown menu: "Active" or "Passive"
 
- The experiment is setup as such that the inputs in the GUI are restricted.
- Feel free to adjust.
-
- Importantly, you have to set the `yoke_map` in the `sp.py` file. This is a
- dictionary that determines which replay of an active condition a participant
- sees when they are in the passive condition.
+The experiment is setup as such that the inputs in the GUI are restricted. More
+general settings can be changed in the `define_settings.py` file. Most
+importantly, you have to set the `yoke_map`. This is a dictionary that
+determines which replay of an active condition a participant sees when they are
+in the passive condition.
 
  Example:
+
  ```python
 yoke_map = {1:1, 2:1}
 
