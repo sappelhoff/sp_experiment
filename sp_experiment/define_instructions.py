@@ -10,7 +10,9 @@ import sp_experiment
 from sp_experiment.utils import get_final_choice_outcomes
 from sp_experiment.define_settings import (txt_color, twait_show_instr,
                                            color_magnitude, color_probability,
-                                           OPTIONAL_STOPPING)
+                                           OPTIONAL_STOPPING, font, lang,
+                                           max_ntrls, max_nsamples, block_size,
+                                           maxwait, exchange_rate)
 
 
 def print_human_readable_instrs(kind, fpath=None):
@@ -38,9 +40,10 @@ def print_human_readable_instrs(kind, fpath=None):
                 fout.write(text + '\n\n')
 
 
-def run_instructions(kind, monitor='testMonitor', font='', lang='de',
-                     max_ntrls=100, max_nsamples=12, block_size=25, maxwait=3,
-                     exchange_rate=0.01, opt_stop=OPTIONAL_STOPPING,
+def run_instructions(kind, monitor='testMonitor', font=font, lang=lang,
+                     max_ntrls=max_ntrls, max_nsamples=max_nsamples,
+                     block_size=block_size, maxwait=maxwait,
+                     exchange_rate=exchange_rate, opt_stop=OPTIONAL_STOPPING,
                      return_text_only=False, track_eyes=False):
     """Show experiment instructions on the screen.
 
@@ -134,6 +137,10 @@ def run_instructions(kind, monitor='testMonitor', font='', lang='de',
                 img_stim.image = op.join(img_dir, 'any_ball.png')
                 img_stim.draw()
             if 'Taste drücken.' in text:
+                img_stim.image = op.join(img_dir, 'bbox_photo.png')
+                img_stim.draw()
+            if 'Wie bereits erwähnt' in text:
+                # XXX: Need to mark up the "Stop" button
                 img_stim.image = op.join(img_dir, 'bbox_photo.png')
                 img_stim.draw()
             if 'Farbe der Punkte' in text:
@@ -263,7 +270,7 @@ def _provide_active_instr_strs(lang, max_ntrls, max_nsamples, block_size,
         texts.append('Es gibt in dieser Aufgabe viele Durchgänge. In jedem Durchgang gibt es neue Urnen, und ihre Aufgabe wird jedes Mal sein, sich am Ende der Aufgabe für eine der beiden Urnen zu entscheiden. Um etwas über den Inhalt der Urnen zu erfahren, dürfen Sie in jedem Durchgang zunächst insgesamt {} mal blind eine Kugel ziehen. Dies können Sie tun, indem Sie die linke oder die rechte Taste drücken. Sie können also jedes Mal selbst wählen, aus welcher Urne die nächste Kugel gezogen wird. Die Kugel wird jedesmal  zufällig aus der jeweiligen Urne gezogen und Ihnen kurz gezeigt. Danach wird die Kugel zurück in die ursprüngliche Urne gelegt. Es sind also IMMER 10 Kugeln in jeder Urne. In anderen Worten, der Inhalt der Urnen wird durch Ihre Ziehung(en) nicht verändert.'.format(opt_stop_str1))  # noqa: E501 E999
         if opt_stop:
             # If optional stopping, append an extra explanation on how to stop
-            texts.append('Wie bereits erwähnt können Sie in jedem Durchgang maximal {} mal blind eine Kugel ziehen, um mehr über die Urnen zu lernen. Sie können jedoch auch schon früher aufhören, Kugeln zu ziehen. Das können Sie mit der Taste über der rechten Tase anzeigen. Beim Drücken der dieser "Stopp" Taste wird sofort die nächste Phase des momentanen Durchgangs eingeleitet, wie im Folgenden beschrieben.')  # noqa: E501
+            texts.append('Wie bereits erwähnt können Sie in jedem Durchgang maximal {} mal blind eine Kugel ziehen, um mehr über die Urnen zu lernen. Sie können jedoch auch schon früher aufhören, Kugeln zu ziehen. Das können Sie mit der Taste über der rechten Tase anzeigen. Beim Drücken der dieser "Stopp" Taste wird sofort die nächste Phase des momentanen Durchgangs eingeleitet, wie im Folgenden beschrieben.'.format(max_nsamples))  # noqa: E501
         texts.append('Nachdem Sie sich die {} angeschaut haben, müssen Sie sich final für eine der Urnen entscheiden. Ihr Ziel sollte natürlich sein, dabei immer die jeweils bessere Urne zu wählen. Nach dieser finalen Entscheidung wird aus der gewählten Urne nochmals eine Kugel (zufällig) gezogen. Die Punkte auf dieser finalen Kugel werden Ihrem Konto gutgeschrieben. Dies wird durch die grüne Farbe der Punkte gezeigt. Danach beginnt ein neuer Durchgang mit komplett neuen Urnen. Insgesamt gibt es {} Durchgänge und alle {} Durchgänge werden Sie Zeit für eine kurze Pause haben.'.format(opt_stop_str2, max_ntrls, block_size))  # noqa: E501
         texts.append('Als Hilfestellung zeigt Ihnen die Farbe des zentralen Stimulus an, was während der Durchgänge als nächstes passiert: Zu Beginn eines Durchgangs ist der Stimulus kurz grün und dann weiß. Das bedeutet, dass neue unsichtbaren Urnen links und rechts aufgestellt wurden.')  # noqa: E501
         texts.append('Danach bleibt die Farbe des zentralen Stimulus weiß. Das bedeutet, dass Sie jetzt eine Kugel aus einer der Urnen ziehen können, durch Drücken der linken oder der rechten Taste. Während Sie darauf warten, dass die Kugel gezeigt wird, wird die Farbe des zentralen Stimulus auch noch weiß sein.')  # noqa: E501
@@ -295,13 +302,11 @@ def _provide_passive_instr_strs(lang, max_ntrls, max_nsamples, block_size,
     if opt_stop:
         opt_stop_str1 = 'bis zu einem Maximum von {}'.format(max_nsamples)
         opt_stop_str2 = 'vom Computer gewählte Anzahl an Kugeln (bis zu maximal {})'.format(max_nsamples)  # noqa: E501
-        opt_stop_str3 = 'nach dem Drücken der "Stopp" Taste oder '
-        opt_stop_str4 = 'maximal {}'.format(max_nsamples)
+        opt_stop_str3 = 'alle gewollten'
     else:
         opt_stop_str1 = max_nsamples
         opt_stop_str2 = '{} Kugeln'.format(max_nsamples)
-        opt_stop_str3 = ''
-        opt_stop_str4 = '{}'.format(max_nsamples)
+        opt_stop_str3 = '{}'.format(max_nsamples)
 
     texts = list()
     if lang == 'de':
@@ -313,7 +318,7 @@ def _provide_passive_instr_strs(lang, max_ntrls, max_nsamples, block_size,
         texts.append('Dies wird durch die grüne Farbe der Punkte gezeigt. Danach beginnt ein neuer Durchgang mit komplett neuen Urnen. Insgesamt gibt es {} Durchgänge und alle {} Durchgänge werden Sie Zeit für eine kurze Pause haben.'.format(max_ntrls, block_size))  # noqa: E501
         texts.append('Als Hilfestellung zeigt Ihnen die Farbe des zentralen Stimulus an, was während der Durchgänge als nächstes passiert: Zu Beginn eines Durchgangs ist der Stimulus kurz grün und dann weiß. Das bedeutet, dass neue unsichtbaren Urnen links und rechts aufgestellt wurden.')  # noqa: E501
         texts.append('Danach bleibt die Farbe des zentralen Stimulus weiß. Das bedeutet, dass der Computer jetzt eine Kugel aus einer der Urnen ziehen wird. Während Sie darauf warten, dass die Kugel gezeigt wird, wird die Farbe des zentralen Stimulus auch noch weiß sein.')  # noqa: E501
-        texts.append('Wenn der Computer {} Züge getätigt hat, wechselt die Farbe des zentralen Stimulus kurz zu blau und wird dann wieder weiß. Das bedeutet, dass Sie sich nun final zwischen den Urnen entscheiden müssen. Zur Erinnerung: Nur die Kugel die nach der finalen Entscheidung gezogen wird bestimmt, wie viele Punkte ihrem Konto hinzugefügt werden.'.format(max_nsamples))  # noqa: E501
+        texts.append('Wenn der Computer {} Züge getätigt hat, wechselt die Farbe des zentralen Stimulus kurz zu blau und wird dann wieder weiß. Das bedeutet, dass Sie sich nun final zwischen den Urnen entscheiden müssen. Zur Erinnerung: Nur die Kugel die nach der finalen Entscheidung gezogen wird bestimmt, wie viele Punkte ihrem Konto hinzugefügt werden.'.format(opt_stop_str3))  # noqa: E501
         texts.append('Für Ihre Entscheidungen haben Sie jeweils {} Sekunden Zeit. Wenn Sie länger warten, wechselt die Farbe des zentralen Stimulus zu rot und der momentane Durchgang wird abgebrochen.{} Direkt danach wird ein neuer Durchgang gestartet.'.format(maxwait, eyetrackstr2))  # noqa: E501
         texts.append('Zusammenfassend bedeuten die Farben das folgende:\n\ngrün: neuer Durchgang mit neuen Urnen\n\nweiß: Der Computer wählt eine Urne oder auf zufällig gezogene Kugel warten\n\nblau: nächste Entscheidung ist die finale Entscheidung für diesen Durchgang\n\nrot: Sie haben länger als {} Sekunden gewartet {}und der Durchgang wird abgebrochen'.format(maxwait, eyetrackstr3))  # noqa: E501
         texts.append('Die Instruktionen sind abgeschlossen. Drücken Sie eine beliebige Taste um fortzufahren.')  # noqa: E501
