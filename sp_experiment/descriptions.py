@@ -127,19 +127,22 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
         trials_to_run = sorted(trials_to_run_arr)
 
     # Maker sure our number of trials fits with number of blocks
-    raise_it = False
+    no_match_blocks_trials = False
     if quit_after_n:
+        nblocks = int(quit_after_n/block_size)
         if quit_after_n % block_size != 0:
-            raise_it = True
-    elif len(trials_to_run) % block_size != 0:
-        raise_it = True
-    if raise_it:
+            no_match_blocks_trials = True
+    else:
+        nblocks = int(len(trials_to_run)/block_size)
+        if len(trials_to_run) % block_size != 0:
+            no_match_blocks_trials = True
+
+    # If we found that blocks and trials don't match, raise an error
+    if no_match_blocks_trials:
         raise ValueError('block_size of {} and trials_to_run of len {} '
                          'do not match.\n\nTrials to run: {}'
                          .format(block_size, len(trials_to_run),
-                                 trials_to_run)
-                         )
-    nblocks = int(len(trials_to_run)/block_size)
+                                 trials_to_run))
 
     # Prepare eyetracking
     try:
