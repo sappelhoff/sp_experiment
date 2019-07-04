@@ -1,7 +1,6 @@
 """Simple tests for the instructions that do not rely on psychopy."""
 import os
 import os.path as op
-import shutil as sh
 
 import sp_experiment
 from sp_experiment.define_instructions import (provide_start_str,
@@ -42,11 +41,10 @@ def test_print_human_readable_instrs():
     init_dir = op.dirname(sp_experiment.__file__)
     root_dir = op.abspath(op.join(init_dir, '..'))
     instr_dir = op.join(root_dir, 'instructions')
-    # Remove existing instructions
-    if op.exists(instr_dir):
-        sh.rmtree(instr_dir)
-    os.makedirs(instr_dir)
-    # Write anew
+    # If not existing, make a fresh one
+    if not op.exists(instr_dir):
+        os.makedirs(instr_dir)
+    # Write the instructions, auto-overwriting old ones
     for kind in ['general', 'active', 'passive', 'description']:
         fpath = op.join(instr_dir, 'instructions_{}.txt'.format(kind))
         print_human_readable_instrs(kind, fpath)
