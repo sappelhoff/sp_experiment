@@ -128,7 +128,11 @@ def make_events_json_dict():
                                                 'sampling'),
             trigger_dict['trig_mask_out_l']: ('a masked outcome is shown '
                                               'after sampling (left side)'),
-            trigger_dict['trig_show_out_r']: ('a masked outcome is revealed '
+            trigger_dict['trig_show_out_l']: ('an outcome is revealed '
+                                              'after sampling (left side)'),
+            trigger_dict['trig_mask_out_r']: ('a masked outcome is shown '
+                                              'after sampling (right side)'),
+            trigger_dict['trig_show_out_r']: ('an outcome is revealed '
                                               'after sampling (right side)'),
             trigger_dict['trig_new_final_choice']: ('color of fixcross is '
                                                     'changed to indicate '
@@ -145,7 +149,13 @@ def make_events_json_dict():
             trigger_dict['trig_mask_final_out_l']: ('a masked outcome is '
                                                     'shown after final '
                                                     'choice (left side)'),
-            trigger_dict['trig_show_final_out_r']: ('a masked outcome is '
+            trigger_dict['trig_show_final_out_l']: ('an outcome is '
+                                                    'revealed after final '
+                                                    'choice (left side)'),
+            trigger_dict['trig_mask_final_out_r']: ('a masked outcome is '
+                                                    'shown after final '
+                                                    'choice (right side)'),
+            trigger_dict['trig_show_final_out_r']: ('an outcome is '
                                                     'revealed after final '
                                                     'choice (right side)'),
             trigger_dict['trig_error']: ('color of fixcross is changed to '

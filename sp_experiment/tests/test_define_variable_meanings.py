@@ -41,10 +41,14 @@ def test_json():
     # Load json and check for integrity
     with open(fpath, 'r') as fin:
         try:
-            assert json.load(fin)
+            saved_json_dict = json.load(fin)
         except ValueError as e:
             print('invalid json: {}'.format(e))
             raise
+
+    # Test that saved JSON is up to date
+    events_json_dict = make_description_task_json()
+    assert events_json_dict == saved_json_dict
 
 
 def test_make_data_dir():
