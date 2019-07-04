@@ -140,8 +140,7 @@ def run_instructions(kind, monitor='testMonitor', font=font, lang=lang,
                 img_stim.image = op.join(img_dir, 'bbox_photo.png')
                 img_stim.draw()
             if 'Wie bereits erwähnt' in text:
-                # XXX: Need to mark up the "Stop" button
-                img_stim.image = op.join(img_dir, 'bbox_photo.png')
+                img_stim.image = op.join(img_dir, 'bbox_photo_stop_button.png')
                 img_stim.draw()
             if 'Farbe der Punkte' in text:
                 img_stim.image = op.join(img_dir, 'final_ball.png')
