@@ -29,7 +29,7 @@ steps:
   displayName: Testing and coverage via pytest --cov
 
 - script: |
-    call activate sp_experiment
+    call activate testEnv
     flake8 .
   displayName: Linting via flake8
 

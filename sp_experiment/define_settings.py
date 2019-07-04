@@ -1,15 +1,21 @@
 """Provide constants for several settings in the experiment."""
 from collections import OrderedDict
 
-# CONSTANTS
+# Set whether participants can stop or HAVE to do a certain number of samples
+# per trial
+OPTIONAL_STOPPING = False
+
 # The expected frames per second. Change depending on your hardware.
 EXPECTED_FPS = 60
 
-# Keylists for responses
-# replace "__" with "f" to allow final choices
+# Keylists for responses, "__" is a non-existent key serving as a placeholder
 KEYLIST_SAMPLES = ['s', 'd', '__', 'x']  # press x to quit
 KEYLIST_FINCHOICE = ['s', 'd', 'x']
 KEYLIST_DESCRIPTION = ['s', 'd', 'x']
+if OPTIONAL_STOPPING:
+    # If we allow optional stopping, make pressing the "F" key an option
+    idx_to_replace = KEYLIST_SAMPLES.index('__')
+    KEYLIST_SAMPLES[idx_to_replace] = 'f'
 
 # Eyetracking variables
 GAZE_TOLERANCE = 0.1  # in psychopy norm units: the window where gaze is OK
@@ -35,13 +41,17 @@ color_error = (1, 0, 0)  # wait: you did an error ... we have to restart
 # EXPERIMENT SETTINGS,  including yoke_map to determine which participant
 # gets yoked to which
 twait_show_instr = 0  # how long to force instruction screen
-monitor = 'room26'
+monitor = 'room26'  # see define_monitors.py
 ser = None  # either address to serial port or None
-maxwait = 3
-exchange_rate = 0.005
+maxwait = 3  # how long to wait before each action ... if longer: timeout
+exchange_rate = 0.005  # multiply this with accumulated points to get Euros
 lang = 'de'
 font = 'Liberation Sans'
 
+# Settings for sp task in all conditions
+# if OPTIONAL_STOPPING is False, participants will always play `max_nsamples`
+# samples ... else, they can stop after a minimum of 1 sample ... or before
+# they have taken a maximum of `max_nsamples`
 max_ntrls = 1
 max_nsamples = 2
 block_size = 20
