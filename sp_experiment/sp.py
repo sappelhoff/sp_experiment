@@ -311,10 +311,19 @@ def prep_logging(yoke_map, auto=False, gui_info=None):
             fname = 'log_{}_{}.txt'.format(sub_id, condition)
             log_path = op.join(data_dir, fname)
             prefixes = ['sub_id', 'age', 'sex', 'yoke_to']
+            # Read in the current experiment settings
+            settings_path = op.join(op.dirname(sp_experiment.__file__),
+                                    'define_settings.py')
+            with open(settings_path, 'r') as fsettings:
+                lines_settings = fsettings.readlines()
+
+            # Write the log
             with open(log_path, 'w') as fout:
                 for i, line in enumerate([sub_id, age, sex, yoke_to]):
                     fout.write('{}: {}'.format(prefixes[i], line))
                     fout.write('\n')
+                fout.write('\n\n\n-------------------------------------\n\n\n')
+                fout.writelines(lines_settings)
 
     return sub_id, data_file, condition, yoke_to
 

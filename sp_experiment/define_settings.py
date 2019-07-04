@@ -51,13 +51,17 @@ font = 'Liberation Sans'
 # Settings for sp task in all conditions
 # if OPTIONAL_STOPPING is False, participants will always play `max_nsamples`
 # samples ... else, they can stop after a minimum of 1 sample ... or before
-# they have taken a maximum of `max_nsamples`
-max_ntrls = 1
-max_nsamples = 2
+# they have taken a maximum of `max_nsamples
+if OPTIONAL_STOPPING:
+    max_nsamples = 20
+else:
+    max_nsamples = 12
+max_ntrls = 100
 block_size = 20
+
 # Settings for training
 test_max_ntrls = 1
-test_max_nsamples = 1
+test_max_nsamples = max_nsamples
 test_block_size = 1
 
 # First 10 subjs are mapped to themselves
