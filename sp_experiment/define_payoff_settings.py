@@ -179,7 +179,7 @@ def get_random_payoff_dict(payoff_settings, pseudorand=False, df=None):
     # were encountered)
     def _nanint(x, prob=False):
         if np.isnan(x):
-            return np.nan if prob==False else 1
+            return np.nan if not prob else 1
         else:
             return int(x)
 
