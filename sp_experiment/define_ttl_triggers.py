@@ -68,3 +68,17 @@ def provide_trigger_dict():
     trigger_dict['trig_block_feedback'] = bytes([23])
 
     return trigger_dict
+
+
+if __name__ == '__main__':
+    import serial
+    from time import sleep
+    ser = serial.Serial('COM4')
+    trigger_dict = provide_trigger_dict()
+
+    for key, val in trigger_dict.items():
+        print('{}: {}'.format(ord(val), key))
+        ser.write(val)
+        sleep(0.5)
+        ser.write(bytes([0]))
+        sleep(1.5)

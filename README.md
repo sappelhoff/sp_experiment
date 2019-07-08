@@ -75,6 +75,15 @@ downloaded from https://www.tobiipro.com/learn-and-support/downloads-pro/
 And the Tobii 4C eyetracker with a "Pro license" (needs to be purchased
 separately and then loaded onto the specific eyetracker).
 
+# EEG Triggers
+
+Event markers (also called TTL Triggers) can be sent using the pyserial
+library. In our setup we use the Brain Products Trigger Box as a device to
+send serial data via a USB port, which gets transformed into a parallel TTL
+signal to be picked up by the EEG amplifier.
+
+See `define_settings.py` and `define_ttl_triggers.py` for more information
+
 # GIT notes:
 
 You may want to git ignore the data files that are produced by running the
