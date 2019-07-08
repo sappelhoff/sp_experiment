@@ -1,5 +1,6 @@
 """Provide constants for several settings in the experiment."""
 from collections import OrderedDict
+import serial
 
 # Set whether participants can stop or HAVE to do a certain number of samples
 # per trial
@@ -42,11 +43,22 @@ color_error = (1, 0, 0)  # wait: you did an error ... we have to restart
 # gets yoked to which
 twait_show_instr = 0  # how long to force instruction screen
 monitor = 'room26'  # see define_monitors.py
-ser = None  # either address to serial port or None
 maxwait = 3  # how long to wait before each action ... if longer: timeout
 exchange_rate = 0.005  # multiply this with accumulated points to get Euros
 lang = 'de'
 font = 'Liberation Sans'
+
+# Serial port
+# INSTRUCTIONS TRIGGER BOX
+# https://www.brainproducts.com/downloads.php?kid=40
+# Open the Windows device manager,
+# search for the "TriggerBox VirtualSerial Port (COM6)"
+# in "Ports /COM & LPT)" and enter the COM port number in the constructor.
+# If there is no TriggerBox, set ser to None
+ser = None  # either address to serial port or None ... COM4
+if isinstance(ser, str):
+    ser = serial.Serial(ser)
+
 
 # Settings for sp task in all conditions
 # if OPTIONAL_STOPPING is False, participants will always play `max_nsamples`
