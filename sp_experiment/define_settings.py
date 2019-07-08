@@ -56,9 +56,9 @@ font = 'Liberation Sans'
 # in "Ports /COM & LPT)" and enter the COM port number in the constructor.
 # If there is no TriggerBox, set ser to None
 ser = None  # either address to serial port or None ... COM4
+waittime = 0.005  # how long to keep up a signal before resetting to zero
 if isinstance(ser, str):
     ser = serial.Serial(ser)
-
 
 # Settings for sp task in all conditions
 # if OPTIONAL_STOPPING is False, participants will always play `max_nsamples`

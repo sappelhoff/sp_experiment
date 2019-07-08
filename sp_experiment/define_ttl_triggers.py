@@ -73,12 +73,12 @@ def provide_trigger_dict():
 if __name__ == '__main__':
     import serial
     from time import sleep
+    from sp_experiment.utils import My_serial
     ser = serial.Serial('COM4')
+    ser = My_serial(ser, waittime=0.005)
     trigger_dict = provide_trigger_dict()
 
     for key, val in trigger_dict.items():
         print('{}: {}'.format(ord(val), key))
         ser.write(val)
-        sleep(0.5)
-        ser.write(bytes([0]))
         sleep(1.5)

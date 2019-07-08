@@ -39,7 +39,8 @@ from sp_experiment.define_settings import (KEYLIST_SAMPLES,
                                            test_block_size,
                                            yoke_map,
                                            DESCR_EXPERIENCED,
-                                           fraction_to_run
+                                           fraction_to_run,
+                                           waittime
                                            )
 from sp_experiment.define_variable_meanings import (make_events_json_dict,
                                                     make_data_dir
@@ -962,6 +963,9 @@ if __name__ == '__main__':
     # Check serial
     if ser is None:
         ser = Fake_serial()
+    else:
+        # Use a wrapper that resets bytes to zero some time after the fact
+        ser = My_serial(ser, waittime)
 
     # Navigate
     run, auto = navigation(lang=lang, yoke_map=yoke_map, max_ntrls=max_ntrls,
