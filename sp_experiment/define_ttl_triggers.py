@@ -75,7 +75,7 @@ if __name__ == '__main__':
     from time import sleep
     from sp_experiment.utils import My_serial
     ser = serial.Serial('COM4')
-    ser = My_serial(ser, waittime=0.005)
+    ser = My_serial(ser, waitsecs=0.002)
     trigger_dict = provide_trigger_dict()
 
     for key, val in trigger_dict.items():

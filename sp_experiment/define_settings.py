@@ -56,9 +56,20 @@ font = 'Liberation Sans'
 # in "Ports /COM & LPT)" and enter the COM port number in the constructor.
 # If there is no TriggerBox, set ser to None
 ser = None  # either address to serial port or None ... COM4
-waittime = 0.005  # how long to keep up a signal before resetting to zero
 if isinstance(ser, str):
     ser = serial.Serial(ser)
+
+# When sending EEG trigger signals / event markers it is important to "reset"
+# the serial port to zero after each sent byte. The time between the sent byte
+# and the resetting must be long enough so that the sampling rate of the EEG
+# system can pick up the change in signals. E.g., for a 1000Hz sampling
+# frequency, the trigger MUST be on for at least 1ms ... better for 2 or 3.
+# `waitsecs` determines for how long triggers will be ON.
+# NOTE: `waitsecs` should NOT be longer than the time the screen needs to
+# refresh, because we time our experimental presentations per frames and
+# window flips. If `waitsecs` is longer than a flip takes, the following flip
+# will be delayed. Flip times for 60Hz=16.6mss, 120Hz=8.3ms, 144Hz=6.9ms
+waitsecs = 0.002
 
 # Settings for sp task in all conditions
 # if OPTIONAL_STOPPING is False, participants will always play `max_nsamples`

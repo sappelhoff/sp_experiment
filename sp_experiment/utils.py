@@ -9,7 +9,7 @@ other utilities: psychopy_utils.py
 """
 import os.path as op
 from collections import OrderedDict
-import time
+from time import perf_counter
 
 import numpy as np
 import pandas as pd
@@ -34,28 +34,34 @@ class Fake_serial():
 class My_serial():
     """Convenience class that always resets the event marker to zero."""
 
-    def __init__(self, ser, waittime=0.005):
+    def __init__(self, ser, waitsecs):
         """Initialize the class.
 
         Parameters
         ----------
         ser : serial.Serial
             A serial port object
-        waittime : float
-            Time to wait until resetting the serial port to zero
+        waitsecs : float
+            Time in seconds to wait until resetting the serial port to zero
 
         """
         self.ser = ser
-        self.waittime = waittime
+        self.waitsecs = waitsecs
         self.reset_val = bytes([0])
 
     def write(self, byte):
         """Take a byte, write it, and reset to zero."""
         self.ser.write(byte)
-        # Sleep guarantees us AT LEAST `waittime` secs of pause
-        # see: https://docs.python.org/3/library/time.html#time.sleep
-        time.sleep(self.waittime)
+        mysleep(self.waitsecs)
         self.ser.write(self.reset_val)
+
+
+def mysleep(waitsecs):
+    """Block execution of further code for `waitsecs` seconds."""
+    twaited = 0
+    start = perf_counter()
+    while twaited < waitsecs:
+        twaited = perf_counter() - start
 
 
 def calc_bonus_payoff(sub_id, exchange_rate=0.01, lang='en'):

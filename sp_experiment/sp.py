@@ -40,7 +40,7 @@ from sp_experiment.define_settings import (KEYLIST_SAMPLES,
                                            yoke_map,
                                            DESCR_EXPERIENCED,
                                            fraction_to_run,
-                                           waittime
+                                           waitsecs
                                            )
 from sp_experiment.define_variable_meanings import (make_events_json_dict,
                                                     make_data_dir
@@ -51,6 +51,7 @@ from sp_experiment.utils import (get_fixation_stim,
                                  get_jittered_waitframes,
                                  log_data,
                                  Fake_serial,
+                                 My_serial,
                                  get_payoff_dict,
                                  get_passive_action,
                                  get_passive_outcome,
@@ -965,7 +966,7 @@ if __name__ == '__main__':
         ser = Fake_serial()
     else:
         # Use a wrapper that resets bytes to zero some time after the fact
-        ser = My_serial(ser, waittime)
+        ser = My_serial(ser, waitsecs)
 
     # Navigate
     run, auto = navigation(lang=lang, yoke_map=yoke_map, max_ntrls=max_ntrls,
