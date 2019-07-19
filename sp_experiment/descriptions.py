@@ -357,9 +357,10 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
         frames = get_jittered_waitframes(*tdisplay_ms)
         for frame in range(frames):
             win.flip()
-            if frame == 0:
+            if frame == 1:
                 log_data(data_file, onset=exp_timer.getTime(),
-                         trial=trial, value=value, duration=frames)
+                         trial=trial, value=value, duration=frames,
+                         deduct_onset_frames=1)
 
         # Present lotteries
         # make not encountered magnitudes an empty string so they don't show
@@ -445,9 +446,10 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
         for frame in range(frames):
             circ_stim.draw()
             win.flip()
-            if frame == 0:
+            if frame == 1:
                 log_data(data_file, onset=exp_timer.getTime(), trial=trial,
-                         duration=frames, value=trig_val_mask)
+                         duration=frames, value=trig_val_mask,
+                         deduct_onset_frames=1)
 
         win.callOnFlip(ser.write, trig_val_show)
         frames = get_jittered_waitframes(*toutshow_ms)
@@ -455,9 +457,10 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
             circ_stim.draw()
             txt_stim.draw()
             win.flip()
-            if frame == 0:
+            if frame == 1:
                 log_data(data_file, onset=exp_timer.getTime(), trial=trial,
-                         duration=frames, outcome=outcome, value=trig_val_show)
+                         duration=frames, outcome=outcome, value=trig_val_show,
+                         deduct_onset_frames=1)
 
         # reset text color
         txt_stim.color = color_standard

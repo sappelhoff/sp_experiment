@@ -528,9 +528,10 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
         frames = get_jittered_waitframes(*tdisplay_ms)
         for frame in range(frames):
             win.flip()
-            if frame == 0:
+            if frame == 1:
                 log_data(data_file, onset=exp_timer.getTime(),
-                         trial=current_ntrls, value=value, duration=frames)
+                         deduct_onset_frames=1, trial=current_ntrls,
+                         value=value, duration=frames)
 
         # Within this trial, allow sampling
         current_nsamples = 0
@@ -575,13 +576,14 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                     frames = get_jittered_waitframes(*tdisplay_ms)
                     for frame in range(frames):
                         win.flip()
-                        if frame == 0:
+                        if frame == 1:
                             # Log an event that we have to disregard all prior
                             # events in this trial
                             log_data(data_file, onset=exp_timer.getTime(),
                                      trial=current_ntrls,
                                      value=trig_dict['trig_error'],
-                                     duration=frames, reset=True)
+                                     duration=frames, reset=True,
+                                     deduct_onset_frames=1)
                     # start a new trial without incrementing the trial counter
                     break
 
@@ -645,10 +647,11 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                 for frame in range(frames):
                     circ_stim.draw()
                     win.flip()
-                    if frame == 0:
+                    if frame == 1:
                         log_data(data_file, onset=exp_timer.getTime(),
                                  trial=current_ntrls, duration=frames,
-                                 value=trig_val_mask)
+                                 value=trig_val_mask,
+                                 deduct_onset_frames=1)
 
                 win.callOnFlip(ser.write, trig_val_show)
                 frames = get_jittered_waitframes(*toutshow_ms)
@@ -656,10 +659,11 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                     circ_stim.draw()
                     txt_stim.draw()
                     win.flip()
-                    if frame == 0:
+                    if frame == 1:
                         log_data(data_file, onset=exp_timer.getTime(),
                                  trial=current_ntrls, duration=frames,
-                                 outcome=outcome, value=trig_val_show)
+                                 outcome=outcome, value=trig_val_show,
+                                 deduct_onset_frames=1)
 
                 # Gaze Fixation test
                 gazepoint = get_normed_gazepoint(gaze_dict)
@@ -676,12 +680,13 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                         frames = get_jittered_waitframes(*tdisplay_ms)
                         for frame in range(frames):
                             win.flip()
-                            if frame == 0:
+                            if frame == 1:
                                 # Log an event that we have to disregard all
                                 # prior events in this trial
                                 log_data(data_file, onset=exp_timer.getTime(),
                                          trial=current_ntrls, value=value,
-                                         duration=frames, reset=True)
+                                         duration=frames, reset=True,
+                                         deduct_onset_frames=1)
                         # start a new trial without incrementing the trial
                         # counter
                         break
@@ -700,13 +705,14 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                     frames = get_jittered_waitframes(*tdisplay_ms)
                     for frame in range(frames):
                         win.flip()
-                        if frame == 0:
+                        if frame == 1:
                             # Log an event that we have to disregard all prior
                             # events in this trial
                             log_data(data_file, onset=exp_timer.getTime(),
                                      trial=current_ntrls,
                                      value=trig_dict['trig_error'],
-                                     duration=frames, reset=True)
+                                     duration=frames, reset=True,
+                                     deduct_onset_frames=1)
                     if condition == 'active':
                         # start a new trial without incrementing the trial
                         # counter
@@ -737,11 +743,11 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                 frames = get_jittered_waitframes(*tdisplay_ms)
                 for frame in range(frames):
                     win.flip()
-                    if frame == 0:
+                    if frame == 1:
                         log_data(data_file, onset=exp_timer.getTime(),
                                  trial=current_ntrls,
                                  value=trig_dict['trig_new_final_choice'],
-                                 duration=frames)
+                                 duration=frames, deduct_onset_frames=1)
 
                 # Switch color of stim cross back to standard: action allowed
                 set_fixstim_color(inner, color_standard)
@@ -765,13 +771,14 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                     frames = get_jittered_waitframes(*tdisplay_ms)
                     for frame in range(frames):
                         win.flip()
-                        if frame == 0:
+                        if frame == 1:
                             # Log an event that we have to disregard all prior
                             # events in this trial
                             log_data(data_file, onset=exp_timer.getTime(),
                                      trial=current_ntrls,
                                      value=trig_dict['trig_error'],
-                                     duration=frames, reset=True)
+                                     duration=frames, reset=True,
+                                     deduct_onset_frames=1)
                     # start a new trial without incrementing the trial counter
                     break
 
@@ -819,10 +826,11 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                 for frame in range(frames):
                     circ_stim.draw()
                     win.flip()
-                    if frame == 0:
+                    if frame == 1:
                         log_data(data_file, onset=exp_timer.getTime(),
                                  trial=current_ntrls, duration=frames,
-                                 value=trig_val_mask_final)
+                                 value=trig_val_mask_final,
+                                 deduct_onset_frames=1)
 
                 win.callOnFlip(ser.write, trig_val_show_final)
                 frames = get_jittered_waitframes(*toutshow_ms)
@@ -830,10 +838,10 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                     circ_stim.draw()
                     txt_stim.draw()
                     win.flip()
-                    if frame == 0:
+                    if frame == 1:
                         log_data(data_file, onset=exp_timer.getTime(),
                                  trial=current_ntrls, duration=frames,
-                                 outcome=outcome,
+                                 outcome=outcome, deduct_onset_frames=1,
                                  value=trig_val_show_final)
 
                 # Reset txt_color

@@ -391,7 +391,7 @@ action_type_dict['n/a'] = 'n/a'
 
 def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
              outcome='n/a', response_time='n/a', value='n/a',
-             payoff_dict='n/a', fps=EXPECTED_FPS,
+             payoff_dict='n/a', fps=EXPECTED_FPS, deduct_onset_frames=0,
              version=sp_experiment.__version__, reset=False):
     """Write data to the log file.
 
@@ -422,6 +422,10 @@ def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
         "mag0_1, prob0_1, mag0_2, prob0_2, mag1_1, prob1_1, mag1_2, prob1_2"
     fps : int
         frames per second used in this experiment
+    deduct_onset_frames : int
+        number of frames to deduct from onset. For example, because the
+        log_data function was called N frames later. Then we deduct N / fps
+        seconds from the onset
     version : str
         version of the experiment used for collecting this data
     reset : bool
@@ -461,6 +465,9 @@ def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
 
     # turn byte into integer if we sent a trigger
     value = ord(value) if isinstance(value, bytes) else 'n/a'
+
+    if onset != 'n/a':
+        onset = onset - (deduct_onset_frames / fps)
 
     # Write the data
     with open(fpath, 'a') as fout:
