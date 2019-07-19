@@ -376,6 +376,19 @@ def get_jittered_waitframes(min_wait, max_wait, fps=EXPECTED_FPS):
     return wait_frames
 
 
+# Define action types, to be used in log_data
+action_type_dict = OrderedDict()
+action_type_dict[0] = 'sample'
+action_type_dict[1] = 'sample'
+action_type_dict[2] = 'stop'
+action_type_dict[3] = 'final_choice'
+action_type_dict[4] = 'final_choice'
+action_type_dict[5] = 'forced_stop'
+action_type_dict[6] = 'forced_stop'
+action_type_dict[7] = 'premature_stop'
+action_type_dict['n/a'] = 'n/a'
+
+
 def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
              outcome='n/a', response_time='n/a', value='n/a',
              payoff_dict='n/a', fps=EXPECTED_FPS,
@@ -421,17 +434,6 @@ def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
 
     """
     # Infer action type
-    action_type_dict = OrderedDict()
-    action_type_dict[0] = 'sample'
-    action_type_dict[1] = 'sample'
-    action_type_dict[2] = 'stop'
-    action_type_dict[3] = 'final_choice'
-    action_type_dict[4] = 'final_choice'
-    action_type_dict[5] = 'forced_stop'
-    action_type_dict[6] = 'forced_stop'
-    action_type_dict[7] = 'premature_stop'
-    action_type_dict['n/a'] = 'n/a'
-
     action_type = action_type_dict[action]
     if action in [5, 6]:
         action = action - 5
@@ -442,7 +444,6 @@ def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
 
     # Reformat reward distribution settings
     if isinstance(payoff_dict, dict):
-        assert len(payoff_dict) == 2
         setting = list()
         for i in range(2):
             # NOTE: the use of "set" discards the ordering of values in the
