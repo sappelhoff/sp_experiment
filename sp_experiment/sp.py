@@ -114,7 +114,7 @@ def navigation(nav='initial', bonus='', lang='en', yoke_map=None,
         yoke_map = OrderedDict((i, i) for i in range(100))
     run = False
     auto = False
-    next = ''
+    next_screen = ''
     while not nav == 'finished':
         # Prepare GUI
         myDlg = gui.Dlg(title='Sampling Paradigm Experiment')
@@ -154,8 +154,8 @@ def navigation(nav='initial', bonus='', lang='en', yoke_map=None,
             elif (ok_data[0] == 'run test trials' or
                   ok_data[0] == 'show instructions'):
                 nav = 'inquire_condition'
-                next = 'test' if ok_data[0].startswith('r') else 'show'
-            elif next == 'test':
+                next_screen = 'test' if ok_data[0].startswith('r') else 'show'
+            elif next_screen == 'test':
                 print('preparing test trials now')
                 # run test trials, then quit program
                 if ok_data[0] == 'A':
@@ -169,7 +169,7 @@ def navigation(nav='initial', bonus='', lang='en', yoke_map=None,
                                 test_max_ntrls, test_max_nsamples,
                                 test_block_size, maxwait)
                 core.quit()
-            elif next == 'show':
+            elif next_screen == 'show':
                 if ok_data[0] == 'A':
                     condition = 'active'
                 elif ok_data[0] == 'B':
