@@ -533,6 +533,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
 
         # Within this trial, allow sampling
         current_nsamples = 0
+        gaze__error_count = 0  # a counter for fixation errors
         while True:
             # Starting a new sample by setting the fix stim to standard color
             set_fixstim_color(inner, color_standard)

@@ -4,7 +4,7 @@ import serial
 
 # Set whether participants can stop or HAVE to do a certain number of samples
 # per trial
-OPTIONAL_STOPPING = False
+OPTIONAL_STOPPING = True
 
 # The expected frames per second. Change depending on your hardware.
 EXPECTED_FPS = 60
@@ -19,7 +19,7 @@ if OPTIONAL_STOPPING:
     KEYLIST_SAMPLES[idx_to_replace] = 'f'
 
 # Eyetracking variables
-GAZE_TOLERANCE = 0.1  # in psychopy norm units: the window where gaze is OK
+GAZE_TOLERANCE = 0.2  # in psychopy norm units: the window where gaze is OK
 GAZE_ERROR_THRESH = 4  # after how many fixation errors to cancel the trial
 
 # Experiment settings
@@ -55,7 +55,7 @@ font = 'Liberation Sans'
 # search for the "TriggerBox VirtualSerial Port (COM6)"
 # in "Ports /COM & LPT)" and enter the COM port number in the constructor.
 # If there is no TriggerBox, set ser to None
-ser = None  # either address to serial port or None ... COM4
+ser = "COM4"  # either address to serial port or None ... COM4
 if isinstance(ser, str):
     ser = serial.Serial(ser)
 
