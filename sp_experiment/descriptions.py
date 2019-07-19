@@ -191,7 +191,9 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
     # because it can fluctuate a bit
     fps_counter = 0
     while True:
-        fps = int(round(win.getActualFrameRate()))
+        fps = win.getActualFrameRate(nMaxFrames=1000)
+        if fps is not None:
+            fps = int(round(fps))
         if EXPECTED_FPS == fps:
             break
         else:
