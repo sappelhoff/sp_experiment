@@ -40,7 +40,7 @@ from sp_experiment.define_settings import (KEYLIST_SAMPLES,
                                            yoke_map,
                                            DESCR_EXPERIENCED,
                                            fraction_to_run,
-                                           waitsecs
+                                           WAITSECS
                                            )
 from sp_experiment.define_variable_meanings import (make_events_json_dict,
                                                     make_data_dir
@@ -372,7 +372,6 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
         raise ValueError('Please provide a data_file path.')
 
     # Prepare eyetracking
-    gaze__error_count = 0  # a counter for fixation errors
     try:
         eyetracker = find_eyetracker()
         track_eyes = True
@@ -533,7 +532,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
 
         # Within this trial, allow sampling
         current_nsamples = 0
-        gaze__error_count = 0  # a counter for fixation errors
+        gaze__error_count = 0  # reset the counter for gaze threshold errors
         while True:
             # Starting a new sample by setting the fix stim to standard color
             set_fixstim_color(inner, color_standard)
@@ -967,7 +966,7 @@ if __name__ == '__main__':
         ser = Fake_serial()
     else:
         # Use a wrapper that resets bytes to zero some time after the fact
-        ser = My_serial(ser, waitsecs)
+        ser = My_serial(ser, waitsecs=WAITSECS)
 
     # Navigate
     run, auto = navigation(lang=lang, yoke_map=yoke_map, max_ntrls=max_ntrls,
