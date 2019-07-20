@@ -26,8 +26,7 @@ def test_make_events_json_dict():
 
 def test_json():
     """Test json file."""
-    init_dir = op.dirname(sp_experiment.__file__)
-    data_dir = op.join(init_dir, 'experiment_data')
+    _, data_dir = make_data_dir()
     fname = 'task-sp_events.json'
     fpath = op.join(data_dir, fname)
 
@@ -53,6 +52,7 @@ def test_json():
 def test_make_data_dir():
     """Test making of datadir and copying over of relevant files."""
     init_dir, data_dir = make_data_dir()
+    assert init_dir == op.dirname(sp_experiment.__file__)
     assert op.exists(data_dir)
     assert op.exists(op.join(data_dir, 'task-sp_events.json'))
     assert op.exists(op.join(data_dir, 'sub-999_task-spactive_events.tsv'))

@@ -251,12 +251,12 @@ def prep_logging(yoke_map, auto=False, gui_info=None):
 
     # Data logging
     # ============
+    _, data_dir = make_data_dir()
     if condition == 'description':
         # For description task we show what happened in active SP
         fname_events = 'sub-{:02d}_task-spactive_events.tsv'.format(sub_id)
 
         # Make sure the file for descr exists ... but no associated data yet
-        init_dir, data_dir = make_data_dir()
         events_file = op.join(data_dir, fname_events)
         if not op.exists(events_file):
             raise OSError('\n\nTo run task C, we need a data file "{}".'
@@ -284,8 +284,6 @@ def prep_logging(yoke_map, auto=False, gui_info=None):
         fname = 'sub-{:02d}_task-sp{}_events.tsv'.format(sub_id, condition)
 
         # Check directory is present and file name not yet used
-        init_dir, data_dir = make_data_dir()
-
         data_file = op.join(data_dir, fname)
         if op.exists(data_file):
             raise OSError('\n\nA data file for ID "{}" already exists.\n\n'

@@ -132,7 +132,7 @@ def test_get_passive_outcome():
 def test_get_jittered_waitframes():
     """Test the waitframes func."""
     n = 100
-    for i in range(n):
+    for _ in range(n):
         wait_frames = get_jittered_waitframes(1000, 2000)
         assert wait_frames >= EXPECTED_FPS and wait_frames <= EXPECTED_FPS*2
 

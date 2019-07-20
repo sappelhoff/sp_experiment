@@ -270,7 +270,7 @@ def get_payoff_dict(df, trial):
     # NOTE: we use get_random_payoff_dict simply for putting the structure
     # into the right order. With a setting of length 1, there is no randomness
     # as to which setting gets drawn.
-    payoff_dict, payoff_settings = get_random_payoff_dict(setting)
+    payoff_dict, _ = get_random_payoff_dict(setting)
     return payoff_dict
 
 
