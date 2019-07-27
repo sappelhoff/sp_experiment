@@ -1,0 +1,32 @@
+Instruktionen Aufgabe A. Bitte lesen Sie aufmerksam den folgenden Text. Nutzen Sie die linke und rechte Taste zum Navigieren. Achten Sie auf die Details in der Beschreibung! In dieser Aufgabe werden Sie selbst nach Informationen suchen.
+
+Bitte fixieren Sie während des Experiments mit ihrem Blick immer den zentralen Stimulus in der Bildschirmmitte.
+
+Links und rechts von dem zentralen Stimulus befinden sich zwei unsichtbare Urnen. In den Urnen befinden sich jeweils zehn Kugeln mit Zahlen darauf. Die Zahlen stehen für Spielpunkte, die zu einem Wechselkurs von 0.005 in Euro umgewandelt werden. Dieses Geld in Euro wird Ihnen am Ende des Experimentes als Bonus ausgezahlt.
+
+Es gibt in dieser Aufgabe viele Durchgänge. In jedem Durchgang gibt es neue Urnen, und ihre Aufgabe wird jedes Mal sein, sich am Ende der Aufgabe für eine der beiden Urnen zu entscheiden. Um etwas über den Inhalt der Urnen zu erfahren, dürfen Sie in jedem Durchgang zunächst insgesamt bis zu einem Maximum von 19 mal blind eine Kugel ziehen. Dies können Sie tun, indem Sie die linke oder die rechte Taste drücken. Sie können also jedes Mal selbst wählen, aus welcher Urne die nächste Kugel gezogen wird. Die Kugel wird jedesmal  zufällig aus der jeweiligen Urne gezogen und Ihnen kurz gezeigt. Danach wird die Kugel zurück in die ursprüngliche Urne gelegt. Es sind also IMMER 10 Kugeln in jeder Urne. In anderen Worten, der Inhalt der Urnen wird durch Ihre Ziehung(en) nicht verändert.
+
+Wie bereits erwähnt können Sie in jedem Durchgang maximal 19 mal blind eine Kugel ziehen, um mehr über die Urnen zu lernen. Sie können jedoch auch schon früher aufhören, Kugeln zu ziehen. Das können Sie mit der blauen Taste über der rechten Taste anzeigen. Beim Drücken der dieser blauen "Stopp" Taste wird sofort die nächste Phase des momentanen Durchgangs eingeleitet, wie im Folgenden beschrieben.
+
+Nachdem Sie sich die von Ihnen gewählte Anzahl an Kugeln (bis zu maximal 19) angeschaut haben, müssen Sie sich final für eine der Urnen entscheiden. Ihr Ziel sollte natürlich sein, dabei immer die jeweils bessere Urne zu wählen. Nach dieser finalen Entscheidung wird aus der gewählten Urne nochmals eine Kugel (zufällig) gezogen. Die Punkte auf dieser finalen Kugel werden Ihrem Konto gutgeschrieben. Dies wird durch die grüne Farbe der Punkte gezeigt. Danach beginnt ein neuer Durchgang mit komplett neuen Urnen. Insgesamt gibt es 100 Durchgänge und alle 20 Durchgänge werden Sie Zeit für eine kurze Pause haben.
+
+Als Hilfestellung zeigt Ihnen die Farbe des zentralen Stimulus an, was während der Durchgänge als nächstes passiert: Zu Beginn eines Durchgangs ist der Stimulus kurz grün und dann weiß. Das bedeutet, dass neue unsichtbaren Urnen links und rechts aufgestellt wurden.
+
+Danach bleibt die Farbe des zentralen Stimulus weiß. Das bedeutet, dass Sie jetzt eine Kugel aus einer der Urnen ziehen können, durch Drücken der linken oder der rechten Taste. Während Sie darauf warten, dass die Kugel gezeigt wird, wird die Farbe des zentralen Stimulus auch noch weiß sein.
+
+Wenn Sie nach dem Drücken der blauen "Stopp" Taste oder nach maximal 19 Zügen ein weiteres Mal die linke oder rechte Taste drücken, wechselt die Farbe des zentralen Stimulus kurz zu blau und wird dann wieder weiß. Das bedeutet, dass Sie sich nun final zwischen den Urnen entscheiden müssen. Zur Erinnerung: Nur die Kugel die nach der finalen Entscheidung gezogen wird bestimmt, wie viele Punkte ihrem Konto hinzugefügt werden.
+
+Für Ihre Entscheidungen haben Sie jeweils 3 Sekunden Zeit. Wenn Sie länger warten, wechselt die Farbe des zentralen Stimulus zu rot und der momentane Durchgang wird abgebrochen. Direkt danach wird ein neuer Durchgang gestartet.
+
+Zusammenfassend bedeuten die Farben das folgende:
+
+grün: neuer Durchgang mit neuen Urnen
+
+weiß: Urne wählen oder auf zufällig gezogene Kugel warten
+
+blau: nächste Entscheidung ist die finale Entscheidung für diesen Durchgang
+
+rot: Sie haben länger als 3 Sekunden gewartet und der Durchgang wird abgebrochen
+
+Die Instruktionen sind abgeschlossen. Drücken Sie die rechte Taste um fortzufahren.
+

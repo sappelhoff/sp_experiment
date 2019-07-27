@@ -8,26 +8,32 @@ import tobii_research as tr
 
 import sp_experiment
 from sp_experiment.utils import get_final_choice_outcomes
-from sp_experiment.define_settings import (txt_color, twait_show_instr,
+from sp_experiment.define_settings import (txt_color,
                                            color_magnitude, color_probability,
                                            OPTIONAL_STOPPING, font, lang,
                                            max_ntrls, max_nsamples, block_size,
-                                           maxwait, exchange_rate)
+                                           maxwait, exchange_rate,
+                                           KEYLIST_SAMPLES)
 
 
-def print_human_readable_instrs(kind, fpath=None):
+def print_human_readable_instrs(kind, track_eyes, opt_stop, fpath=None):
     """Print the instructions in readable format.
 
     Parameters
     ----------
     kind : str
         Can be 'active', 'passive', or 'description'
+    track_eyes : bool
+        Whether or not to render instructions for eyetracking.
+    opt_stop : bool
+        Whether or not to render instructions for optional stopping.
     fpath : str | None
         Path to the file to be written. If None, will print to console. If
         file already exists, it will be deleted.
 
     """
-    texts = run_instructions(kind, return_text_only=True)
+    texts = run_instructions(kind, return_text_only=True,
+                             track_eyes=track_eyes, opt_stop=opt_stop)
 
     if fpath is None:
         for text in texts:
@@ -38,6 +44,35 @@ def print_human_readable_instrs(kind, fpath=None):
         with open(fpath, 'w', encoding='utf-8') as fout:
             for text in texts:
                 fout.write(text + '\n\n')
+
+
+def _navigate_instrs(ith_text, texts, txt_stim, win):
+    """Navigate in instructions."""
+    from psychopy import event
+
+    do_break = False
+    key = event.waitKeys()
+    if key[0] == KEYLIST_SAMPLES[1]:
+        ith_text += 1
+    elif key[0] == KEYLIST_SAMPLES[0]:
+        ith_text -= 1
+    elif key[0] == 'x':
+        do_break = True
+    else:
+        # print help and leave ith_text unchanged
+        txt_stim.text = ('Nutzen Sie die linke und rechte Taste zum '
+                         'Navigieren.')
+        txt_stim.draw()
+        win.flip()
+        event.waitKeys()
+    # Check whether to stop
+    if ith_text >= len(texts):
+        do_break = True
+
+    # ith_text is never negative
+    if ith_text < 0:
+        ith_text = 0
+    return ith_text, do_break
 
 
 def run_instructions(kind, monitor='testMonitor', font=font, lang=lang,
@@ -81,9 +116,10 @@ def run_instructions(kind, monitor='testMonitor', font=font, lang=lang,
     if not return_text_only:
         from psychopy import visual, event, core
 
-        # Check if we have an eyetracker
+        # Check if we have an eyetracker ... if yes, switch to showing
+        # instructions with eyetracker instructions as well
         found_eyetrackers = tr.find_all_eyetrackers()
-        if len(found_eyetrackers) > 0:
+        if not track_eyes and len(found_eyetrackers) > 0:
             track_eyes = True
 
         # Define monitor specific window object
@@ -115,13 +151,16 @@ def run_instructions(kind, monitor='testMonitor', font=font, lang=lang,
         texts = _provide_general_instr_str(lang=lang)
         if return_text_only:
             return texts
-        for text in texts:
+        ith_text = 0
+        while True:
+            text = texts[ith_text]
             txt_stim.text = text
             txt_stim.draw()
             win.flip()
-            core.wait(twait_show_instr)  # force some wait time
-            key = event.waitKeys()
-            if key[0] == 'x':
+            # Check whether to proceed, go gack, or stay
+            ith_text, do_break = _navigate_instrs(ith_text, texts, txt_stim,
+                                                  win)
+            if do_break:
                 break
 
     elif kind == 'active':
@@ -130,7 +169,9 @@ def run_instructions(kind, monitor='testMonitor', font=font, lang=lang,
                                            track_eyes, opt_stop)
         if return_text_only:
             return texts
-        for text in texts:
+        ith_text = 0
+        while True:
+            text = texts[ith_text]
             txt_stim.text = text
             txt_stim.draw()
             if 'Kugeln mit Zahlen' in text:
@@ -161,9 +202,10 @@ def run_instructions(kind, monitor='testMonitor', font=font, lang=lang,
                 img_stim.image = op.join(img_dir, 'fix_stims.png')
                 img_stim.draw()
             win.flip()
-            core.wait(twait_show_instr)  # force some wait time
-            key = event.waitKeys()
-            if key[0] == 'x':
+            # Check whether to proceed, go gack, or stay
+            ith_text, do_break = _navigate_instrs(ith_text, texts, txt_stim,
+                                                  win)
+            if do_break:
                 break
 
     elif kind == 'passive':
@@ -172,7 +214,9 @@ def run_instructions(kind, monitor='testMonitor', font=font, lang=lang,
                                             track_eyes, opt_stop)
         if return_text_only:
             return texts
-        for text in texts:
+        ith_text = 0
+        while True:
+            text = texts[ith_text]
             txt_stim.text = text
             txt_stim.draw()
             if 'Kugeln mit Zahlen' in text:
@@ -200,16 +244,19 @@ def run_instructions(kind, monitor='testMonitor', font=font, lang=lang,
                 img_stim.image = op.join(img_dir, 'fix_stims.png')
                 img_stim.draw()
             win.flip()
-            core.wait(twait_show_instr)  # force some wait time
-            key = event.waitKeys()
-            if key[0] == 'x':
+            # Check whether to proceed, go gack, or stay
+            ith_text, do_break = _navigate_instrs(ith_text, texts, txt_stim,
+                                                  win)
+            if do_break:
                 break
 
     elif kind == 'description':
         texts = _provide_description_instr_str(lang=lang)
         if return_text_only:
             return texts
-        for text in texts:
+        ith_text = 0
+        while True:
+            text = texts[ith_text]
             txt_stim.text = text
             txt_stim.draw()
 
@@ -227,9 +274,10 @@ def run_instructions(kind, monitor='testMonitor', font=font, lang=lang,
             txt_stim2.draw()
             # Flip and go
             win.flip()
-            core.wait(twait_show_instr)  # force some wait time
-            key = event.waitKeys()
-            if key[0] == 'x':
+            # Check whether to proceed, go gack, or stay
+            ith_text, do_break = _navigate_instrs(ith_text, texts, txt_stim,
+                                                  win)
+            if do_break:
                 break
 
     win.close()
@@ -263,7 +311,7 @@ def _provide_active_instr_strs(lang, max_ntrls, max_nsamples, block_size,
 
     texts = list()
     if lang == 'de':
-        texts.append('Instruktionen Aufgabe A. Bitte lesen Sie aufmerksam den folgenden Text. Drücken Sie eine beliebige Taste um fortzufahren. Achten Sie auf die Details in der Beschreibung! In dieser Aufgabe werden Sie selbst nach Informationen suchen.')  # noqa: E501
+        texts.append('Instruktionen Aufgabe A. Bitte lesen Sie aufmerksam den folgenden Text. Nutzen Sie die linke und rechte Taste zum Navigieren. Achten Sie auf die Details in der Beschreibung! In dieser Aufgabe werden Sie selbst nach Informationen suchen.')  # noqa: E501
         texts.append('Bitte fixieren Sie während des Experiments mit ihrem Blick immer den zentralen Stimulus in der Bildschirmmitte.{}'.format(eyetrackstr1))  # noqa: E501
         texts.append('Links und rechts von dem zentralen Stimulus befinden sich zwei unsichtbare Urnen. In den Urnen befinden sich jeweils zehn Kugeln mit Zahlen darauf. Die Zahlen stehen für Spielpunkte, die zu einem Wechselkurs von {} in Euro umgewandelt werden. Dieses Geld in Euro wird Ihnen am Ende des Experimentes als Bonus ausgezahlt.'.format(exchange_rate))  # noqa: E501
         texts.append('Es gibt in dieser Aufgabe viele Durchgänge. In jedem Durchgang gibt es neue Urnen, und ihre Aufgabe wird jedes Mal sein, sich am Ende der Aufgabe für eine der beiden Urnen zu entscheiden. Um etwas über den Inhalt der Urnen zu erfahren, dürfen Sie in jedem Durchgang zunächst insgesamt {} mal blind eine Kugel ziehen. Dies können Sie tun, indem Sie die linke oder die rechte Taste drücken. Sie können also jedes Mal selbst wählen, aus welcher Urne die nächste Kugel gezogen wird. Die Kugel wird jedesmal  zufällig aus der jeweiligen Urne gezogen und Ihnen kurz gezeigt. Danach wird die Kugel zurück in die ursprüngliche Urne gelegt. Es sind also IMMER 10 Kugeln in jeder Urne. In anderen Worten, der Inhalt der Urnen wird durch Ihre Ziehung(en) nicht verändert.'.format(opt_stop_str1))  # noqa: E501 E999
@@ -276,7 +324,7 @@ def _provide_active_instr_strs(lang, max_ntrls, max_nsamples, block_size,
         texts.append('Wenn Sie {}nach {} Zügen ein weiteres Mal die linke oder rechte Taste drücken, wechselt die Farbe des zentralen Stimulus kurz zu blau und wird dann wieder weiß. Das bedeutet, dass Sie sich nun final zwischen den Urnen entscheiden müssen. Zur Erinnerung: Nur die Kugel die nach der finalen Entscheidung gezogen wird bestimmt, wie viele Punkte ihrem Konto hinzugefügt werden.'.format(opt_stop_str3, opt_stop_str4))  # noqa: E501
         texts.append('Für Ihre Entscheidungen haben Sie jeweils {} Sekunden Zeit. Wenn Sie länger warten, wechselt die Farbe des zentralen Stimulus zu rot und der momentane Durchgang wird abgebrochen.{} Direkt danach wird ein neuer Durchgang gestartet.'.format(maxwait, eyetrackstr2))  # noqa: E501
         texts.append('Zusammenfassend bedeuten die Farben das folgende:\n\ngrün: neuer Durchgang mit neuen Urnen\n\nweiß: Urne wählen oder auf zufällig gezogene Kugel warten\n\nblau: nächste Entscheidung ist die finale Entscheidung für diesen Durchgang\n\nrot: Sie haben länger als {} Sekunden gewartet {}und der Durchgang wird abgebrochen'.format(maxwait, eyetrackstr3))  # noqa: E501
-        texts.append('Die Instruktionen sind abgeschlossen. Drücken Sie eine beliebige Taste um fortzufahren.')  # noqa: E501
+        texts.append('Die Instruktionen sind abgeschlossen. Drücken Sie die rechte Taste um fortzufahren.')  # noqa: E501
 
     elif lang == 'en':
         texts.append('LANGUAGE NOT IMPLEMENTED YET')
@@ -309,7 +357,7 @@ def _provide_passive_instr_strs(lang, max_ntrls, max_nsamples, block_size,
 
     texts = list()
     if lang == 'de':
-        texts.append('Instruktionen Aufgabe B. Bitte lesen Sie aufmerksam den folgenden Text. Drücken Sie eine beliebige Taste um fortzufahren. Achten Sie auf die Details in der Beschreibung! In dieser Aufgabe wird der Computer Sie mit Informationen versorgen.')  # noqa: E501
+        texts.append('Instruktionen Aufgabe B. Bitte lesen Sie aufmerksam den folgenden Text. Nutzen Sie die linke und rechte Taste zum Navigieren. Achten Sie auf die Details in der Beschreibung! In dieser Aufgabe wird der Computer Sie mit Informationen versorgen.')  # noqa: E501
         texts.append('Bitte fixieren Sie während des Experiments mit ihrem Blick immer den zentralen Stimulus in der Bildschirmmitte.{}'.format(eyetrackstr1))  # noqa: E501
         texts.append('Links und rechts von dem zentralen Stimulus befinden sich zwei unsichtbare Urnen. In den Urnen befinden sich jeweils zehn Kugeln mit Zahlen darauf. Die Zahlen stehen für Spielpunkte, die zu einem Wechselkurs von {} in Euro umgewandelt werden. Dieses Geld in Euro wird Ihnen am Ende des Experimentes als Bonus ausgezahlt.'.format(exchange_rate))  # noqa: E501
         texts.append('Es gibt in dieser Aufgabe viele Durchgänge. In jedem Durchgang gibt es neue Urnen, und ihre Aufgabe wird jedes Mal sein, sich am Ende der Aufgabe für eine der beiden Urnen zu entscheiden. Der Computer wird zunächst insgesamt {} mal blind eine Kugel ziehen. Hierzu wird der Computer entscheiden,  aus welcher Urne die nächste Kugel gezogen wird. Die Kugel wird jedesmal  zufällig aus der jeweiligen Urne gezogen und Ihnen kurz gezeigt. Danach wird die Kugel zurück in die ursprüngliche Urne gelegt. Es sind also IMMER 10 Kugeln in jeder Urne. In anderen Worten, der Inhalt der Urnen wird durch Ihre Ziehung(en) nicht verändert.'.format(opt_stop_str1))  # noqa: E501
@@ -320,7 +368,7 @@ def _provide_passive_instr_strs(lang, max_ntrls, max_nsamples, block_size,
         texts.append('Wenn der Computer {} Züge getätigt hat, wechselt die Farbe des zentralen Stimulus kurz zu blau und wird dann wieder weiß. Das bedeutet, dass Sie sich nun final zwischen den Urnen entscheiden müssen. Zur Erinnerung: Nur die Kugel die nach der finalen Entscheidung gezogen wird bestimmt, wie viele Punkte ihrem Konto hinzugefügt werden.'.format(opt_stop_str3))  # noqa: E501
         texts.append('Für Ihre Entscheidungen haben Sie jeweils {} Sekunden Zeit. Wenn Sie länger warten, wechselt die Farbe des zentralen Stimulus zu rot und der momentane Durchgang wird abgebrochen.{} Direkt danach wird ein neuer Durchgang gestartet.'.format(maxwait, eyetrackstr2))  # noqa: E501
         texts.append('Zusammenfassend bedeuten die Farben das folgende:\n\ngrün: neuer Durchgang mit neuen Urnen\n\nweiß: Der Computer wählt eine Urne oder auf zufällig gezogene Kugel warten\n\nblau: nächste Entscheidung ist die finale Entscheidung für diesen Durchgang\n\nrot: Sie haben länger als {} Sekunden gewartet {}und der Durchgang wird abgebrochen'.format(maxwait, eyetrackstr3))  # noqa: E501
-        texts.append('Die Instruktionen sind abgeschlossen. Drücken Sie eine beliebige Taste um fortzufahren.')  # noqa: E501
+        texts.append('Die Instruktionen sind abgeschlossen. Drücken Sie die rechte Taste um fortzufahren.')  # noqa: E501
 
     elif lang == 'en':
         texts.append('LANGUAGE NOT IMPLEMENTED YET')

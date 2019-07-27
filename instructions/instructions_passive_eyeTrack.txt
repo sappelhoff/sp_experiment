@@ -1,6 +1,6 @@
 Instruktionen Aufgabe B. Bitte lesen Sie aufmerksam den folgenden Text. Nutzen Sie die linke und rechte Taste zum Navigieren. Achten Sie auf die Details in der Beschreibung! In dieser Aufgabe wird der Computer Sie mit Informationen versorgen.
 
-Bitte fixieren Sie während des Experiments mit ihrem Blick immer den zentralen Stimulus in der Bildschirmmitte.
+Bitte fixieren Sie während des Experiments mit ihrem Blick immer den zentralen Stimulus in der Bildschirmmitte. Wenn Sie während eines Versuchs wiederholt nicht ausreichend fixieren, muss der Versuch erneut gestartet werden.
 
 Links und rechts von dem zentralen Stimulus befinden sich zwei unsichtbare Urnen. In den Urnen befinden sich jeweils zehn Kugeln mit Zahlen darauf. Die Zahlen stehen für Spielpunkte, die zu einem Wechselkurs von 0.005 in Euro umgewandelt werden. Dieses Geld in Euro wird Ihnen am Ende des Experimentes als Bonus ausgezahlt.
 
@@ -16,7 +16,7 @@ Danach bleibt die Farbe des zentralen Stimulus weiß. Das bedeutet, dass der Com
 
 Wenn der Computer 19 Züge getätigt hat, wechselt die Farbe des zentralen Stimulus kurz zu blau und wird dann wieder weiß. Das bedeutet, dass Sie sich nun final zwischen den Urnen entscheiden müssen. Zur Erinnerung: Nur die Kugel die nach der finalen Entscheidung gezogen wird bestimmt, wie viele Punkte ihrem Konto hinzugefügt werden.
 
-Für Ihre Entscheidungen haben Sie jeweils 3 Sekunden Zeit. Wenn Sie länger warten, wechselt die Farbe des zentralen Stimulus zu rot und der momentane Durchgang wird abgebrochen. Direkt danach wird ein neuer Durchgang gestartet.
+Für Ihre Entscheidungen haben Sie jeweils 3 Sekunden Zeit. Wenn Sie länger warten, wechselt die Farbe des zentralen Stimulus zu rot und der momentane Durchgang wird abgebrochen. Die Farbe wechselt auch zu rot, wenn Sie wiederholt nicht ausreichend den zentralen Stimulus fixiert haben. Direkt danach wird ein neuer Durchgang gestartet.
 
 Zusammenfassend bedeuten die Farben das folgende:
 
@@ -26,7 +26,7 @@ weiß: Der Computer wählt eine Urne oder auf zufällig gezogene Kugel warten
 
 blau: nächste Entscheidung ist die finale Entscheidung für diesen Durchgang
 
-rot: Sie haben länger als 3 Sekunden gewartet und der Durchgang wird abgebrochen
+rot: Sie haben länger als 3 Sekunden gewartet oder haben wiederholt nicht den zentralen Stimulus fixiert und der Durchgang wird abgebrochen
 
 Die Instruktionen sind abgeschlossen. Drücken Sie die rechte Taste um fortzufahren.
 

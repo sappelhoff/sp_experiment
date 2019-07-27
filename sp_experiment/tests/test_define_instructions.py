@@ -44,7 +44,26 @@ def test_print_human_readable_instrs():
     # If not existing, make a fresh one
     if not op.exists(instr_dir):
         os.makedirs(instr_dir)
+
     # Write the instructions, auto-overwriting old ones
     for kind in ['general', 'active', 'passive', 'description']:
-        fpath = op.join(instr_dir, 'instructions_{}.txt'.format(kind))
-        print_human_readable_instrs(kind, fpath)
+        for track_eyes, opt_stop in ((True, True), (True, False),
+                                     (False, True), (False, False)):
+            track_eyes_str = '_eyeTrack' if track_eyes else ''
+            opt_stop_str = '_optStop' if opt_stop else ''
+            if kind not in ['active', 'passive']:
+                track_eyes_str, opt_stop_str = ('', '')
+            fname = ('instructions_{}{}{}.txt'
+                     .format(kind, track_eyes_str, opt_stop_str))
+            fpath = op.join(instr_dir, fname)
+            print_human_readable_instrs(kind, track_eyes, opt_stop, fpath)
+
+    # Write a README
+    readme_file = op.join(instr_dir, 'README.md')
+    with open(readme_file, 'w') as fout:
+        print('You can print the instructions with the '
+              '`print_human_readable_instrs` function in '
+              '`define_instructions.py`.\n\n'
+              'Presence of "eyeTrack" and "optStop" in the file name indicate '
+              'that the instructions also include information on these '
+              'parameters', file=fout)

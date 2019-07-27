@@ -41,7 +41,6 @@ color_error = (1, 0, 0)  # wait: you did an error ... we have to restart
 
 # EXPERIMENT SETTINGS,  including yoke_map to determine which participant
 # gets yoked to which
-twait_show_instr = 0  # how long to force instruction screen
 monitor = 'room26'  # see define_monitors.py
 maxwait = 3  # how long to wait before each action ... if longer: timeout
 exchange_rate = 0.005  # multiply this with accumulated points to get Euros
@@ -56,6 +55,7 @@ font = 'Liberation Sans'
 # in "Ports /COM & LPT)" and enter the COM port number in the constructor.
 # If there is no TriggerBox, set ser to None
 ser = "COM4"  # either address to serial port or None ... COM4
+ser = None
 if isinstance(ser, str):
     ser = serial.Serial(ser)
 
