@@ -114,7 +114,7 @@ def run_instructions(kind, monitor='testMonitor', font=font, lang=lang,
 
     """
     if not return_text_only:
-        from psychopy import visual, event, core
+        from psychopy import visual
 
         # Check if we have an eyetracker ... if yes, switch to showing
         # instructions with eyetracker instructions as well
@@ -301,27 +301,25 @@ def _provide_active_instr_strs(lang, max_ntrls, max_nsamples, block_size,
     if opt_stop:
         opt_stop_str1 = 'bis zu einem Maximum von {}'.format(max_nsamples)
         opt_stop_str2 = 'von Ihnen gewählte Anzahl an Kugeln (bis zu maximal {})'.format(max_nsamples)  # noqa: E501
-        opt_stop_str3 = 'nach dem Drücken der blauen "Stopp" Taste oder '
-        opt_stop_str4 = 'maximal {}'.format(max_nsamples)
+        opt_stop_str3 = 'Nach dem Drücken der blauen "Stopp" Taste (oder maximal {} Zügen)'.format(max_nsamples)  # noqa: E501
     else:
         opt_stop_str1 = max_nsamples
         opt_stop_str2 = '{} Kugeln'.format(max_nsamples)
-        opt_stop_str3 = ''
-        opt_stop_str4 = '{}'.format(max_nsamples)
+        opt_stop_str3 = 'Wenn Sie nach {} Zügen ein weiteres Mal die linke oder rechte Taste drücken,'.format(max_nsamples)  # noqa: E501
 
     texts = list()
     if lang == 'de':
         texts.append('Instruktionen Aufgabe A. Bitte lesen Sie aufmerksam den folgenden Text. Nutzen Sie die linke und rechte Taste zum Navigieren. Achten Sie auf die Details in der Beschreibung! In dieser Aufgabe werden Sie selbst nach Informationen suchen.')  # noqa: E501
         texts.append('Bitte fixieren Sie während des Experiments mit ihrem Blick immer den zentralen Stimulus in der Bildschirmmitte.{}'.format(eyetrackstr1))  # noqa: E501
         texts.append('Links und rechts von dem zentralen Stimulus befinden sich zwei unsichtbare Urnen. In den Urnen befinden sich jeweils zehn Kugeln mit Zahlen darauf. Die Zahlen stehen für Spielpunkte, die zu einem Wechselkurs von {} in Euro umgewandelt werden. Dieses Geld in Euro wird Ihnen am Ende des Experimentes als Bonus ausgezahlt.'.format(exchange_rate))  # noqa: E501
-        texts.append('Es gibt in dieser Aufgabe viele Durchgänge. In jedem Durchgang gibt es neue Urnen, und ihre Aufgabe wird jedes Mal sein, sich am Ende der Aufgabe für eine der beiden Urnen zu entscheiden. Um etwas über den Inhalt der Urnen zu erfahren, dürfen Sie in jedem Durchgang zunächst insgesamt {} mal blind eine Kugel ziehen. Dies können Sie tun, indem Sie die linke oder die rechte Taste drücken. Sie können also jedes Mal selbst wählen, aus welcher Urne die nächste Kugel gezogen wird. Die Kugel wird jedesmal  zufällig aus der jeweiligen Urne gezogen und Ihnen kurz gezeigt. Danach wird die Kugel zurück in die ursprüngliche Urne gelegt. Es sind also IMMER 10 Kugeln in jeder Urne. In anderen Worten, der Inhalt der Urnen wird durch Ihre Ziehung(en) nicht verändert.'.format(opt_stop_str1))  # noqa: E501 E999
+        texts.append('Es gibt in dieser Aufgabe viele Durchgänge. In jedem Durchgang gibt es neue Urnen, und ihre Aufgabe wird jedes Mal sein, sich am Ende der Aufgabe für eine der beiden Urnen zu entscheiden. Um etwas über den Inhalt der Urnen zu erfahren, dürfen Sie in jedem Durchgang zunächst insgesamt {} mal blind eine Kugel ziehen. Dies können Sie tun, indem Sie die linke oder die rechte Taste drücken. Sie können also jedes Mal selbst wählen, aus welcher Urne die nächste Kugel gezogen wird. Die Kugel wird jedesmal zufällig aus der jeweiligen Urne gezogen und Ihnen kurz gezeigt. Danach wird die Kugel zurück in die ursprüngliche Urne gelegt. Es sind also IMMER 100 Kugeln in jeder Urne. In anderen Worten, der Inhalt der Urnen wird durch Ihre Ziehung(en) nicht verändert.'.format(opt_stop_str1))  # noqa: E501 E999
         if opt_stop:
             # If optional stopping, append an extra explanation on how to stop
             texts.append('Wie bereits erwähnt können Sie in jedem Durchgang maximal {} mal blind eine Kugel ziehen, um mehr über die Urnen zu lernen. Sie können jedoch auch schon früher aufhören, Kugeln zu ziehen. Das können Sie mit der blauen Taste über der rechten Taste anzeigen. Beim Drücken der dieser blauen "Stopp" Taste wird sofort die nächste Phase des momentanen Durchgangs eingeleitet, wie im Folgenden beschrieben.'.format(max_nsamples))  # noqa: E501
         texts.append('Nachdem Sie sich die {} angeschaut haben, müssen Sie sich final für eine der Urnen entscheiden. Ihr Ziel sollte natürlich sein, dabei immer die jeweils bessere Urne zu wählen. Nach dieser finalen Entscheidung wird aus der gewählten Urne nochmals eine Kugel (zufällig) gezogen. Die Punkte auf dieser finalen Kugel werden Ihrem Konto gutgeschrieben. Dies wird durch die grüne Farbe der Punkte gezeigt. Danach beginnt ein neuer Durchgang mit komplett neuen Urnen. Insgesamt gibt es {} Durchgänge und alle {} Durchgänge werden Sie Zeit für eine kurze Pause haben.'.format(opt_stop_str2, max_ntrls, block_size))  # noqa: E501
         texts.append('Als Hilfestellung zeigt Ihnen die Farbe des zentralen Stimulus an, was während der Durchgänge als nächstes passiert: Zu Beginn eines Durchgangs ist der Stimulus kurz grün und dann weiß. Das bedeutet, dass neue unsichtbaren Urnen links und rechts aufgestellt wurden.')  # noqa: E501
         texts.append('Danach bleibt die Farbe des zentralen Stimulus weiß. Das bedeutet, dass Sie jetzt eine Kugel aus einer der Urnen ziehen können, durch Drücken der linken oder der rechten Taste. Während Sie darauf warten, dass die Kugel gezeigt wird, wird die Farbe des zentralen Stimulus auch noch weiß sein.')  # noqa: E501
-        texts.append('Wenn Sie {}nach {} Zügen ein weiteres Mal die linke oder rechte Taste drücken, wechselt die Farbe des zentralen Stimulus kurz zu blau und wird dann wieder weiß. Das bedeutet, dass Sie sich nun final zwischen den Urnen entscheiden müssen. Zur Erinnerung: Nur die Kugel die nach der finalen Entscheidung gezogen wird bestimmt, wie viele Punkte ihrem Konto hinzugefügt werden.'.format(opt_stop_str3, opt_stop_str4))  # noqa: E501
+        texts.append('{} wechselt die Farbe des zentralen Stimulus kurz zu blau und wird dann wieder weiß. Das bedeutet, dass Sie sich nun final zwischen den Urnen entscheiden müssen. Zur Erinnerung: Nur die Kugel die nach der finalen Entscheidung gezogen wird bestimmt, wie viele Punkte ihrem Konto hinzugefügt werden.'.format(opt_stop_str3))  # noqa: E501
         texts.append('Für Ihre Entscheidungen haben Sie jeweils {} Sekunden Zeit. Wenn Sie länger warten, wechselt die Farbe des zentralen Stimulus zu rot und der momentane Durchgang wird abgebrochen.{} Direkt danach wird ein neuer Durchgang gestartet.'.format(maxwait, eyetrackstr2))  # noqa: E501
         texts.append('Zusammenfassend bedeuten die Farben das folgende:\n\ngrün: neuer Durchgang mit neuen Urnen\n\nweiß: Urne wählen oder auf zufällig gezogene Kugel warten\n\nblau: nächste Entscheidung ist die finale Entscheidung für diesen Durchgang\n\nrot: Sie haben länger als {} Sekunden gewartet {}und der Durchgang wird abgebrochen'.format(maxwait, eyetrackstr3))  # noqa: E501
         texts.append('Die Instruktionen sind abgeschlossen. Drücken Sie die rechte Taste um fortzufahren.')  # noqa: E501
@@ -360,7 +358,7 @@ def _provide_passive_instr_strs(lang, max_ntrls, max_nsamples, block_size,
         texts.append('Instruktionen Aufgabe B. Bitte lesen Sie aufmerksam den folgenden Text. Nutzen Sie die linke und rechte Taste zum Navigieren. Achten Sie auf die Details in der Beschreibung! In dieser Aufgabe wird der Computer Sie mit Informationen versorgen.')  # noqa: E501
         texts.append('Bitte fixieren Sie während des Experiments mit ihrem Blick immer den zentralen Stimulus in der Bildschirmmitte.{}'.format(eyetrackstr1))  # noqa: E501
         texts.append('Links und rechts von dem zentralen Stimulus befinden sich zwei unsichtbare Urnen. In den Urnen befinden sich jeweils zehn Kugeln mit Zahlen darauf. Die Zahlen stehen für Spielpunkte, die zu einem Wechselkurs von {} in Euro umgewandelt werden. Dieses Geld in Euro wird Ihnen am Ende des Experimentes als Bonus ausgezahlt.'.format(exchange_rate))  # noqa: E501
-        texts.append('Es gibt in dieser Aufgabe viele Durchgänge. In jedem Durchgang gibt es neue Urnen, und ihre Aufgabe wird jedes Mal sein, sich am Ende der Aufgabe für eine der beiden Urnen zu entscheiden. Der Computer wird zunächst insgesamt {} mal blind eine Kugel ziehen. Hierzu wird der Computer entscheiden,  aus welcher Urne die nächste Kugel gezogen wird. Die Kugel wird jedesmal  zufällig aus der jeweiligen Urne gezogen und Ihnen kurz gezeigt. Danach wird die Kugel zurück in die ursprüngliche Urne gelegt. Es sind also IMMER 10 Kugeln in jeder Urne. In anderen Worten, der Inhalt der Urnen wird durch Ihre Ziehung(en) nicht verändert.'.format(opt_stop_str1))  # noqa: E501
+        texts.append('Es gibt in dieser Aufgabe viele Durchgänge. In jedem Durchgang gibt es neue Urnen, und ihre Aufgabe wird jedes Mal sein, sich am Ende der Aufgabe für eine der beiden Urnen zu entscheiden. Der Computer wird zunächst insgesamt {} mal blind eine Kugel ziehen. Hierzu wird der Computer entscheiden,  aus welcher Urne die nächste Kugel gezogen wird. Die Kugel wird jedesmal  zufällig aus der jeweiligen Urne gezogen und Ihnen kurz gezeigt. Danach wird die Kugel zurück in die ursprüngliche Urne gelegt. Es sind also IMMER 100 Kugeln in jeder Urne. In anderen Worten, der Inhalt der Urnen wird durch Ihre Ziehung(en) nicht verändert.'.format(opt_stop_str1))  # noqa: E501
         texts.append('Nachdem Sie sich die {} angeschaut haben, müssen Sie sich final für eine der Urnen entscheiden. Dies können Sie tun, indem Sie die linke oder die rechte Taste drücken. Ihr Ziel sollte natürlich sein, dabei immer die jeweils bessere Urne zu wählen. Nach dieser finalen Entscheidung wird aus der gewählten Urne nochmals eine Kugel (zufällig) gezogen. Die Punkte auf dieser finalen Kugel werden Ihrem Konto gutgeschrieben.'.format(opt_stop_str2))  # noqa: E501
         texts.append('Dies wird durch die grüne Farbe der Punkte gezeigt. Danach beginnt ein neuer Durchgang mit komplett neuen Urnen. Insgesamt gibt es {} Durchgänge und alle {} Durchgänge werden Sie Zeit für eine kurze Pause haben.'.format(max_ntrls, block_size))  # noqa: E501
         texts.append('Als Hilfestellung zeigt Ihnen die Farbe des zentralen Stimulus an, was während der Durchgänge als nächstes passiert: Zu Beginn eines Durchgangs ist der Stimulus kurz grün und dann weiß. Das bedeutet, dass neue unsichtbaren Urnen links und rechts aufgestellt wurden.')  # noqa: E501
@@ -379,27 +377,19 @@ def _provide_general_instr_str(lang):
     """Provide a welcome screen text."""
     texts = list()
     if lang == 'de':
-        welcome_str = ('Wilkommen! Sie werden drei Aufgaben nacheinander '
-                       'ausführen. Im Folgenden bekommen Sie Anweisungen zur '
-                       'ersten Aufgabe. Dann dürfen Sie einen Test der '
-                       'ersten Aufgabe durchführen. Danach wird die erste '
-                       'Aufgabe gestartet. Wenn Sie mit dieser Aufgabe '
-                       'fertig sind, wird die zweite Aufgabe in den selben '
-                       'Schritten durchgeführt. Das heißt: Erst Anweisung, '
-                       'dann Test, dann Durchführung der Aufgabe. '
-                       'Zum Schluss gibt es noch eine kurze dritte Aufgabe. '
-                       'Drücken Sie eine beliebige Taste.')
+        texts.append('Wilkommen! Sie werden drei Aufgaben nacheinander '
+                     'ausführen. Im Folgenden bekommen Sie Anweisungen zur '
+                     'ersten Aufgabe. Dann dürfen Sie einen Test der '
+                     'ersten Aufgabe durchführen. Danach wird die erste '
+                     'Aufgabe gestartet. Wenn Sie mit dieser Aufgabe '
+                     'fertig sind, wird die zweite Aufgabe in den selben '
+                     'Schritten durchgeführt. Das heißt: Erst Anweisung, '
+                     'dann Test, dann Durchführung der Aufgabe. '
+                     'Zum Schluss gibt es noch eine kurze dritte Aufgabe, '
+                     'gefolgt von 4 Matheproblemen. '
+                     'Drücken Sie eine beliebige Taste.')
     elif lang == 'en':
-        welcome_str = ('Welcome! You will perform three tasks, one after the '
-                       'other. In the following you will get instructions '
-                       'for the first task. Then you are allowed to practice '
-                       'the first task. Then you will perform the first task'
-                       '. After you are done, the second task will be '
-                       'started using the same procedure. That is, first '
-                       'instructions, then practice, then execution of the '
-                       'second task. Finally, there will be a short third '
-                       'task. Press any button.')
-    texts.append(welcome_str)
+        texts.append('LANGUAGE NOT IMPLEMENTED YET')
     return texts
 
 
