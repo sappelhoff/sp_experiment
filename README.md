@@ -1,5 +1,7 @@
 [![Build Status](https://dev.azure.com/sappelhoff/sp_experiment/_apis/build/status/sappelhoff.sp_experiment?branchName=master)](https://dev.azure.com/sappelhoff/sp_experiment/_build/latest?definitionId=1&branchName=master)
 [![codecov](https://codecov.io/gh/sappelhoff/sp_experiment/branch/master/graph/badge.svg)](https://codecov.io/gh/sappelhoff/sp_experiment)
+[![DOI](https://zenodo.org/badge/149852122.svg)](https://zenodo.org/badge/latestdoi/149852122)
+
 
 # Implementing the Sampling Paradigm in PsychoPy
 
