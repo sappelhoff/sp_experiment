@@ -499,6 +499,9 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     current_ntrls = 0
     while current_ntrls < max_ntrls:
 
+        # Need to check that eyetracker is still connected
+        # XXX
+
         # For each trial, take a new payoff setting.
         # When active condition, read current data to make pseudorandom draw
         # of a payoff setting. This is to guarantee that also stimuli that have
