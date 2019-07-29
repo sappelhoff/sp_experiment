@@ -86,13 +86,18 @@ to simplify several tasks. To make use of it under Windows, install [GNU Make](h
 The script works with a [Tobii 4C eyetracker](https://gaming.tobii.com/product/tobii-eye-tracker-4c/)
 (on Microsoft Windows only). You will need the proprietary software
 "TobiiProEyeTrackerManager" to be downloaded from the TobiiPro website:
-https://www.tobiipro.com/learn-and-support/downloads-pro/.
+https://www.tobiipro.com/learn-and-support/downloads-pro/. To get all necessary
+drivers, you also need to download the "Tobii Eyetracking" software from the
+getting started pages: https://gaming.tobii.com/getstarted/
 
 Furthermore, you will need the actual hardware and a "Pro license", which
 allows users to access the data on the device. This license needs to be
 purchased separately and then loaded onto the specific eyetracker. See this
 [form](https://www.tobiipro.com/contact/contact-eyex-for-research/?utm_source=Tobii+Gaming+Contact+form)
 by Tobii for more information.
+
+Finally, the interface to Python is done through the Tobii python API:
+https://pypi.org/project/tobii-research/
 
 # EEG Triggers
 
