@@ -499,8 +499,12 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     current_ntrls = 0
     while current_ntrls < max_ntrls:
 
-        # Need to check that eyetracker is still connected
-        # XXX
+        # Need to check that eyetracker is still connected. If not, we need to
+        # reset the gaze_dict, so that the gaze-contingent stimuli do note
+        # unnecessarily kick us out of trials
+        if len(tr.find_all_eyetrackers()) == 0:
+            track_eyes = False
+            print('Eyetracker disconnected in trial {}'.format(current_ntrls))
 
         # For each trial, take a new payoff setting.
         # When active condition, read current data to make pseudorandom draw
@@ -671,7 +675,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                 dist_norm = np.linalg.norm(gazepoint)
 
                 # Is gaze not within our tolerance?
-                if dist_norm >= GAZE_TOLERANCE:
+                if dist_norm >= GAZE_TOLERANCE and track_eyes:
                     gaze__error_count += 1
                     if gaze__error_count > GAZE_ERROR_THRESH:
                         gaze__error_count = 0
