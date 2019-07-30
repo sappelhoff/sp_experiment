@@ -165,7 +165,14 @@ def get_random_payoff_dict(payoff_settings, pseudorand=False, df=None):
     """
     if pseudorand:
         assert isinstance(df, pd.DataFrame)
-        selected_row_idx = provide_balancing_selection(df, payoff_settings)
+        num_side_select = provide_balancing_selection(df, payoff_settings)
+        n, __ = num_side_select.shape
+        num_side_select_idx = np.random.randint(0, n)
+        selected_row = num_side_select[num_side_select_idx]
+        # Find the index into the payoff_settings
+        selected_row_idx = np.where((payoff_settings ==
+                                     selected_row).all(axis=1))[0][0]
+
     else:
         n, __ = payoff_settings.shape
         selected_row_idx = np.random.randint(0, n)
@@ -197,13 +204,13 @@ def get_random_payoff_dict(payoff_settings, pseudorand=False, df=None):
 
 
 def provide_balancing_selection(df, payoff_settings):
-    """Provide index for setting containing little sampled stimuli.
+    """Provide subset of `payoff_settings` to balance the stimulus set in `df`.
 
     Given the previously recorded data, find which stimuli have been presented
-    only few times and then return an index into payoff_settings that will
-    resolve to a setting containing such a little sampled stimulus. Here,
-    stimuli are the numbers 1 to 9, as well as the side they appear on, so
-    18 distinct stimulus classes.
+    only few times and then return a subset of payoff_settings` that contains
+    only settings of such a little sampled stimulus. Here, stimuli are the
+    numbers 1 to 9, as well as the side they appear on, so 18 distinct stimulus
+    classes.
 
     Parameters
     ----------
@@ -215,9 +222,10 @@ def provide_balancing_selection(df, payoff_settings):
 
     Returns
     -------
-    selected_row_idx : int
-        The row index of the payoff_settings that should be picked to balance
-        the currently presented stimuli.
+    num_side_select : ndarray, shape (n, 8)
+        A subset of `payoff_settings` that contains only settings that - if
+        selected - would favor the overall selected stimulus set towards
+        being more balanced.
 
     """
     # Get sampling actions and corresponding outcomes so far
@@ -244,10 +252,10 @@ def provide_balancing_selection(df, payoff_settings):
     stim_class_arr = np.vstack((stim_class_hist[0], stim_class_hist[1][:-1])).T
     stim_class_arr_sorted = stim_class_arr[stim_class_arr[:, 0].argsort()]
 
-    # From what we have seen so far, take the stim_classes we have seen least
-    # as priotities to be shown
-    stim_to_show_i = 0
-    stim_to_show = stim_class_arr_sorted[stim_to_show_i, 1]
+    # Take the stim_classes we have seen the least so far in the present data.
+    # `stim_class_arr_sorted` is sorted ascending with amount of "stim seen"
+    stim_to_show_idx = 0
+    stim_to_show = stim_class_arr_sorted[stim_to_show_idx, 1]
 
     # Now start to look in our payoff settings, which potential settings
     # contain the stimulus class to be shown
@@ -271,25 +279,13 @@ def provide_balancing_selection(df, payoff_settings):
         # If we found some candidates, return the selection for a random pick
         # from it
         if num_side_select.shape[0] > 0:
-            break
+            return num_side_select
 
         # Else, take the next simulus to be shown in line and try to find a
         # selection
-        stim_to_show_i += 1
-        if stim_to_show_i == stim_class_arr_sorted.shape[0]:
+        stim_to_show_idx += 1
+        if stim_to_show_idx == stim_class_arr_sorted.shape[0]:
             # This should never happen ...
             raise RuntimeError('We have run out of potential stimuli to show.')
         else:
-            stim_to_show = stim_class_arr_sorted[stim_to_show_i, 1]
-
-    # Now we have the selection of payoff_settings and we can pick a random
-    # row from our selection
-    n, __ = num_side_select.shape
-    num_side_select_idx = np.random.randint(0, n)
-    selected_row = num_side_select[num_side_select_idx]
-
-    # And find the index into the payoff_settings
-    selected_row_idx = np.where((payoff_settings ==
-                                 selected_row).all(axis=1))[0][0]
-
-    return selected_row_idx
+            stim_to_show = stim_class_arr_sorted[stim_to_show_idx, 1]
