@@ -49,3 +49,15 @@ def test_get_random_payoff_dict():
     payoff_dict, payoff_settings = get_random_payoff_dict(payoff_settings,
                                                           pseudorand=True,
                                                           df=df)
+
+    # Test rng seed setting
+    payoff_settings = get_payoff_settings(0.9)
+    n_settings = payoff_settings.shape[0]
+    payoff_dict1, _ = get_random_payoff_dict(payoff_settings)
+    payoff_dict2, _ = get_random_payoff_dict(payoff_settings)
+    assert payoff_dict1 != payoff_dict2
+    payoff_dict3, _ = get_random_payoff_dict(payoff_settings, seed=1)
+    payoff_dict4, _ = get_random_payoff_dict(payoff_settings, seed=1)
+    assert payoff_dict3 == payoff_dict4
+    payoff_dict5, _ = get_random_payoff_dict(payoff_settings, seed=2)
+    assert payoff_dict4 != payoff_dict5
