@@ -348,7 +348,8 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
                  payoff_dict=used_setting)
 
         # Start new trial
-        [stim.setAutoDraw(True) for stim in fixation_stim_parts]
+        for stim in fixation_stim_parts:
+            stim.setAutoDraw(True)
         set_fixstim_color(inner, color_newtrl)
         value = trig_dict['trig_new_trl']
         win.callOnFlip(ser.write, value)
@@ -468,7 +469,8 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
         nth_trial = trials_to_run.index(trial) + 1
         if nth_trial % block_size == 0:
             current_nblocks += 1
-            [stim.setAutoDraw(False) for stim in fixation_stim_parts]
+            for stim in fixation_stim_parts:
+                stim.setAutoDraw(False)
             txt_stim.text = provide_blockfbk_str(data_file,
                                                  current_nblocks,
                                                  nblocks,
@@ -484,7 +486,8 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
             event.waitKeys()
 
             # Reset stim settings for next block
-            [stim.setAutoDraw(True) for stim in fixation_stim_parts]
+            for stim in fixation_stim_parts:
+                stim.setAutoDraw(True)
             # set height for stimuli to be shown below
             txt_stim.height = 4
 
@@ -494,7 +497,8 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
                 break
 
     # We are done here
-    [stim.setAutoDraw(False) for stim in fixation_stim_parts]
+    for stim in fixation_stim_parts:
+        stim.setAutoDraw(False)
     txt_stim.text = provide_stop_str(is_test=is_test, lang=lang)
     txt_stim.pos = (0, 0)
     txt_stim.height = 1
