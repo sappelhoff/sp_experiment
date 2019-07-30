@@ -149,8 +149,9 @@ def get_random_payoff_dict(payoff_settings, pseudorand=False, df=None,
     df : pd.DataFrame | None
         The data to be supplied if pseudorand is True. Defaults to None.
     seed : int | None
-        If of type int, it will be used to initialize np.random.seed. Else,
-        np.random.seed will remain untouched.
+        If of type int, all randomness will come from a np.random.RandomState
+        object initialized with that seed. Else, the randomness comes from the
+        normal np.random.randint() function.
 
     Returns
     -------
@@ -165,14 +166,15 @@ def get_random_payoff_dict(payoff_settings, pseudorand=False, df=None,
         removed.
 
     """
-    if isinstance(seed, int):
-        np.random.seed(seed)
-
     if pseudorand:
         assert isinstance(df, pd.DataFrame)
         num_side_select = provide_balancing_selection(df, payoff_settings)
         n, __ = num_side_select.shape
-        num_side_select_idx = np.random.randint(0, n)
+        if isinstance(seed, int):
+            prng = np.random.RandomState(seed)
+            num_side_select_idx = prng.randint(0, n)
+        else:
+            num_side_select_idx = np.random.randint(0, n)
         selected_row = num_side_select[num_side_select_idx]
         # Find the index into the payoff_settings
         selected_row_idx = np.where((payoff_settings ==
@@ -180,7 +182,11 @@ def get_random_payoff_dict(payoff_settings, pseudorand=False, df=None,
 
     else:
         n, __ = payoff_settings.shape
-        selected_row_idx = np.random.randint(0, n)
+        if isinstance(seed, int):
+            prng = np.random.RandomState(seed)
+            selected_row_idx = prng.randint(0, n)
+        else:
+            selected_row_idx = np.random.randint(0, n)
 
     # Form a payoff dictionary from the selected setting
     payoff_setting = payoff_settings[selected_row_idx, :]
