@@ -233,7 +233,7 @@ def provide_balancing_selection(df, payoff_settings):
 
     # combine actions and outcomes to code outcomes on the left with negative
     # sign outcomes on the right with positive sign ... will end up with stim
-    # classes
+    # classes: - sign for "left", + sign for "right"
     stim_classes = outcomes * (actions*2-1)
 
     # Make a histogram of which stimulus_classes we have collected so far
@@ -276,7 +276,7 @@ def provide_balancing_selection(df, payoff_settings):
         # Else, take the next simulus to be shown in line and try to find a
         # selection
         stim_to_show_i += 1
-        if stim_to_show_i == stim_to_show.shape[0]:
+        if stim_to_show_i == stim_class_arr_sorted.shape[0]:
             # This should never happen ...
             raise RuntimeError('We have run out of potential stimuli to show.')
         else:
