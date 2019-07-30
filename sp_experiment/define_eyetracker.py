@@ -1,8 +1,13 @@
 """Functions and settings for the tobii 4C eye tracker.
 
-Tobii Research "Pro" license is required (to be purchased separately).
+Tobii Research "Pro" license is required (to be purchased separately). For
+more information, see main README file.
 
 Perform the calibration using the Tobii Pro Eyetracker Manager tool.
+
+When this script is directly called, it plots the gaze tolerance beyond which
+a fixation error will be raised (see if __name__ == '__main__' part)
+
 """
 import os
 import csv
@@ -10,6 +15,8 @@ from functools import partial
 
 import numpy as np
 import tobii_research as tr
+
+from sp_experiment.define_settings import monitor, GAZE_TOLERANCE
 
 # global gaze_dict allows us to share the gazepoint of the left and right eye
 # as tuples. By default it's set to be at (0.5, 0.5) for each eye, which
@@ -95,3 +102,39 @@ def _gaze_data_callback(gaze_data, fout_name):
     global gaze_dict
     gaze_dict['gaze'] = (gaze_data['left_gaze_point_on_display_area'],
                          gaze_data['right_gaze_point_on_display_area'])
+
+
+if __name__ == '__main__':
+    from psychopy import visual, event, monitors
+    win = visual.Window(color=(0, 0, 0),  # Background color: RGB [-1,1]
+                        fullscr=True,  # Fullscreen for better timing
+                        monitor=monitor,
+                        units='deg',
+                        winType='pyglet')
+
+    txt_stim = visual.TextStim(win)
+    txt_stim.autoDraw = True
+
+    my_monitor = monitors.Monitor(name=monitor)
+    width, height = my_monitor.getSizePix()
+
+    while True:
+        # Draw tolerance circle
+        radius_pix = (width / 2) * GAZE_TOLERANCE
+        circ_stim = visual.Circle(win, radius=radius_pix, units='pix',
+                                  edges=128)
+        circ_stim.draw()
+        txt_stim.text = '{:.2f}'.format(GAZE_TOLERANCE)
+        win.flip()
+
+        key = event.waitKeys()
+        if key[0] == 'right':
+            GAZE_TOLERANCE += 0.01
+        elif key[0] == 'left':
+            GAZE_TOLERANCE -= 0.01
+        elif key[0] == 'x':
+            break
+        else:
+            txt_stim.text = 'Press left or right to adjust. Press "x" to quit.'
+            win.flip()
+            event.waitKeys()
