@@ -23,7 +23,7 @@ import warnings
 
 import pandas as pd
 import numpy as np
-from psychopy import visual, event, core
+from psychopy import visual, event, core, monitors
 import tobii_research as tr
 
 from sp_experiment.define_ttl_triggers import provide_trigger_dict
@@ -179,10 +179,12 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
     trig_dict = provide_trigger_dict()
 
     # Define monitor specific window object
+    my_monitor = monitors.Monitor(name=monitor)
     win = visual.Window(color=(0, 0, 0),  # Background color: RGB [-1,1]
                         fullscr=True,  # Fullscreen for better timing
                         monitor=monitor,
-                        winType='pyglet')
+                        winType='pyglet',
+                        size=my_monitor.getSizePix())
 
     # Hide the cursor
     win.mouseVisible = False
@@ -204,12 +206,8 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
                              'in define_settings.py')
 
     # prepare text objects
-    txt_stim = visual.TextStim(win,
-                               color=txt_color,
-                               units='deg',
-                               pos=(0, 0))
-    txt_stim.height = 1
-    txt_stim.font = font
+    txt_stim = visual.TextStim(win, color=txt_color, units='deg', pos=(0, 0),
+                               height=1, font=font)
 
     txt_left1 = visual.TextStim(win, color=colmag, units='deg',
                                 pos=(-xpos1, 0), height=height, font=font)

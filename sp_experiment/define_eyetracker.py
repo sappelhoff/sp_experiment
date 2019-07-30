@@ -106,17 +106,19 @@ def _gaze_data_callback(gaze_data, fout_name):
 
 if __name__ == '__main__':
     from psychopy import visual, event, monitors
+
+    my_monitor = monitors.Monitor(name=monitor)
+    width, height = my_monitor.getSizePix()
+
     win = visual.Window(color=(0, 0, 0),  # Background color: RGB [-1,1]
                         fullscr=True,  # Fullscreen for better timing
                         monitor=monitor,
                         units='deg',
-                        winType='pyglet')
+                        winType='pyglet',
+                        size=(width, height))
 
     txt_stim = visual.TextStim(win)
     txt_stim.autoDraw = True
-
-    my_monitor = monitors.Monitor(name=monitor)
-    width, height = my_monitor.getSizePix()
 
     while True:
         # Draw tolerance circle

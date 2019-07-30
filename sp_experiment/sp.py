@@ -5,7 +5,7 @@ from collections import OrderedDict
 
 import numpy as np
 import pandas as pd
-from psychopy import visual, event, core, gui
+from psychopy import visual, event, core, gui, monitors
 import tobii_research as tr
 
 import sp_experiment
@@ -403,11 +403,13 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     # Get PsychoPy stimuli ready
     # ==========================
     # Define monitor specific window object
+    my_monitor = monitors.Monitor(name=monitor)
     win = visual.Window(color=(0, 0, 0),  # Background color: RGB [-1,1]
                         fullscr=True,  # Fullscreen for better timing
                         monitor=monitor,
                         units='deg',
-                        winType='pyglet')
+                        winType='pyglet',
+                        size=my_monitor.getSizePix())
 
     # Hide the cursor
     win.mouseVisible = False

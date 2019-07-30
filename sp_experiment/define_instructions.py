@@ -114,7 +114,7 @@ def run_instructions(kind, monitor='testMonitor', font=font, lang=lang,
 
     """
     if not return_text_only:
-        from psychopy import visual
+        from psychopy import visual, monitors
 
         # Check if we have an eyetracker ... if yes, switch to showing
         # instructions with eyetracker instructions as well
@@ -123,10 +123,12 @@ def run_instructions(kind, monitor='testMonitor', font=font, lang=lang,
             track_eyes = True
 
         # Define monitor specific window object
+        my_monitor = monitors.Monitor(name=monitor)
         win = visual.Window(color=(0, 0, 0),  # Background color: RGB [-1,1]
                             fullscr=True,  # Fullscreen for better timing
                             monitor=monitor,
-                            winType='pyglet')
+                            winType='pyglet',
+                            size=my_monitor.getSizePix())
 
         # Hide the cursor
         win.mouseVisible = False
