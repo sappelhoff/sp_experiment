@@ -629,11 +629,11 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                     outcome = get_passive_outcome(df, current_ntrls,
                                                   current_nsamples-1)
                 if action == 0:
-                    pos = (-5, 0)
+                    pos = (-4.5, 0)
                     trig_val_mask = trig_dict['trig_mask_out_l']
                     trig_val_show = trig_dict['trig_show_out_l']
                 else:
-                    pos = (5, 0)
+                    pos = (4.5, 0)
                     trig_val_mask = trig_dict['trig_mask_out_r']
                     trig_val_show = trig_dict['trig_show_out_r']
                 circ_stim.pos = pos
