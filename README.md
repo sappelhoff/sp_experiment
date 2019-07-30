@@ -79,7 +79,7 @@ logger**.
 # Makefile
 
 There is also a [`Makefile`](https://github.com/sappelhoff/sp_experiment/blob/master/Makefile)
-to simplify several tasks. To make use of it under Windows, install [GNU Make](https://chocolatey.org/packages/make))
+to simplify several tasks. To make use of it under Windows, install [GNU Make](https://chocolatey.org/packages/make).
 
 # Eyetracking
 
