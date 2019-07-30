@@ -134,21 +134,23 @@ def get_payoff_settings(ev_diff):
     return payoff_settings
 
 
-def get_random_payoff_dict(payoff_settings, pseudorand=False, df=None):
+def get_random_payoff_dict(payoff_settings, pseudorand=False, df=None,
+                           seed=None):
     """Given an array of possible payoff settings, get a random setting.
 
     Parameters
     ----------
     payoff_settings : ndarray, shape (n, 8)
         Subset of all possible payoff distribution settings.
-
     pseudorand : bool
         If True, make a random pick of payoff settings, where the currently
         least presented outcome is present. You must specify the df argument
         if True. Defauls to False.
-
     df : pd.DataFrame | None
         The data to be supplied if pseudorand is True. Defaults to None.
+    seed : int | None
+        If of type int, it will be used to initialize np.random.seed. Else,
+        np.random.seed will remain untouched.
 
     Returns
     -------
@@ -163,6 +165,9 @@ def get_random_payoff_dict(payoff_settings, pseudorand=False, df=None):
         removed.
 
     """
+    if isinstance(seed, int):
+        np.random.seed(seed)
+
     if pseudorand:
         assert isinstance(df, pd.DataFrame)
         num_side_select = provide_balancing_selection(df, payoff_settings)
