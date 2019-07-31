@@ -134,6 +134,45 @@ def get_payoff_settings(ev_diff):
     return payoff_settings
 
 
+def get_payoff_dict(payoff_setting):
+    """Turn a payoff setting array into a dict.
+
+    Parameters
+    ----------
+    payoff_setting : ndarray, shape (1, 8)
+        Payoff setting array
+
+    Returns
+    -------
+    payoff_dict : collections.OrderedDict
+        Dict with keys [0, 1] and each key containing as values a list of
+        possible outcomes, the frequency of which corresponds to a probability.
+        For example payoff_dict[0] = [0, 0, ,0 ,0, 0, 0, 0, 1, 1, 1] for a
+        payoff distribution "0" that yields 1 with 30% chance, and 0 otherwise.
+
+    """
+    payoff_dict = OrderedDict()
+
+    # Need special way to deal with NaNs in payoff setting (related to
+    # descriptions.py  when displaying distributions where not all outcomes
+    # were encountered)
+    def _nanint(x, prob=False):
+        if np.isnan(x):
+            return np.nan if not prob else 1
+        else:
+            return int(x)
+
+    left_distr = [_nanint(payoff_setting[0])] * _nanint(payoff_setting[2]*10, True)  # noqa: E501
+    left_distr += [_nanint(payoff_setting[1])] * _nanint(payoff_setting[3]*10,  True)  # noqa: E501
+    right_distr = [_nanint(payoff_setting[4])] * _nanint(payoff_setting[6]*10, True)  # noqa: E501
+    right_distr += [_nanint(payoff_setting[5])] * _nanint(payoff_setting[7]*10, True)  # noqa: E501
+
+    payoff_dict[0] = [i for i in left_distr if ~np.isnan(i)]
+    payoff_dict[1] = [i for i in right_distr if ~np.isnan(i)]
+
+    return payoff_dict
+
+
 def get_random_payoff_dict(payoff_settings, pseudorand=False, df=None,
                            seed=None):
     """Given an array of possible payoff settings, get a random setting.
