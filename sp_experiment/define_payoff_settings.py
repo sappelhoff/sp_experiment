@@ -300,3 +300,128 @@ def provide_balancing_selection(df, payoff_settings):
             raise RuntimeError('We have run out of potential stimuli to show.')
         else:
             stim_to_show = stim_class_arr_sorted[stim_to_show_idx, 1]
+
+
+def get_rand_idxs_into_payoff(max_ntrls, payoff_settings, seed=None):
+    """
+
+    Parameters
+    ----------
+    max_ntrls : int
+        Number of trials that we need payoff settings for.
+    payoff_settings : ndarray, shape(n, 8)
+        Overall pool of payoff settings to draw randomly from
+    seed : int | array_like | None
+        Set the seed of the randomness used in this function
+
+    Returns
+    -------
+    idxs_into_payoffs : ndarray, shape(max_ntrls, 8)
+        A set of unique, pseudorandom indices into payoff_settings to
+        provide settings for each trial.
+
+    Notes
+    -----
+    The idxs_into_payoffs are selected randomly, but biased towards
+    the goal of having a stimulus set that contains a similar number
+    of each stimulus class, where stimulus classes are the combinations
+    of numbers and the side they are shown on during the experiment.
+    For example a number 3 shown on the left would be a stimulus class.
+    We have 18 classes overall (numbers 1 to 9, shown left and right).
+
+    """
+    # Potential outcomes are numbers from 1 to 9
+    outcomes = np.arange(1, 10)
+
+    # Each outcome can occur left (negative sign) or right (positive sign)
+    stim_classes = np.concatenate([outcomes*-1, outcomes])
+    n_classes = stim_classes.shape[0]
+
+    # Depending on how many trials there are, we want to make sure that each
+    # stim class is represented approximately equally
+    n_stims_per_class = int(np.floor(max_ntrls / n_classes))
+    n_random_stims = max_ntrls - n_stims_per_class * n_classes
+
+    # Make a random selection of payoff settings biased towards an overall
+    # balanced design (each stim class occurs at least n_stims_per_class times)
+    idxs_into_payoffs = np.zeros(max_ntrls) * np.nan
+
+    # Keep a copy of payoff_settings that keeps getting smaller as
+    # we draw settings out of it
+    payoff_settings_reducing = payoff_settings.copy()
+    for nth_stimclass, stim in enumerate(stim_classes):
+        number = np.abs(stim)
+        side = np.sign(stim)
+
+        # Select only payoff settings that contain the specific number
+        num_select = payoff_settings_reducing[(payoff_settings_reducing ==
+                                               number).any(axis=1), :]
+
+        # From the number specific selection, select only where the number is
+        # on a specific side
+        if side == -1:
+            num_side_select = num_select[np.where(num_select ==
+                                                  number)[1] <= 1, :]
+        else:
+            num_side_select = num_select[np.where(num_select ==
+                                                  number)[1] > 1, :]
+
+        # Make sure that the pool to randomly choose from is appropriately big
+        n_stimclass_options = num_side_select.shape[0]
+        if n_stimclass_options < n_stims_per_class * 4:
+            raise RuntimeError('We want to randomly pick {} settings from '
+                               'a pool of {} settings. The pool is too small '
+                               '- please double check your settings.'
+                               .format(n_stims_per_class, n_stimclass_options))
+
+        # Randomly select the settings for this stim_class
+        rng = np.random.RandomState(seed)
+        num_side_select_idxs = rng.choice(np.arange(0, n_stimclass_options),
+                                          n_stims_per_class, replace=False)
+        # Find the indices of the selected settings into our payoff_settings
+        selected_rows = num_side_select[num_side_select_idxs, :]
+        payoff_idxs = np.zeros_like(num_side_select_idxs)
+        reduce_idxs = np.zeros_like(num_side_select_idxs)
+        for ii, selected_row in enumerate(selected_rows):
+            # Find the index into the payoff_settings
+            # NOTE: the full payoff_settings, not the reducing one
+            payoff_idxs[ii] = np.where((payoff_settings ==
+                                        selected_row).all(axis=1))[0][0]
+
+            # Modify reduced payoff settings, deleting the currently
+            # selected ones: They are no longer available
+            reduce_idxs[ii] = np.where((payoff_settings_reducing ==
+                                        selected_row).all(axis=1))[0][0]
+
+        payoff_settings_reducing = np.delete(payoff_settings_reducing,
+                                             reduce_idxs, axis=0)
+        # Defend against errors
+        np.testing.assert_array_equal(selected_rows,
+                                      payoff_settings[payoff_idxs, :])
+
+        # Save the indices for this stim class
+        start = nth_stimclass * n_stims_per_class
+        stop = start + n_stims_per_class
+        idxs_into_payoffs[start:stop] = payoff_idxs
+
+
+    # Defend against errors
+    assert np.sum(np.isnan(idxs_into_payoffs)) == n_random_stims
+    assert len(np.unique(idxs_into_payoffs)) == len(idxs_into_payoffs)
+
+    # Pick the leftover random stims
+    leftover_idx = rng.choice(np.arange(0, payoff_settings_reducing.shape[0]),
+                              n_random_stims, replace=False)
+
+    # How do these correspond to payoff_settings
+    selected_rows = payoff_settings_reducing[leftover_idx, :]
+    payoff_idxs = np.zeros(n_random_stims)
+    for ii, selected_row in enumerate(selected_rows):
+        # Find the index into the payoff_settings
+        # NOTE: the full payoff_settings, not the reducing one
+        payoff_idxs[ii] = np.where((payoff_settings ==
+                                    selected_row).all(axis=1))[0][0]
+
+    idxs_into_payoffs[-n_random_stims:] = payoff_idxs
+
+    return idxs_into_payoffs.astype(int)
