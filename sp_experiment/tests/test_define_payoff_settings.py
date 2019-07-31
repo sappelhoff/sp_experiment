@@ -8,6 +8,7 @@ import pandas as pd
 import sp_experiment
 from sp_experiment.define_payoff_settings import (get_payoff_settings,
                                                   get_random_payoff_dict,
+                                                  get_payoff_dict,
                                                   get_random_payoff_settings
                                                   )
 
@@ -64,7 +65,7 @@ def test_get_random_payoff_dict():
     assert payoff_dict4 != payoff_dict5
 
 
-def _simulate_run(rand_payoff_settings, n_samples= 12, seed=None):
+def _simulate_run(rand_payoff_settings, n_samples=12, seed=None):
     """Simulate a participant with 50% 50% left right tendency."""
     rng = np.random.RandomState(seed)
     actions = list()
@@ -107,7 +108,6 @@ def test_balancing():
     ev_diff = 0.9
     payoff_settings = get_payoff_settings(ev_diff)
 
-
     # No balancing at all, this will lead to a few stim_classes never
     # being shown
     rand_payoff_settings = payoff_settings.copy()
@@ -121,7 +121,7 @@ def test_balancing():
     # some balancing
     rand_payoff_settings = get_random_payoff_settings(max_ntrls,
                                                       payoff_settings,
-                                                      -1
+                                                      -1,
                                                       seed)
     stim_classes = _simulate_run(rand_payoff_settings, n_samples=12, seed=seed)
     hist = _make_class_hist(stim_classes)
@@ -130,7 +130,7 @@ def test_balancing():
     # Most balancing
     rand_payoff_settings = get_random_payoff_settings(max_ntrls,
                                                       payoff_settings,
-                                                      0.6
+                                                      0.6,
                                                       seed)
     stim_classes = _simulate_run(rand_payoff_settings, n_samples=12, seed=seed)
     hist = _make_class_hist(stim_classes)

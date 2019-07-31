@@ -341,7 +341,8 @@ def provide_balancing_selection(df, payoff_settings):
             stim_to_show = stim_class_arr_sorted[stim_to_show_idx, 1]
 
 
-def get_random_payoff_settings(max_ntrls, payoff_settings, cutoff_p, seed=None):
+def get_random_payoff_settings(max_ntrls, payoff_settings, cutoff_p,
+                               seed=None):
     """Return a pseudorandom selection of payoff settings.
 
     The selection will be biased towards the goal of a balanced
@@ -416,7 +417,7 @@ def get_random_payoff_settings(max_ntrls, payoff_settings, cutoff_p, seed=None):
         # Finally, select only those that have a relatively high probability
         # to occurr at all: cutoff_p ... if negative, nothing happens
         num_idx_in_setting = np.where(num_side_select == number)[1]
-        mapit_to_prob_idx = {0: 2, 1: 3, 4:6, 5:7}  # noqa: E501 builds on structure of payoff_settings
+        mapit_to_prob_idx = {0: 2, 1: 3, 4: 6, 5: 7}  # noqa: E501 builds on structure of payoff_settings
         prob_idxs = [mapit_to_prob_idx[num_idx] for
                      num_idx in num_idx_in_setting]
         probs = list()
@@ -464,7 +465,6 @@ def get_random_payoff_settings(max_ntrls, payoff_settings, cutoff_p, seed=None):
         start = nth_stimclass * n_stims_per_class
         stop = start + n_stims_per_class
         idxs_into_payoffs[start:stop] = payoff_idxs
-
 
     # Defend against errors
     assert np.sum(np.isnan(idxs_into_payoffs)) == n_random_stims
