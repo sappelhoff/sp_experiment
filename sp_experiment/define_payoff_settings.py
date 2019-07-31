@@ -302,8 +302,11 @@ def provide_balancing_selection(df, payoff_settings):
             stim_to_show = stim_class_arr_sorted[stim_to_show_idx, 1]
 
 
-def get_rand_idxs_into_payoff(max_ntrls, payoff_settings, seed=None):
-    """
+def get_random_payoff_settings(max_ntrls, payoff_settings, cutoff_p, seed=None):
+    """Return a pseudorandom selection of payoff settings.
+
+    The selection will be biased towards the goal of a balanced
+    stimulus set.
 
     Parameters
     ----------
@@ -311,14 +314,19 @@ def get_rand_idxs_into_payoff(max_ntrls, payoff_settings, seed=None):
         Number of trials that we need payoff settings for.
     payoff_settings : ndarray, shape(n, 8)
         Overall pool of payoff settings to draw randomly from
+    cutoff_p : float
+        A probability threshold that needs to be surpassed by a
+        probability of a number in a setting, for that setting
+        to be considered to become a member of the pool of
+        settings we are making final draws from for the given
+        number. Set to negative value to disable feature.
     seed : int | array_like | None
         Set the seed of the randomness used in this function
 
     Returns
     -------
-    idxs_into_payoffs : ndarray, shape(max_ntrls, 8)
-        A set of unique, pseudorandom indices into payoff_settings to
-        provide settings for each trial.
+    rand_payoff_settings : ndarray, shape(max_ntrls, 8)
+        A set of unique, pseudorandom payoff settings for each trial.
 
     Notes
     -----
@@ -366,8 +374,21 @@ def get_rand_idxs_into_payoff(max_ntrls, payoff_settings, seed=None):
             num_side_select = num_select[np.where(num_select ==
                                                   number)[1] > 1, :]
 
+        # Finally, select only those that have a relatively high probability
+        # to occurr at all: cutoff_p ... if negative, nothing happens
+        num_idx_in_setting = np.where(num_side_select == number)[1]
+        mapit_to_prob_idx = {0: 2, 1: 3, 4:6, 5:7}  # noqa: E501 builds on structure of payoff_settings
+        prob_idxs = [mapit_to_prob_idx[num_idx] for
+                     num_idx in num_idx_in_setting]
+        probs = list()
+        for row_idx, prob_idx in enumerate(prob_idxs):
+            probs.append(num_side_select[row_idx, prob_idx])
+        prob_select = np.asarray(probs) > cutoff_p
+
+        num_side_prob_select = num_side_select[prob_select, :]
+
         # Make sure that the pool to randomly choose from is appropriately big
-        n_stimclass_options = num_side_select.shape[0]
+        n_stimclass_options = num_side_prob_select.shape[0]
         if n_stimclass_options < n_stims_per_class * 4:
             raise RuntimeError('We want to randomly pick {} settings from '
                                'a pool of {} settings. The pool is too small '
@@ -376,12 +397,13 @@ def get_rand_idxs_into_payoff(max_ntrls, payoff_settings, seed=None):
 
         # Randomly select the settings for this stim_class
         rng = np.random.RandomState(seed)
-        num_side_select_idxs = rng.choice(np.arange(0, n_stimclass_options),
-                                          n_stims_per_class, replace=False)
+        num_side_prob_select_idxs = rng.choice(np.arange(n_stimclass_options),
+                                               n_stims_per_class,
+                                               replace=False)
         # Find the indices of the selected settings into our payoff_settings
-        selected_rows = num_side_select[num_side_select_idxs, :]
-        payoff_idxs = np.zeros_like(num_side_select_idxs)
-        reduce_idxs = np.zeros_like(num_side_select_idxs)
+        selected_rows = num_side_prob_select[num_side_prob_select_idxs, :]
+        payoff_idxs = np.zeros_like(num_side_prob_select_idxs)
+        reduce_idxs = np.zeros_like(num_side_prob_select_idxs)
         for ii, selected_row in enumerate(selected_rows):
             # Find the index into the payoff_settings
             # NOTE: the full payoff_settings, not the reducing one
@@ -424,4 +446,11 @@ def get_rand_idxs_into_payoff(max_ntrls, payoff_settings, seed=None):
 
     idxs_into_payoffs[-n_random_stims:] = payoff_idxs
 
-    return idxs_into_payoffs.astype(int)
+    # Get the payoff settings
+    rand_payoff_settings = payoff_settings[idxs_into_payoffs.astype(int), :]
+
+    # Shuffle them randomly using our rng object (keeping the seed)
+    perm = rng.permutation(max_ntrls)
+    rand_payoff_settings = rand_payoff_settings[perm, :]
+
+    return rand_payoff_settings
