@@ -248,7 +248,7 @@ def _get_payoff_setting(df, trial, experienced=False):
     return setting
 
 
-def get_payoff_dict(df, trial):
+def get_payoff_dict_from_df(df, trial):
     """Get the payoff dict at a trial within the data.
 
     Parameters

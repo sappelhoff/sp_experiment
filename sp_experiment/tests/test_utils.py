@@ -16,7 +16,7 @@ from sp_experiment.define_settings import (EXPECTED_FPS,
 from sp_experiment.utils import (Fake_serial,
                                  calc_bonus_payoff,
                                  get_final_choice_outcomes,
-                                 get_payoff_dict,
+                                 get_payoff_dict_from_df,
                                  get_passive_action,
                                  get_passive_outcome,
                                  get_jittered_waitframes,
@@ -72,16 +72,16 @@ def test_get_final_choice_outcomes():
     np.testing.assert_array_equal(outcomes, expected_outcomes)
 
 
-def test_get_payoff_dict():
+def test_get_payoff_dict_from_df():
     """Test getting payoff_dicts."""
     df = pd.read_csv(no_errors_file, sep='\t')
 
     # The trial argument is 0-indexed
-    payoff_dict = get_payoff_dict(df, 0)
+    payoff_dict = get_payoff_dict_from_df(df, 0)
     assert isinstance(payoff_dict, OrderedDict)
 
     # Make a more thorough test with the second payoff distribution
-    payoff_dict = get_payoff_dict(df, 1)
+    payoff_dict = get_payoff_dict_from_df(df, 1)
     read_set = set(payoff_dict[0])
     expected_set = set((3, 9))
     assert len(read_set) == len(expected_set)
@@ -94,7 +94,7 @@ def test_get_payoff_dict():
 
     # There were only 2 trials, this should be out of index
     with pytest.raises(IndexError):
-        get_payoff_dict(df, 2)
+        get_payoff_dict_from_df(df, 2)
 
 
 def test_get_passive_action():

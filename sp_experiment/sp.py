@@ -52,7 +52,7 @@ from sp_experiment.utils import (get_fixation_stim,
                                  log_data,
                                  Fake_serial,
                                  My_serial,
-                                 get_payoff_dict,
+                                 get_payoff_dict_from_df,
                                  get_passive_action,
                                  get_passive_outcome,
                                  remove_error_rows
@@ -523,7 +523,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
             log_data(data_file, onset=exp_timer.getTime(), trial=current_ntrls,
                      payoff_dict=payoff_dict)
         else:  # condition == 'passive'
-            payoff_dict = get_payoff_dict(df, current_ntrls)
+            payoff_dict = get_payoff_dict_from_df(df, current_ntrls)
             log_data(data_file, onset=exp_timer.getTime(), trial=current_ntrls,
                      payoff_dict=payoff_dict)
 
