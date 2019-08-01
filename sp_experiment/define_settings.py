@@ -2,9 +2,87 @@
 from collections import OrderedDict
 import serial
 
-# Set whether participants can stop or HAVE to do a certain number of samples
-# per trial
-OPTIONAL_STOPPING = True
+import numpy as np
+
+# MASTER SETTINGS
+# Set number of participants to record for your study. Must be divisible by 4
+n_participants = 40
+
+
+# Now define a function to create the experimental design for us
+def provide_experimental_design(n_participants):
+    """Provide an experimental design given some participants.
+
+    Parameters
+    ----------
+    n_participants : int
+        The number of participants in the experiment. Must be divisible by 4.
+
+    Returns
+    -------
+    yoke_map : collections.OrderedDict
+        A dictionary that determines what kind of data participants see in the
+        "yoked" condition. Participants are generally either yoked to
+        themselves, or to another participant. See also the README.
+
+    condition_map : collections.OrderedDict
+        A dictionary that determines whether a participant performs the
+        experiment with or without optional stopping. True if with optional
+        stopping, False otherwise.
+
+    seed_map : collections.OrderedDict
+        A dictionary that determines the payoff_settings to be used for the
+        present participant in the "active" condition. The "yoked" (=passive)
+        condition will be determined by `yoke_map`
+
+    Notes
+    -----
+    This will produce a design as follows:
+
+    ID yoke_to condition seed
+    1  1       fix       1
+    2  2       opt_stop  1
+    3  1       fix       1
+    4  2       opt_stop  1
+    5  5       fix       2
+    6  6       opt_stop  2
+    7  5       fix       2
+    8  6       opt_stop  2
+    9  9       fix       3
+    ...
+
+    """
+    if n_participants % 4 != 0:
+        raise ValueError('Your number of subjects MUST be divisible by 4.')
+
+    # Below, we will automatically compute the design of the experiment
+    # Set the IDs
+    ids = np.arange(1, n_participants+1)
+
+    # Set the yoke_map: Which participant gets yoked to whom
+    yokes = np.empty(ids.size, dtype=int)
+    yokes[0::4] = ids[::4]
+    yokes[1::4] = ids[1::4]
+    yokes[2::4] = ids[::4]
+    yokes[3::4] = ids[1::4]
+    yoke_map = OrderedDict(zip(ids, yokes))
+
+    # Set the condition map: Which participant does optional stopping, and who
+    # does not
+    conditions = np.tile(np.array((False, True)), int(n_participants/2))
+    condition_map = OrderedDict(zip(ids, conditions))
+
+    # Set the seed map: Controlling the payoff_settings that are generated for
+    # each participant
+    seeds = np.repeat(np.arange(1, n_participants / 4 + 1), 4)
+    seeds = seeds.astype(int)
+    seed_map = OrderedDict(zip(ids, seeds))
+
+    return yoke_map, condition_map, seed_map
+
+
+# And use the function to get the design
+yoke_map, condition_map, seed_map = provide_experimental_design(n_participants)
 
 # The expected frames per second. Change depending on your hardware.
 EXPECTED_FPS = 60
@@ -13,10 +91,7 @@ EXPECTED_FPS = 60
 KEYLIST_SAMPLES = ['s', 'd', '__', 'x']  # press x to quit
 KEYLIST_FINCHOICE = ['s', 'd', 'x']
 KEYLIST_DESCRIPTION = ['s', 'd', 'x']
-if OPTIONAL_STOPPING:
-    # If we allow optional stopping, make pressing the "F" key an option
-    idx_to_replace = KEYLIST_SAMPLES.index('__')
-    KEYLIST_SAMPLES[idx_to_replace] = 'f'
+STOP_KEY = 'f'  # used only if condition is optional stopping
 
 # Eyetracking variables
 GAZE_TOLERANCE = 0.2  # in psychopy norm units: the window where gaze is OK
@@ -78,13 +153,11 @@ if isinstance(ser, str):
 WAITSECS = 0.001
 
 # Settings for sp task in all conditions
-# if OPTIONAL_STOPPING is False, participants will always play `max_nsamples`
+# if no optional stopping, participants will always play `max_nsamples`
 # samples ... else, they can stop after a minimum of 1 sample ... or before
 # they have taken a maximum of `max_nsamples
-if OPTIONAL_STOPPING:
-    max_nsamples = 19
-else:
-    max_nsamples = 12
+max_nsamples_opt_stop = 19
+max_nsamples = 12
 max_ntrls = 100
 block_size = 20
 
@@ -92,12 +165,6 @@ block_size = 20
 test_max_ntrls = 2  # Up to a maximum of 5 ... bounded by sub-999 test file
 test_max_nsamples = max_nsamples
 test_block_size = test_max_ntrls
-
-# First 10 subjs are mapped to themselves
-yoke_map = OrderedDict(zip(list(range(1, 11)), list(range(1, 11))))
-# Next 10 are mapped to first ten
-for i, j in zip(list(range(11, 21)), list(range(1, 11))):
-    yoke_map[i] = j
 
 # In description
 DESCR_EXPERIENCED = True  # Show experienced lotteries?

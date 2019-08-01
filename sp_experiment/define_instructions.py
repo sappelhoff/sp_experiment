@@ -10,7 +10,7 @@ import sp_experiment
 from sp_experiment.utils import get_final_choice_outcomes
 from sp_experiment.define_settings import (txt_color,
                                            color_magnitude, color_probability,
-                                           OPTIONAL_STOPPING, font, lang,
+                                           font, lang, max_nsamples_opt_stop,
                                            max_ntrls, max_nsamples, block_size,
                                            maxwait, exchange_rate,
                                            KEYLIST_SAMPLES)
@@ -32,8 +32,13 @@ def print_human_readable_instrs(kind, track_eyes, opt_stop, fpath=None):
         file already exists, it will be deleted.
 
     """
-    texts = run_instructions(kind, return_text_only=True,
-                             track_eyes=track_eyes, opt_stop=opt_stop)
+    if opt_stop:
+        texts = run_instructions(kind, return_text_only=True,
+                                 track_eyes=track_eyes, opt_stop=opt_stop,
+                                 max_nsamples=max_nsamples_opt_stop)
+    else:
+        texts = run_instructions(kind, return_text_only=True,
+                                 track_eyes=track_eyes, opt_stop=opt_stop)
 
     if fpath is None:
         for text in texts:
@@ -78,7 +83,7 @@ def _navigate_instrs(ith_text, texts, txt_stim, win):
 def run_instructions(kind, monitor='testMonitor', font=font, lang=lang,
                      max_ntrls=max_ntrls, max_nsamples=max_nsamples,
                      block_size=block_size, maxwait=maxwait,
-                     exchange_rate=exchange_rate, opt_stop=OPTIONAL_STOPPING,
+                     exchange_rate=exchange_rate, opt_stop=True,
                      return_text_only=False, track_eyes=False):
     """Show experiment instructions on the screen.
 
@@ -104,7 +109,6 @@ def run_instructions(kind, monitor='testMonitor', font=font, lang=lang,
         Conversion rate of points to Euros
     opt_stop : bool
         True if optional stopping is allowed in this run, False otherwise ...
-        see the experiment settings in define_settings.py
     return_text_only : bool
         If True, will only return the texts. No impact if False
     track_eyes : bool
@@ -287,7 +291,7 @@ def run_instructions(kind, monitor='testMonitor', font=font, lang=lang,
 
 def _provide_active_instr_strs(lang, max_ntrls, max_nsamples, block_size,
                                maxwait, exchange_rate, track_eyes,
-                               opt_stop=OPTIONAL_STOPPING):
+                               opt_stop=True):
     """Provide active instr texts."""
     # Eyetracking special replacement strings
     if track_eyes:
@@ -333,7 +337,7 @@ def _provide_active_instr_strs(lang, max_ntrls, max_nsamples, block_size,
 
 def _provide_passive_instr_strs(lang, max_ntrls, max_nsamples, block_size,
                                 maxwait, exchange_rate, track_eyes,
-                                opt_stop=OPTIONAL_STOPPING):
+                                opt_stop=True):
     """Provide passive instr texts."""
     # Eyetracking special replacement strings
     if track_eyes:

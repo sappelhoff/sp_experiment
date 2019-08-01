@@ -58,9 +58,9 @@ for the following information:
 
 The experiment is setup as such that the inputs in the GUI are restricted. More
 general settings can be changed in the `define_settings.py` file. Most
-importantly, you have to set the `yoke_map`. This is a dictionary that
-determines which replay of an active condition a participant sees when they are
-in the passive condition.
+importantly, the `yoke_map`: This is a dictionary that determines which replay
+of an active condition a participant sees when they are in the passive
+condition.
 
  Example:
 

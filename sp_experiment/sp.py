@@ -11,6 +11,7 @@ import tobii_research as tr
 import sp_experiment
 from sp_experiment.define_settings import (KEYLIST_SAMPLES,
                                            KEYLIST_FINCHOICE,
+                                           STOP_KEY,
                                            EXPECTED_FPS,
                                            GAZE_TOLERANCE,
                                            GAZE_ERROR_THRESH,
@@ -29,6 +30,7 @@ from sp_experiment.define_settings import (KEYLIST_SAMPLES,
                                            ser,
                                            max_ntrls,
                                            max_nsamples,
+                                           max_nsamples_opt_stop,
                                            block_size,
                                            maxwait,
                                            exchange_rate,
@@ -38,6 +40,8 @@ from sp_experiment.define_settings import (KEYLIST_SAMPLES,
                                            test_max_nsamples,
                                            test_block_size,
                                            yoke_map,
+                                           condition_map,
+                                           seed_map,
                                            DESCR_EXPERIENCED,
                                            fraction_to_run,
                                            WAITSECS,
@@ -132,6 +136,7 @@ def navigation(nav='initial', bonus='', lang='en', yoke_map=None,
         elif nav == 'inquire_condition':
             myDlg.addField('Condition:', choices=['A', 'B', 'C'])
             myDlg.addField('Language:', choices=['de', 'en'])
+            myDlg.addField('Optional Stopping:', choices=['True', 'False'])
 
         elif nav == 'calc_bonus':
             myDlg.addField('ID:', choices=list(yoke_map.keys()))
@@ -181,7 +186,12 @@ def navigation(nav='initial', bonus='', lang='en', yoke_map=None,
                     condition = 'passive'
                 else:
                     condition = 'description'
-                run_instructions(kind=condition, lang=ok_data[1])
+                optional_stopping = ok_data[2] == 'True'
+                if optional_stopping:
+                    max_nsamples = max_nsamples_opt_stop
+                run_instructions(kind=condition, lang=ok_data[1],
+                                 opt_stop=optional_stopping,
+                                 max_nsamples=max_nsamples)
                 core.quit()
             elif ok_data[0] == 'calculate bonus money':
                 nav = 'calc_bonus'  # ask for ID
@@ -329,7 +339,7 @@ def prep_logging(yoke_map, auto=False, gui_info=None):
 def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
              max_nsamples=12, block_size=10, data_file=None, font='',
              condition='active', yoke_to=None, is_test=False, lang='en',
-             maxwait=3):
+             maxwait=3, seed=None):
     """Run the experimental flow.
 
     Parameters
@@ -359,6 +369,8 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
         Language, can be 'de' or 'en' for German or English.
     maxwait : int | float | float('inf')
         Maximum time to wait for a response until time out
+    seed : int | None
+        The seed to use for creating the payoff_settings
 
     Notes
     -----
@@ -486,7 +498,6 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
              value=value)
 
     # Get general payoff settings
-    seed = 1  # XXX this needs to be yoked
     payoff_settings = get_payoff_settings(expected_value_diff)
     rand_payoff_settings = get_random_payoff_settings(max_ntrls,
                                                       payoff_settings,
@@ -1015,6 +1026,19 @@ if __name__ == '__main__':
     # Perhaps just run (no auto)
     if run and not auto:
         sub_id, data_file, condition, yoke_to = prep_logging(yoke_map)
+
+        # Get the seed for this subject
+        seed = seed_map[sub_id]
+
+        # Change some settings if the current condition is optional stopping
+        optional_stopping = condition_map[sub_id]
+        if optional_stopping:
+            max_nsamples = max_nsamples_opt_stop
+            # If we allow optional stopping, make pressing the "F" key an
+            # option
+            idx_to_replace = KEYLIST_SAMPLES.index('__')
+            KEYLIST_SAMPLES[idx_to_replace] = STOP_KEY
+
         if condition != 'description':
             run_flow(monitor=monitor,
                      ser=ser,
@@ -1025,7 +1049,8 @@ if __name__ == '__main__':
                      condition=condition,
                      yoke_to=yoke_to,
                      lang=lang,
-                     font=font)
+                     font=font,
+                     seed=seed)
         else:
             run_descriptions(events_file=data_file,
                              monitor=monitor,
@@ -1041,6 +1066,18 @@ if __name__ == '__main__':
         # Get input
         sub_id, data_file1, condition1, yoke_to = prep_logging(yoke_map, auto)
 
+        # Get the seed for this subject
+        seed = seed_map[sub_id]
+
+        # Change some settings if the current condition is optional stopping
+        optional_stopping = condition_map[sub_id]
+        if optional_stopping:
+            max_nsamples = max_nsamples_opt_stop
+            # If we allow optional stopping, make pressing the "F" key an
+            # option
+            idx_to_replace = KEYLIST_SAMPLES.index('__')
+            KEYLIST_SAMPLES[idx_to_replace] = STOP_KEY
+
         # Save for later
         info = dict()
         info['sub_id'] = sub_id
@@ -1053,7 +1090,8 @@ if __name__ == '__main__':
             run_instructions(kind='active', monitor=monitor, lang=lang,
                              font=font, max_ntrls=max_ntrls,
                              max_nsamples=max_nsamples, block_size=block_size,
-                             maxwait=maxwait, exchange_rate=exchange_rate)
+                             maxwait=maxwait, exchange_rate=exchange_rate,
+                             opt_stop=optional_stopping)
             run_test_trials(monitor, condition1, lang, test_max_ntrls,
                             test_max_nsamples, test_block_size, maxwait)
             info['condition2'] = 'passive'
@@ -1061,7 +1099,8 @@ if __name__ == '__main__':
             run_instructions(kind='passive', monitor=monitor, lang=lang,
                              font=font, max_ntrls=max_ntrls,
                              max_nsamples=max_nsamples, block_size=block_size,
-                             maxwait=maxwait, exchange_rate=exchange_rate)
+                             maxwait=maxwait, exchange_rate=exchange_rate,
+                             opt_stop=optional_stopping)
             run_test_trials(monitor, condition1, lang, test_max_ntrls,
                             test_max_nsamples, test_block_size, maxwait)
             info['condition2'] = 'active'
@@ -1076,13 +1115,15 @@ if __name__ == '__main__':
                  condition=condition1,
                  yoke_to=yoke_to,
                  lang=lang,
-                 font=font)
+                 font=font,
+                 seed=seed)
 
         # Run test for second condition
         run_instructions(kind=info['condition2'], monitor=monitor, lang=lang,
                          font=font, max_ntrls=max_ntrls,
                          max_nsamples=max_nsamples, block_size=block_size,
-                         maxwait=maxwait, exchange_rate=exchange_rate)
+                         maxwait=maxwait, exchange_rate=exchange_rate,
+                         opt_stop=optional_stopping)
         run_test_trials(monitor, info['condition2'], lang, test_max_ntrls,
                         test_max_nsamples, test_block_size, maxwait)
 
@@ -1100,7 +1141,8 @@ if __name__ == '__main__':
                  condition=condition2,
                  yoke_to=yoke_to,
                  lang=lang,
-                 font=font)
+                 font=font,
+                 seed=seed)
 
         # Run third condition
         # first the instructions
