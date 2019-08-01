@@ -40,7 +40,7 @@ from sp_experiment.define_settings import (KEYLIST_SAMPLES,
                                            test_max_nsamples,
                                            test_block_size,
                                            yoke_map,
-                                           condition_map,
+                                           opt_stop_map,
                                            seed_map,
                                            DESCR_EXPERIENCED,
                                            fraction_to_run,
@@ -318,7 +318,8 @@ def prep_logging(yoke_map, auto=False, gui_info=None):
         if not isinstance(gui_info, dict):
             fname = 'log_{}_{}.txt'.format(sub_id, condition)
             log_path = op.join(data_dir, fname)
-            prefixes = ['sub_id', 'age', 'sex', 'yoke_to']
+            prefixes = ['sub_id', 'age', 'sex', 'yoke_to',
+                        'optional_stopping', 'seed']
             # Read in the current experiment settings
             settings_path = op.join(op.dirname(sp_experiment.__file__),
                                     'define_settings.py')
@@ -327,7 +328,9 @@ def prep_logging(yoke_map, auto=False, gui_info=None):
 
             # Write the log
             with open(log_path, 'w') as fout:
-                for i, line in enumerate([sub_id, age, sex, yoke_to]):
+                for i, line in enumerate([sub_id, age, sex, yoke_to,
+                                          opt_stop_map[sub_id],
+                                          seed_map[sub_id]]):
                     fout.write('{}: {}'.format(prefixes[i], line))
                     fout.write('\n')
                 fout.write('\n\n\n-------------------------------------\n\n\n')
@@ -1031,7 +1034,7 @@ if __name__ == '__main__':
         seed = seed_map[sub_id]
 
         # Change some settings if the current condition is optional stopping
-        optional_stopping = condition_map[sub_id]
+        optional_stopping = opt_stop_map[sub_id]
         if optional_stopping:
             max_nsamples = max_nsamples_opt_stop
             # If we allow optional stopping, make pressing the "F" key an
@@ -1070,7 +1073,7 @@ if __name__ == '__main__':
         seed = seed_map[sub_id]
 
         # Change some settings if the current condition is optional stopping
-        optional_stopping = condition_map[sub_id]
+        optional_stopping = opt_stop_map[sub_id]
         if optional_stopping:
             max_nsamples = max_nsamples_opt_stop
             # If we allow optional stopping, make pressing the "F" key an

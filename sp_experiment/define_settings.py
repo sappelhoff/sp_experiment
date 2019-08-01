@@ -25,7 +25,7 @@ def provide_experimental_design(n_participants):
         "yoked" condition. Participants are generally either yoked to
         themselves, or to another participant. See also the README.
 
-    condition_map : collections.OrderedDict
+    opt_stop_map : collections.OrderedDict
         A dictionary that determines whether a participant performs the
         experiment with or without optional stopping. True if with optional
         stopping, False otherwise.
@@ -69,8 +69,8 @@ def provide_experimental_design(n_participants):
 
     # Set the condition map: Which participant does optional stopping, and who
     # does not
-    conditions = np.tile(np.array((False, True)), int(n_participants/2))
-    condition_map = OrderedDict(zip(ids, conditions))
+    opt_stops = np.tile(np.array((False, True)), int(n_participants/2))
+    opt_stop_map = OrderedDict(zip(ids, opt_stops))
 
     # Set the seed map: Controlling the payoff_settings that are generated for
     # each participant
@@ -78,11 +78,11 @@ def provide_experimental_design(n_participants):
     seeds = seeds.astype(int)
     seed_map = OrderedDict(zip(ids, seeds))
 
-    return yoke_map, condition_map, seed_map
+    return yoke_map, opt_stop_map, seed_map
 
 
 # And use the function to get the design
-yoke_map, condition_map, seed_map = provide_experimental_design(n_participants)
+yoke_map, opt_stop_map, seed_map = provide_experimental_design(n_participants)
 
 # The expected frames per second. Change depending on your hardware.
 EXPECTED_FPS = 60
