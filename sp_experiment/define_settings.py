@@ -33,6 +33,12 @@ tdisplay_ms = (1000, 1000)  # show color: new trial, error, final choice
 
 expected_value_diff = 0.9  # For payoff settings to be used
 
+# CUTOFF_P is used in get_random_payoff_settings. A negative value will lead
+# to a worse balanced set of random payoff settings, a value approaching 1
+# will lead to a better balance, but will decrease the pool of options to
+# draw randomly from. Middle ground is safe
+CUTOFF_P = 0.6
+
 # Set the fixation_stim colors for signalling state of the experiment
 color_standard = txt_color  # prompt for an action
 color_newtrl = (0, 1, 0)  # wait: a new trial is starting

@@ -40,10 +40,11 @@ from sp_experiment.define_settings import (KEYLIST_SAMPLES,
                                            yoke_map,
                                            DESCR_EXPERIENCED,
                                            fraction_to_run,
-                                           WAITSECS
+                                           WAITSECS,
+                                           CUTOFF_P,
                                            )
 from sp_experiment.define_variable_meanings import (make_events_json_dict,
-                                                    make_data_dir
+                                                    make_data_dir,
                                                     )
 from sp_experiment.utils import (get_fixation_stim,
                                  calc_bonus_payoff,
@@ -55,21 +56,25 @@ from sp_experiment.utils import (get_fixation_stim,
                                  get_payoff_dict_from_df,
                                  get_passive_action,
                                  get_passive_outcome,
-                                 remove_error_rows
+                                 remove_error_rows,
                                  )
 from sp_experiment.define_payoff_settings import (get_payoff_settings,
-                                                  get_random_payoff_dict,
+                                                  get_random_payoff_settings,
+                                                  get_payoff_dict,
                                                   )
 from sp_experiment.define_ttl_triggers import provide_trigger_dict
 from sp_experiment.define_instructions import (run_instructions,
                                                provide_blockfbk_str,
                                                provide_start_str,
-                                               provide_stop_str)
+                                               provide_stop_str,
+                                               )
 from sp_experiment.define_eyetracker import (gaze_dict,
                                              find_eyetracker,
                                              get_gaze_data_callback,
-                                             get_normed_gazepoint)
-from sp_experiment.descriptions import run_descriptions
+                                             get_normed_gazepoint,
+                                             )
+from sp_experiment.descriptions import (run_descriptions,
+                                        )
 
 
 def navigation(nav='initial', bonus='', lang='en', yoke_map=None,
@@ -482,8 +487,12 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     txt_stim.height = 4  # set height for stimuli to be shown below
 
     # Get general payoff settings
+    seed = 1  # XXX this needs to be yoked
     payoff_settings = get_payoff_settings(expected_value_diff)
-
+    rand_payoff_settings = get_random_payoff_settings(max_ntrls,
+                                                      payoff_settings,
+                                                      CUTOFF_P,
+                                                      seed)
     # Start a clock for measuring reaction times
     # NOTE: Will be reset to 0 right before recording a button press
     rt_clock = core.Clock()
@@ -508,17 +517,10 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
             track_eyes = False
             print('Eyetracker disconnected in trial {}'.format(current_ntrls))
 
-        # For each trial, take a new payoff setting.
-        # When active condition, read current data to make pseudorandom draw
-        # of a payoff setting. This is to guarantee that also stimuli that have
-        # been sampled the least so far will be included more often.
+        # For each trial, take the corresponding payoff setting.
         if condition == 'active':
-            df_pseudorand = pd.read_csv(data_file, sep='\t')
-            (payoff_dict,
-             payoff_settings) = get_random_payoff_dict(payoff_settings,
-                                                       pseudorand=True,
-                                                       df=df_pseudorand
-                                                       )
+            setting = rand_payoff_settings[current_ntrls]
+            payoff_dict = get_payoff_dict(setting)
 
             log_data(data_file, onset=exp_timer.getTime(), trial=current_ntrls,
                      payoff_dict=payoff_dict)
