@@ -484,7 +484,6 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     exp_timer = core.MonotonicClock()
     log_data(data_file, onset=exp_timer.getTime(),
              value=value)
-    txt_stim.height = 4  # set height for stimuli to be shown below
 
     # Get general payoff settings
     seed = 1  # XXX this needs to be yoked
@@ -508,12 +507,13 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
 
     current_nblocks = 0
     current_ntrls = 0
+    error_happened_before = False
     while current_ntrls < max_ntrls:
 
         # Need to check that eyetracker is still connected. If not, we need to
         # reset the gaze_dict, so that the gaze-contingent stimuli do note
         # unnecessarily kick us out of trials
-        if len(tr.find_all_eyetrackers()) == 0:
+        if len(tr.find_all_eyetrackers()) == 0 and track_eyes is True:
             track_eyes = False
             print('Eyetracker disconnected in trial {}'.format(current_ntrls))
 
@@ -530,6 +530,13 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                      payoff_dict=payoff_dict)
 
         # Starting a new trial
+        if error_happened_before:
+            txt_stim.text = 'Neustart'
+            txt_stim.height = 1
+            txt_stim.pos = (0, 1.5)
+            txt_stim.autoDraw = True
+            error_happened_before = False
+
         for stim in fixation_stim_parts:
             stim.setAutoDraw(True)
         set_fixstim_color(inner, color_newtrl)
@@ -542,6 +549,9 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                 log_data(data_file, onset=exp_timer.getTime(),
                          deduct_onset_frames=1, trial=current_ntrls,
                          value=value, duration=frames)
+
+        txt_stim.height = 4  # set height for stimuli to be shown below
+        txt_stim.autoDraw = False
 
         # Within this trial, allow sampling
         current_nsamples = 0
@@ -595,6 +605,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                                      duration=frames, reset=True,
                                      deduct_onset_frames=1)
                     # start a new trial without incrementing the trial counter
+                    error_happened_before = True
                     break
 
             # Send trigger
@@ -699,6 +710,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                                          deduct_onset_frames=1)
                         # start a new trial without incrementing the trial
                         # counter
+                        error_happened_before = True
                         break
 
             # XXX: Following line could be a simple "else" to always trigger
@@ -726,10 +738,11 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                     if condition == 'active':
                         # start a new trial without incrementing the trial
                         # counter
+                        error_happened_before = True
                         break
                     else:  # condition == 'passive'
                         # if a premature stop happens in passive condition, we
-                        # need to drop if from the df in order not to enter an
+                        # need to drop it from the df in order not to enter an
                         # endless loop
                         # # NOTE: We also drop all trials previous to this one.
                         # They have been replayed, so it should be fine.
@@ -744,6 +757,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                         mask[:i+2] = 0
                         mask = (mask == 1)
                         df = df[mask]
+                        error_happened_before = False
                         break
                 # We survived the minimum samples check ...
                 # Now get ready for final choice
@@ -790,6 +804,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
                                      duration=frames, reset=True,
                                      deduct_onset_frames=1)
                     # start a new trial without incrementing the trial counter
+                    error_happened_before = True
                     break
 
                 key, rt = keys_rts[0]
