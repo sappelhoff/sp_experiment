@@ -1,15 +1,11 @@
 """Testing the setup of the payoff distributions."""
-import os.path as op
 from collections import OrderedDict
 
 import numpy as np
-import pandas as pd
 
-import sp_experiment
 from sp_experiment.define_payoff_settings import (get_payoff_settings,
-                                                  get_random_payoff_dict,
                                                   get_payoff_dict,
-                                                  get_random_payoff_settings
+                                                  get_random_payoff_settings,
                                                   )
 
 
@@ -28,41 +24,16 @@ def test_get_payoff_settings():
     assert len(np.unique(mags)) == 4
 
 
-def test_get_random_payoff_dict():
+def test_get_payoff_dict():
     """Test getting a payoff_dict off a setup."""
     payoff_settings = get_payoff_settings(0.1)
-    n_settings = payoff_settings.shape[0]
-    payoff_dict, payoff_settings = get_random_payoff_dict(payoff_settings)
+    setting = payoff_settings[0, :]
+    payoff_dict = get_payoff_dict(setting)
 
     # Should be a dict
     assert isinstance(payoff_dict, OrderedDict)
     assert len(list(payoff_dict.values())[0]) == 10
     assert len(list(payoff_dict.values())[1]) == 10
-
-    # Payoff settings should have been decreased by one
-    assert payoff_settings.shape[0] == (n_settings - 1)
-
-    # Also test with a pseudorandom draw
-    init_dir = op.dirname(sp_experiment.__file__)
-    test_data_dir = op.join(init_dir, 'tests', 'data')
-    fname = '2_trials_no_errors.tsv'
-    fpath = op.join(test_data_dir, fname)
-    df = pd.read_csv(fpath, sep='\t')
-    payoff_dict, payoff_settings = get_random_payoff_dict(payoff_settings,
-                                                          pseudorand=True,
-                                                          df=df)
-
-    # Test rng seed setting
-    payoff_settings = get_payoff_settings(0.9)
-    n_settings = payoff_settings.shape[0]
-    payoff_dict1, _ = get_random_payoff_dict(payoff_settings)
-    payoff_dict2, _ = get_random_payoff_dict(payoff_settings)
-    assert payoff_dict1 != payoff_dict2
-    payoff_dict3, _ = get_random_payoff_dict(payoff_settings, seed=1)
-    payoff_dict4, _ = get_random_payoff_dict(payoff_settings, seed=1)
-    assert payoff_dict3 == payoff_dict4
-    payoff_dict5, _ = get_random_payoff_dict(payoff_settings, seed=2)
-    assert payoff_dict4 != payoff_dict5
 
 
 def _simulate_run(rand_payoff_settings, n_samples=12, seed=None):

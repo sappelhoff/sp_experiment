@@ -16,7 +16,7 @@ import pandas as pd
 import tobii_research as tr
 
 import sp_experiment
-from sp_experiment.define_payoff_settings import get_random_payoff_dict
+from sp_experiment.define_payoff_settings import get_payoff_dict
 from sp_experiment.define_ttl_triggers import provide_trigger_dict
 from sp_experiment.define_settings import (KEYLIST_SAMPLES,
                                            EXPECTED_FPS
@@ -267,10 +267,7 @@ def get_payoff_dict_from_df(df, trial):
 
     """
     setting = _get_payoff_setting(df, trial)
-    # NOTE: we use get_random_payoff_dict simply for putting the structure
-    # into the right order. With a setting of length 1, there is no randomness
-    # as to which setting gets drawn.
-    payoff_dict, _ = get_random_payoff_dict(setting)
+    payoff_dict = get_payoff_dict(setting)
     return payoff_dict
 
 

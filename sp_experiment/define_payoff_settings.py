@@ -10,9 +10,6 @@ import itertools
 from collections import OrderedDict
 
 import numpy as np
-import pandas as pd
-
-from sp_experiment.define_ttl_triggers import provide_trigger_dict
 
 
 def get_payoff_settings(ev_diff):
@@ -153,6 +150,9 @@ def get_payoff_dict(payoff_setting):
     """
     payoff_dict = OrderedDict()
 
+    # Reduce dims if necessary
+    payoff_setting = np.squeeze(payoff_setting)
+
     # Need special way to deal with NaNs in payoff setting (related to
     # descriptions.py  when displaying distributions where not all outcomes
     # were encountered)
@@ -171,174 +171,6 @@ def get_payoff_dict(payoff_setting):
     payoff_dict[1] = [i for i in right_distr if ~np.isnan(i)]
 
     return payoff_dict
-
-
-def get_random_payoff_dict(payoff_settings, pseudorand=False, df=None,
-                           seed=None):
-    """Given an array of possible payoff settings, get a random setting.
-
-    Parameters
-    ----------
-    payoff_settings : ndarray, shape (n, 8)
-        Subset of all possible payoff distribution settings.
-    pseudorand : bool
-        If True, make a random pick of payoff settings, where the currently
-        least presented outcome is present. You must specify the df argument
-        if True. Defauls to False.
-    df : pd.DataFrame | None
-        The data to be supplied if pseudorand is True. Defaults to None.
-    seed : int | None
-        If of type int, all randomness will come from a np.random.RandomState
-        object initialized with that seed. Else, the randomness comes from the
-        normal np.random.randint() function.
-
-    Returns
-    -------
-    payoff_dict : collections.OrderedDict
-        Dict with keys [0, 1] and each key containing as values a list of
-        possible outcomes, the frequency of which corresponds to a probability.
-        For example payoff_dict[0] = [0, 0, ,0 ,0, 0, 0, 0, 1, 1, 1] for a
-        payoff distribution "0" that yields 1 with 30% chance, and 0 otherwise.
-
-    payoff_settings : ndarray, shape (n, 8)
-        Input settings with the row selected for the present payoff_dict
-        removed.
-
-    """
-    if pseudorand:
-        assert isinstance(df, pd.DataFrame)
-        num_side_select = provide_balancing_selection(df, payoff_settings)
-        n, __ = num_side_select.shape
-        if isinstance(seed, int):
-            prng = np.random.RandomState(seed)
-            num_side_select_idx = prng.randint(0, n)
-        else:
-            num_side_select_idx = np.random.randint(0, n)
-        selected_row = num_side_select[num_side_select_idx]
-        # Find the index into the payoff_settings
-        selected_row_idx = np.where((payoff_settings ==
-                                     selected_row).all(axis=1))[0][0]
-
-    else:
-        n, __ = payoff_settings.shape
-        if isinstance(seed, int):
-            prng = np.random.RandomState(seed)
-            selected_row_idx = prng.randint(0, n)
-        else:
-            selected_row_idx = np.random.randint(0, n)
-
-    # Form a payoff dictionary from the selected setting
-    payoff_setting = payoff_settings[selected_row_idx, :]
-    payoff_dict = OrderedDict()
-
-    # Need special way to deal with NaNs in payoff setting (related to
-    # descriptions.py  when displaying distributions where not all outcomes
-    # were encountered)
-    def _nanint(x, prob=False):
-        if np.isnan(x):
-            return np.nan if not prob else 1
-        else:
-            return int(x)
-
-    left_distr = [_nanint(payoff_setting[0])] * _nanint(payoff_setting[2]*10, True)  # noqa: E501
-    left_distr += [_nanint(payoff_setting[1])] * _nanint(payoff_setting[3]*10,  True)  # noqa: E501
-    right_distr = [_nanint(payoff_setting[4])] * _nanint(payoff_setting[6]*10, True)  # noqa: E501
-    right_distr += [_nanint(payoff_setting[5])] * _nanint(payoff_setting[7]*10, True)  # noqa: E501
-
-    payoff_dict[0] = [i for i in left_distr if ~np.isnan(i)]
-    payoff_dict[1] = [i for i in right_distr if ~np.isnan(i)]
-
-    # Remore the selected setting from all settings (no replacement)
-    payoff_settings = np.delete(payoff_settings, [selected_row_idx], axis=0)
-    return payoff_dict, payoff_settings
-
-
-def provide_balancing_selection(df, payoff_settings):
-    """Provide subset of `payoff_settings` to balance the stimulus set in `df`.
-
-    Given the previously recorded data, find which stimuli have been presented
-    only few times and then return a subset of payoff_settings` that contains
-    only settings of such a little sampled stimulus. Here, stimuli are the
-    numbers 1 to 9, as well as the side they appear on, so 18 distinct stimulus
-    classes.
-
-    Parameters
-    ----------
-    payoff_settings : ndarray, shape (n, 8)
-        Subset of all possible payoff distribution settings.
-
-    df : pd.DataFrame | None
-        The data collected until this point.
-
-    Returns
-    -------
-    num_side_select : ndarray, shape (n, 8)
-        A subset of `payoff_settings` that contains only settings that - if
-        selected - would favor the overall selected stimulus set towards
-        being more balanced.
-
-    """
-    # Get sampling actions and corresponding outcomes so far
-    trig_dict = provide_trigger_dict()
-    trig_sample = [ord(trig_dict['trig_left_choice']),
-                   ord(trig_dict['trig_right_choice'])]
-    trig_out = [ord(trig_dict['trig_show_out_l']),
-                ord(trig_dict['trig_show_out_r'])]
-    actions = (df[df['value'].isin(trig_sample)]['action']
-               .copy().values.astype(int))
-    outcomes = (df[df['value'].isin(trig_out)]['outcome']
-                .copy().values.astype(int))
-
-    # combine actions and outcomes to code outcomes on the left with negative
-    # sign outcomes on the right with positive sign ... will end up with stim
-    # classes: - sign for "left", + sign for "right"
-    stim_classes = outcomes * (actions*2-1)
-
-    # Make a histogram of which stimulus_classes we have collected so far
-    bins = np.hstack((np.arange(-9, 0), np.arange(1, 11)))
-    stim_class_hist = np.histogram(stim_classes, bins)
-
-    # Make an array from the hist and sort it
-    stim_class_arr = np.vstack((stim_class_hist[0], stim_class_hist[1][:-1])).T
-    stim_class_arr_sorted = stim_class_arr[stim_class_arr[:, 0].argsort()]
-
-    # Take the stim_classes we have seen the least so far in the present data.
-    # `stim_class_arr_sorted` is sorted ascending with amount of "stim seen"
-    stim_to_show_idx = 0
-    stim_to_show = stim_class_arr_sorted[stim_to_show_idx, 1]
-
-    # Now start to look in our payoff settings, which potential settings
-    # contain the stimulus class to be shown
-    while True:
-        number = np.abs(stim_to_show)
-        side = np.sign(stim_to_show)
-
-        # Select only payoff settings that contain the specific number
-        num_select = payoff_settings[(payoff_settings ==
-                                      number).any(axis=1), :]
-
-        # From the number specific selection, select only where the number is
-        # on a specific side
-        if side == -1:
-            num_side_select = num_select[np.where(num_select ==
-                                                  number)[1] <= 1, :]
-        else:
-            num_side_select = num_select[np.where(num_select ==
-                                                  number)[1] > 1, :]
-
-        # If we found some candidates, return the selection for a random pick
-        # from it
-        if num_side_select.shape[0] > 0:
-            return num_side_select
-
-        # Else, take the next simulus to be shown in line and try to find a
-        # selection
-        stim_to_show_idx += 1
-        if stim_to_show_idx == stim_class_arr_sorted.shape[0]:
-            # This should never happen ...
-            raise RuntimeError('We have run out of potential stimuli to show.')
-        else:
-            stim_to_show = stim_class_arr_sorted[stim_to_show_idx, 1]
 
 
 def get_random_payoff_settings(max_ntrls, payoff_settings, cutoff_p,

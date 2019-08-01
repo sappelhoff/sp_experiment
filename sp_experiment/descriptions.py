@@ -27,7 +27,7 @@ from psychopy import visual, event, core, monitors
 import tobii_research as tr
 
 from sp_experiment.define_ttl_triggers import provide_trigger_dict
-from sp_experiment.define_payoff_settings import get_random_payoff_dict
+from sp_experiment.define_payoff_settings import get_payoff_dict
 from sp_experiment.define_variable_meanings import make_description_task_json
 from sp_experiment.define_instructions import (provide_start_str,
                                                provide_stop_str,
@@ -256,7 +256,7 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
         # Prepare lotteries for a new trial
         # Extract the true magnitudes and probabilities
         setting = _get_payoff_setting(df, trial)
-        payoff_dict, __ = get_random_payoff_dict(setting)
+        payoff_dict = get_payoff_dict(setting)
         setting[0, [2, 3, 6, 7]] *= 100  # multiply probs to be in percent
         setting = setting.astype(int)
 
@@ -423,7 +423,7 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
         wrong_format_used_setting = used_setting[[0, 2, 1, 3, 4, 6, 5, 7]]
         wrong_format_used_setting = np.expand_dims(wrong_format_used_setting,
                                                    0)
-        payoff_dict, __ = get_random_payoff_dict(wrong_format_used_setting)
+        payoff_dict = get_payoff_dict(wrong_format_used_setting)
         outcome = np.random.choice(payoff_dict[action])
 
         # Prepare feedback

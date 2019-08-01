@@ -23,7 +23,7 @@ from sp_experiment.utils import (Fake_serial,
                                  log_data
                                  )
 from sp_experiment.define_payoff_settings import (get_payoff_settings,
-                                                  get_random_payoff_dict
+                                                  get_payoff_dict
                                                   )
 init_dir = op.dirname(sp_experiment.__file__)
 data_dir = op.join(init_dir, 'experiment_data')
@@ -183,7 +183,8 @@ def test_log_data():
 
     # And even more data logging
     payoff_settings = get_payoff_settings(0.1)
-    payoff_dict, payoff_settings = get_random_payoff_dict(payoff_settings)
+    setting = payoff_settings[0, :]
+    payoff_dict = get_payoff_dict(setting)
     log_data(fpath, payoff_dict=payoff_dict)
 
     # Remove the temporary dir and all its contents
