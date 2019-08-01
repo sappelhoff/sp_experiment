@@ -31,6 +31,7 @@ from sp_experiment.define_settings import (KEYLIST_SAMPLES,
                                            max_ntrls,
                                            max_nsamples,
                                            max_nsamples_opt_stop,
+                                           test_max_nsamples_opt_stop,
                                            block_size,
                                            maxwait,
                                            exchange_rate,
@@ -174,7 +175,11 @@ def navigation(nav='initial', bonus='', lang='en', yoke_map=None,
                     condition = 'passive'
                 if ok_data[0] == 'C':
                     condition = 'description'
-
+                optional_stopping = ok_data[2] == 'True'
+                if optional_stopping:
+                    test_max_nsamples = test_max_nsamples_opt_stop
+                    idx_to_replace = KEYLIST_SAMPLES.index('__')
+                    KEYLIST_SAMPLES[idx_to_replace] = STOP_KEY
                 run_test_trials(monitor, condition, ok_data[1],
                                 test_max_ntrls, test_max_nsamples,
                                 test_block_size, maxwait)
@@ -981,7 +986,8 @@ def run_test_trials(monitor, condition, lang, max_ntrls, max_nsamples,
                  condition='active',
                  is_test=True,
                  lang=lang,
-                 maxwait=maxwait)
+                 maxwait=maxwait,
+                 )
 
     elif condition == 'passive':
         # Run a single passive test trial ... using a prerecorded dataset
@@ -994,7 +1000,8 @@ def run_test_trials(monitor, condition, lang, max_ntrls, max_nsamples,
                  yoke_to=999,
                  is_test=True,
                  lang=lang,
-                 maxwait=maxwait)
+                 maxwait=maxwait,
+                 )
 
     elif condition == 'description':
         init_dir = op.dirname(sp_experiment.__file__)
@@ -1076,6 +1083,7 @@ if __name__ == '__main__':
         optional_stopping = opt_stop_map[sub_id]
         if optional_stopping:
             max_nsamples = max_nsamples_opt_stop
+            test_max_nsamples = test_max_nsamples_opt_stop  # noqa: F811
             # If we allow optional stopping, make pressing the "F" key an
             # option
             idx_to_replace = KEYLIST_SAMPLES.index('__')

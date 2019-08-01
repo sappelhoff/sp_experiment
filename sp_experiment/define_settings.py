@@ -163,6 +163,7 @@ block_size = 20
 
 # Settings for training
 test_max_ntrls = 2  # Up to a maximum of 5 ... bounded by sub-999 test file
+test_max_nsamples_opt_stop = max_nsamples_opt_stop
 test_max_nsamples = max_nsamples
 test_block_size = test_max_ntrls
 
