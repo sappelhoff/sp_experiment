@@ -28,7 +28,7 @@ class Fake_serial():
 
     def write(self, byte):
         """Take a byte and do nothing."""
-        pass
+        return byte
 
 
 class My_serial():

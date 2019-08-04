@@ -1,4 +1,5 @@
 """Testing the utility functions."""
+import time
 import os
 import os.path as op
 from tempfile import gettempdir
@@ -14,6 +15,7 @@ from sp_experiment.define_settings import (EXPECTED_FPS,
                                            KEYLIST_SAMPLES
                                            )
 from sp_experiment.utils import (Fake_serial,
+                                 My_serial,
                                  calc_bonus_payoff,
                                  get_final_choice_outcomes,
                                  get_payoff_dict_from_df,
@@ -32,11 +34,19 @@ test_data_dir = op.join(init_dir, 'tests', 'data')
 no_errors_file = op.join(test_data_dir, '2_trials_no_errors.tsv')
 
 
-def test_Fake_serial():
+def test_serials():
     """Test the Fake_serial class."""
+    some_byte = bytes([1])
     ser = Fake_serial()
-    ser.write(1)
-    assert True
+    assert ser.write(some_byte) == some_byte
+
+    # Also covers "mysleep"
+    waitsecs = 1
+    ser = My_serial(ser, waitsecs)
+    start = time.perf_counter()
+    ser.write(some_byte)
+    stop = time.perf_counter()
+    assert (stop - start) >= waitsecs
 
 
 def test_calc_bonus_payoff():
