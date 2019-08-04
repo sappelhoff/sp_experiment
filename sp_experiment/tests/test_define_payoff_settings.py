@@ -1,6 +1,7 @@
 """Testing the setup of the payoff distributions."""
 from collections import OrderedDict
 
+import pytest
 import numpy as np
 
 from sp_experiment.define_payoff_settings import (get_payoff_settings,
@@ -9,9 +10,10 @@ from sp_experiment.define_payoff_settings import (get_payoff_settings,
                                                   )
 
 
-def test_get_payoff_settings():
+@pytest.mark.parametrize('ev_diff', [0.1, 0.9, 7.])
+def test_get_payoff_settings(ev_diff):
     """Test the setup of payoff distributions."""
-    payoff_settings = get_payoff_settings(0.1)
+    payoff_settings = get_payoff_settings(ev_diff)
     assert payoff_settings.ndim == 2
     assert payoff_settings.shape[-1] == 8
     assert payoff_settings.shape[0] >= 1
@@ -109,3 +111,7 @@ def test_balancing():
 
     assert diff1 > diff2
     assert diff2 > diff3
+
+    with pytest.raises(RuntimeError, match='We want to randomly pick 10'):
+        rand_payoff_settings = get_random_payoff_settings(180,
+                                                          payoff_settings, 1)
