@@ -185,7 +185,8 @@ def _get_payoff_setting(df, trial, experienced=False):
 
     Returns
     -------
-    setting : ndarray, shape(8,)
+    setting : ndarray, shape(1, 8)
+        The payoff setting, first dimension is empty.
 
     Notes
     -----

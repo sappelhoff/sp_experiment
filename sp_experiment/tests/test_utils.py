@@ -22,7 +22,8 @@ from sp_experiment.utils import (Fake_serial,
                                  get_passive_action,
                                  get_passive_outcome,
                                  get_jittered_waitframes,
-                                 log_data
+                                 log_data,
+                                 _get_payoff_setting,
                                  )
 from sp_experiment.define_payoff_settings import (get_payoff_settings,
                                                   get_payoff_dict
@@ -199,3 +200,15 @@ def test_log_data():
 
     # Remove the temporary dir and all its contents
     rmtree(data_dir, ignore_errors=True)
+
+
+@pytest.mark.parametrize('trial, expected_setting', (
+                         pytest.param(0, np.array((3, 98, 1, 0, 4, 5, 0.2, 0.8))),  # noqa: E501
+                         pytest.param(1, np.array((3, 9, 0.22, 0.78, 7, 8, 0.33, 0.67))),  # noqa: E501
+                         ))
+def test_get_payoff_setting_aux(trial, expected_setting):
+    """Test private func for getting payoff sets from df."""
+    # Test experienced
+    df = pd.read_csv(no_errors_file, sep='\t')
+    setting = _get_payoff_setting(df, trial, experienced=True)
+    np.testing.assert_array_equal(setting.squeeze(), expected_setting)
