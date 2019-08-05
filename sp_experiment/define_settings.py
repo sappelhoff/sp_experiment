@@ -150,7 +150,7 @@ if isinstance(ser, str):
 # refresh, because we time our experimental presentations per frames and
 # window flips. If `WAITSECS` is longer than a flip takes, the following flip
 # will be delayed. Flip times for 60Hz=16.6mss, 120Hz=8.3ms, 144Hz=6.9ms
-WAITSECS = 0.001
+WAITSECS = 0.002
 
 # Settings for sp task in all conditions
 # if no optional stopping, participants will always play `max_nsamples`
