@@ -451,6 +451,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
         fps = win.getActualFrameRate(nMaxFrames=1000)
         if fps is not None:
             fps = int(round(fps))
+            print('found fps: {}'.format(fps))
         if EXPECTED_FPS == fps:
             break
         else:
