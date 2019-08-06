@@ -181,11 +181,13 @@ def navigation(nav='initial', bonus='', lang='en', yoke_map=None,
                     KEYLIST_SAMPLES[idx_to_replace] = STOP_KEY
                     run_test_trials(monitor, condition, ok_data[1],
                                     test_max_ntrls, test_max_nsamples_opt_stop,
-                                    test_block_size, maxwait)
+                                    test_block_size, maxwait,
+                                    optional_stopping)
                 else:
                     run_test_trials(monitor, condition, ok_data[1],
                                     test_max_ntrls, test_max_nsamples,
-                                    test_block_size, maxwait)
+                                    test_block_size, maxwait,
+                                    optional_stopping)
                 core.quit()
             elif next_screen == 'show':
                 if ok_data[0] == 'A':
@@ -947,7 +949,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
 
 
 def run_test_trials(monitor, condition, lang, max_ntrls, max_nsamples,
-                    block_size, maxwait):
+                    block_size, maxwait, optional_stopping):
     """Run the test trials.
 
     Parameters
@@ -966,6 +968,8 @@ def run_test_trials(monitor, condition, lang, max_ntrls, max_nsamples,
         Number of trials after which feedback is provided
     maxwait : int | float | float('inf')
         Maximum time to wait for a response until time out
+    optional_stopping : bool
+        Whether or not optional stopping is enabled.
 
     """
     init_dir, data_dir = make_data_dir()
@@ -994,9 +998,15 @@ def run_test_trials(monitor, condition, lang, max_ntrls, max_nsamples,
 
     elif condition == 'passive':
         # Run a single passive test trial ... using a prerecorded dataset
+        # if optional stopping is enabled, we tweak the max_nsamples to be
+        # 12, to match to the sub-999 test data
+        if optional_stopping:
+            use_samps = 12
+        else:
+            use_samps = max_nsamples
         run_flow(monitor=monitor,
                  max_ntrls=max_ntrls,
-                 max_nsamples=max_nsamples,
+                 max_nsamples=use_samps,
                  block_size=block_size,
                  data_file=data_file,
                  condition='passive',
@@ -1107,7 +1117,8 @@ if __name__ == '__main__':
                              maxwait=maxwait, exchange_rate=exchange_rate,
                              opt_stop=optional_stopping)
             run_test_trials(monitor, condition1, lang, test_max_ntrls,
-                            test_max_nsamples, test_block_size, maxwait)
+                            test_max_nsamples, test_block_size, maxwait,
+                            optional_stopping)
             info['condition2'] = 'passive'
         elif condition1 == 'passive':
             run_instructions(kind='passive', monitor=monitor, lang=lang,
@@ -1116,7 +1127,8 @@ if __name__ == '__main__':
                              maxwait=maxwait, exchange_rate=exchange_rate,
                              opt_stop=optional_stopping)
             run_test_trials(monitor, condition1, lang, test_max_ntrls,
-                            test_max_nsamples, test_block_size, maxwait)
+                            test_max_nsamples, test_block_size, maxwait,
+                            optional_stopping)
             info['condition2'] = 'active'
 
         # Run first condition
@@ -1139,7 +1151,8 @@ if __name__ == '__main__':
                          maxwait=maxwait, exchange_rate=exchange_rate,
                          opt_stop=optional_stopping)
         run_test_trials(monitor, info['condition2'], lang, test_max_ntrls,
-                        test_max_nsamples, test_block_size, maxwait)
+                        test_max_nsamples, test_block_size, maxwait,
+                        optional_stopping)
 
         # prep new data_file, skipping GUI
         sub_id, data_file2, condition2, yoke_to = prep_logging(yoke_map,
@@ -1164,7 +1177,8 @@ if __name__ == '__main__':
                          font=font)
         # Now the test trials
         run_test_trials(monitor, 'description', lang, test_max_ntrls,
-                        test_max_nsamples, test_block_size, maxwait)
+                        test_max_nsamples, test_block_size, maxwait,
+                        optional_stopping)
         # And then the actual thing
         fname = 'sub-{:02d}_task-spactive_events.tsv'.format(sub_id)
         init_dir = op.dirname(sp_experiment.__file__)
