@@ -33,7 +33,7 @@ if __name__ == '__main__':
 
     # Room26
     my_monitor = monitors.Monitor(name='room26')
-    my_monitor.setSizePix((1920, 1080))
+    my_monitor.setSizePix((2560, 1440))
     my_monitor.setWidth(53)
     my_monitor.setDistance(60)
     my_monitor.saveMon()
