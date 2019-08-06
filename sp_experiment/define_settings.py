@@ -136,7 +136,6 @@ font = 'Liberation Sans'
 # in "Ports /COM & LPT)" and enter the COM port number in the constructor.
 # If there is no TriggerBox, set ser to None
 ser = "COM4"  # either address to serial port or None ... COM4
-ser = None
 if isinstance(ser, str):
     ser = serial.Serial(ser)
 
