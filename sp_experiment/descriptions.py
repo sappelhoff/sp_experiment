@@ -182,7 +182,7 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
     my_monitor = monitors.Monitor(name=monitor)
     win = visual.Window(color=(0, 0, 0),  # Background color: RGB [-1,1]
                         fullscr=True,  # Fullscreen for better timing
-                        monitor=monitor,
+                        monitor=my_monitor,
                         winType='pyglet',
                         size=my_monitor.getSizePix())
 
@@ -284,6 +284,13 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
             # Need to make sure it always sums to 100
             def _adjust_to_100(p1, p2, trial):
                 """If p1 and p2 do not sum to 100, adjust them."""
+                # We might encounter special values 98 and 99 ... in that case
+                # ignore any issues and just proceed. These will be replaced
+                # later.
+                suppress_warning = False
+                if p1 in [9800, 9900] or p2 in [9800, 9900]:  # were *100 above
+                    suppress_warning = True
+
                 if p1 + p2 != 100:
                     cointoss = np.random.choice([0, 1])
                     if cointoss == 0:
@@ -295,9 +302,10 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
                     assert p1 >= 0 and p1 <= 100
                     assert p2 >= 0 and p2 <= 100
                 except AssertionError:
-                    warnings.warn('Probabilities do not add to 100. '
-                                  'Trial:{}, p1={}, p2={}'
-                                  .format(trial, p1, p2))
+                    if not suppress_warning:
+                        warnings.warn('Probabilities do not add to 100. '
+                                      'Trial:{}, p1={}, p2={}'
+                                      .format(trial, p1, p2))
                 return p1, p2
 
             prob0_1, prob0_2 = _adjust_to_100(prob0_1, prob0_2, trial)
