@@ -177,12 +177,15 @@ def navigation(nav='initial', bonus='', lang='en', yoke_map=None,
                     condition = 'description'
                 optional_stopping = ok_data[2] == 'True'
                 if optional_stopping:
-                    test_max_nsamples = test_max_nsamples_opt_stop
                     idx_to_replace = KEYLIST_SAMPLES.index('__')
                     KEYLIST_SAMPLES[idx_to_replace] = STOP_KEY
-                run_test_trials(monitor, condition, ok_data[1],
-                                test_max_ntrls, test_max_nsamples,
-                                test_block_size, maxwait)
+                    run_test_trials(monitor, condition, ok_data[1],
+                                    test_max_ntrls, test_max_nsamples_opt_stop,
+                                    test_block_size, maxwait)
+                else:
+                    run_test_trials(monitor, condition, ok_data[1],
+                                    test_max_ntrls, test_max_nsamples,
+                                    test_block_size, maxwait)
                 core.quit()
             elif next_screen == 'show':
                 if ok_data[0] == 'A':
@@ -194,8 +197,8 @@ def navigation(nav='initial', bonus='', lang='en', yoke_map=None,
                 optional_stopping = ok_data[2] == 'True'
                 if optional_stopping:
                     max_nsamples = max_nsamples_opt_stop
-                run_instructions(kind=condition, lang=ok_data[1],
-                                 opt_stop=optional_stopping,
+                run_instructions(monitor=monitor, kind=condition,
+                                 lang=ok_data[1], opt_stop=optional_stopping,
                                  max_nsamples=max_nsamples)
                 core.quit()
             elif ok_data[0] == 'calculate bonus money':
@@ -431,7 +434,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     my_monitor = monitors.Monitor(name=monitor)
     win = visual.Window(color=(0, 0, 0),  # Background color: RGB [-1,1]
                         fullscr=True,  # Fullscreen for better timing
-                        monitor=monitor,
+                        monitor=my_monitor,
                         units='deg',
                         winType='pyglet',
                         size=my_monitor.getSizePix())

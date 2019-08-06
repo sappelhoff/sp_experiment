@@ -130,7 +130,7 @@ def run_instructions(kind, monitor='testMonitor', font=font, lang=lang,
         my_monitor = monitors.Monitor(name=monitor)
         win = visual.Window(color=(0, 0, 0),  # Background color: RGB [-1,1]
                             fullscr=True,  # Fullscreen for better timing
-                            monitor=monitor,
+                            monitor=my_monitor,
                             winType='pyglet',
                             size=my_monitor.getSizePix())
 
