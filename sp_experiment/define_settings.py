@@ -1,4 +1,5 @@
 """Provide constants for several settings in the experiment."""
+import os
 from collections import OrderedDict
 import serial
 
@@ -137,7 +138,20 @@ font = 'Liberation Sans'
 # If there is no TriggerBox, set ser to None
 ser = "COM4"  # either address to serial port or None ... COM4
 if isinstance(ser, str):
-    ser = serial.Serial(ser)
+    # Try to open a serial port
+    try:
+        ser = serial.Serial(ser)
+
+    # If it doesn't work, raise an error ... except when we are on
+    # Azure Pipelines for the CI testing. ('Agent.Id' is defined there.)
+    except serial.SerialException as ee:
+        agent_id = os.getenv('AZURE_PIPELINE', False)
+        if not agent_id:
+            raise ee
+        else:
+            print('serial "{}" does not exist. Not raising an error, assuming '
+                  'we are on Azure Pipelines with Agend.Id={}'
+                  .format(ser, agent_id))
 
 # When sending EEG trigger signals / event markers it is important to "reset"
 # the serial port to zero after each sent byte. The time between the sent byte

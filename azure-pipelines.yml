@@ -6,6 +6,9 @@ trigger:
 pool:
   vmImage: 'windows-2019'
 
+variables:
+  AZURE_PIPELINE: True
+
 steps:
 - task: UsePythonVersion@0
   inputs:
