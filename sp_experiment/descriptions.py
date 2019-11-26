@@ -255,27 +255,42 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
     for trial in trials_to_run:
 
         # Prepare lotteries for a new trial
-        # Extract the true magnitudes and probabilities
-        setting = _get_payoff_setting(df, trial)
-        setting[0, [2, 3, 6, 7]] *= 100  # multiply probs to be in percent
-        setting = setting.astype(int)
+        # Extract the true magnitudes and probabilities in the form of the
+        # "setting" array ... once for true underlying distribution, once
+        # for experienced distribution
+        setting = _get_payoff_setting(df, trial, experienced=False)
+        exp_setting = _get_payoff_setting(df, trial, experienced=True)
 
-        # Magnitudes are always set
-        mag0_1 = setting[0, 0]
-        mag0_2 = setting[0, 1]
-        mag1_1 = setting[0, 4]
-        mag1_2 = setting[0, 5]
+        # If we do not want experienced data, OR if the experienced data
+        # contains an option that has NEVER been sampled, we will use the
+        # magnitudes and probabilities of the true underlying distribution
+        # NOTE: "99" is the code for one option never sampled
+        if not experienced or 99 in exp_setting:
+            setting[0, [2, 3, 6, 7]] *= 100  # multiply probs to be in percent
+            setting = setting.astype(int)
 
-        # Setting of probabilities depends on argument `experienced`
-        if experienced:
-            # Get experienced probabilities (magnitudes are the same ... or
-            # will be added if never experienced - either with p=0 and other
-            # *experienced* outcome p=1 ... or both with p=0.5 if both of the
-            # outcomes have not been experienced)
-            exp_setting = _get_payoff_setting(df, trial, experienced)
+            mag0_1 = setting[0, 0]
+            mag0_2 = setting[0, 1]
+            mag1_1 = setting[0, 4]
+            mag1_2 = setting[0, 5]
+            prob0_1 = setting[0, 2]
+            prob0_2 = setting[0, 3]
+            prob1_1 = setting[0, 6]
+            prob1_2 = setting[0, 7]
+
+        # Else, we want the experienced data, and have enough information to
+        # prepare it in description format.
+        # NOTE: in case only a single outcome was observed for an option, we
+        # simply show that outcome with a probability of 100 ... this is
+        # indicated by a code of "98"
+        else:
             exp_setting[0, [2, 3, 6, 7]] *= 100  # multiply probs to percent
             exp_setting = exp_setting.astype(int)
 
+            mag0_1 = exp_setting[0, 0]
+            mag0_2 = exp_setting[0, 1]
+            mag1_1 = exp_setting[0, 4]
+            mag1_2 = exp_setting[0, 5]
             prob0_1 = exp_setting[0, 2]
             prob0_2 = exp_setting[0, 3]
             prob1_1 = exp_setting[0, 6]
@@ -311,17 +326,9 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
             prob0_1, prob0_2 = _adjust_to_100(prob0_1, prob0_2, trial)
             prob1_1, prob1_2 = _adjust_to_100(prob1_1, prob1_2, trial)
 
-            # If a distribution has not been sampled, display standard probs
-            # we can drop the trial from analysis
-            if 99 in exp_setting:
-                prob0_1 = setting[0, 2]
-                prob0_2 = setting[0, 3]
-                prob1_1 = setting[0, 6]
-                prob1_2 = setting[0, 7]
-
-            # Else, if not all 4 outcomes were observed, adjust probabilities
+            # If not all 4 outcomes were observed, adjust probabilities
             # to simulate "safe" lotteries
-            elif 98 in exp_setting:
+            if 98 in exp_setting:
                 if exp_setting[0, 0] == 98:
                     mag0_1 = np.nan
                     prob0_1 = np.nan
@@ -338,14 +345,6 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
                     mag1_2 = np.nan
                     prob1_2 = np.nan
                     prob1_1 = 100
-
-        # If not running in experienced mode ...
-        else:
-            # Use true probabilities
-            prob0_1 = setting[0, 2]
-            prob0_2 = setting[0, 3]
-            prob1_1 = setting[0, 6]
-            prob1_2 = setting[0, 7]
 
         # log used setting and convert back probabilities back to proportions
         used_setting = np.asarray([mag0_1, np.round(prob0_1/100, 2),
