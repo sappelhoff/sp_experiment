@@ -162,6 +162,8 @@ def get_payoff_dict(payoff_setting):
         else:
             return int(x)
 
+    # NOTE: if the probability is NaN, then the magnitude is also NaN
+    # and vice versa, in such a case we will have "[np.nan] * 1" ...
     left_distr = [_nanint(payoff_setting[0])] * _nanint(payoff_setting[2]*10, True)  # noqa: E501
     left_distr += [_nanint(payoff_setting[1])] * _nanint(payoff_setting[3]*10,  True)  # noqa: E501
     right_distr = [_nanint(payoff_setting[4])] * _nanint(payoff_setting[6]*10, True)  # noqa: E501
