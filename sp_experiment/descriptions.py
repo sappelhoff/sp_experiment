@@ -257,7 +257,6 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
         # Prepare lotteries for a new trial
         # Extract the true magnitudes and probabilities
         setting = _get_payoff_setting(df, trial)
-        payoff_dict = get_payoff_dict(setting)
         setting[0, [2, 3, 6, 7]] *= 100  # multiply probs to be in percent
         setting = setting.astype(int)
 
