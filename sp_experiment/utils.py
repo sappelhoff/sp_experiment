@@ -225,14 +225,20 @@ def _get_payoff_setting(df, trial, experienced=False):
                     wrong_format_setting.append(i)
                 continue
 
+            # Get the outcomes we have in the sampled distribution/option
+            # NOTE: make sure that the order of "outcomes" is preserved, i.e.,
+            # do NOT sort ascending, like a standard np.unique(distr) would do
+            _, idx = np.unique(distr, return_index=True)
+            outcomes = np.asarray(distr)[np.sort(idx)]
+
             # Special case 2 if only one outcome sampled: add a 98 with p=0
-            outcomes = np.unique(distr)
             if len(outcomes) < 2:
                 outcomes = np.append(outcomes, np.array(98))
-            # Go though outcomes
+
+            # After special cases are treated, proceed to go through outcomes
             for out_i in outcomes:
                 wrong_format_setting.append(out_i)
-                # Round it to one decimal
+                # Find probability and round it to two decimals
                 p = np.round(distr.count(out_i) / len(distr), 2)
                 wrong_format_setting.append(p)
 
