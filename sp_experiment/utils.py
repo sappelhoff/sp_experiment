@@ -454,9 +454,10 @@ def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
     if isinstance(payoff_dict, dict):
         setting = list()
         for i in range(2):
-            # NOTE: the use of "set" discards the ordering of values in the
-            # payoff distributions
-            for out_i in list(set(payoff_dict[i])):
+            sampled_outs = np.array(payoff_dict[i])
+            _, idx = np.unique(sampled_outs, return_index=True)
+            unique_sampled_outs = sampled_outs[np.sort(idx)]
+            for out_i in unique_sampled_outs:
                 prob_i = payoff_dict[i].count(out_i) / len(payoff_dict[i])
                 setting.append(out_i)
                 setting.append(prob_i)
