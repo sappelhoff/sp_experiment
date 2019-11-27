@@ -203,8 +203,8 @@ def test_log_data():
 
 
 @pytest.mark.parametrize('trial, expected_setting', (
-                         pytest.param(0, np.array((3, 98, 1, 0, 4, 5, 0.2, 0.8))),  # noqa: E501
-                         pytest.param(1, np.array((3, 9, 0.22, 0.78, 7, 8, 0.33, 0.67))),  # noqa: E501
+                         pytest.param(0, np.array((3, 98, 1, 0, 5, 4, 0.8, 0.2))),  # noqa: E501
+                         pytest.param(1, np.array((3, 9, 0.22, 0.78, 8, 7, 0.67, 0.33))),  # noqa: E501
                          ))
 def test_get_payoff_setting_aux(trial, expected_setting):
     """Test private func for getting payoff sets from df."""
