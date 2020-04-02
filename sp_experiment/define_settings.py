@@ -1,7 +1,6 @@
 """Provide constants for several settings in the experiment."""
 import os
 from collections import OrderedDict
-import serial
 
 import numpy as np
 
@@ -136,8 +135,10 @@ font = 'Liberation Sans'
 # search for the "TriggerBox VirtualSerial Port (COM6)"
 # in "Ports /COM & LPT)" and enter the COM port number in the constructor.
 # If there is no TriggerBox, set ser to None
-ser = "COM4"  # either address to serial port or None ... COM4
+ser = None  # either address to serial port or None ... COM4
 if isinstance(ser, str):
+    import serial
+
     # Try to open a serial port
     try:
         ser = serial.Serial(ser)
@@ -152,6 +153,8 @@ if isinstance(ser, str):
             print('serial "{}" does not exist. Not raising an error, assuming '
                   'we are on Azure Pipelines with Agend.Id={}'
                   .format(ser, agent_id))
+else:
+    print('No serial port specified. We will not send triggers.')
 
 # When sending EEG trigger signals / event markers it is important to "reset"
 # the serial port to zero after each sent byte. The time between the sent byte
