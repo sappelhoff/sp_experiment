@@ -14,7 +14,6 @@ import csv
 from functools import partial
 
 import numpy as np
-import tobii_research as tr
 
 from sp_experiment.define_settings import monitor, GAZE_TOLERANCE
 
@@ -26,6 +25,7 @@ gaze_dict = {'gaze': ((0.5, 0.5), (0.5, 0.5))}
 
 def find_eyetracker():
     """Find Tobii 4C eyetracker."""
+    import tobii_research as tr
     # Connect to the eyetracker
     found_eyetrackers = tr.find_all_eyetrackers()
     if len(found_eyetrackers) == 0:

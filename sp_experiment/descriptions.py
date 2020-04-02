@@ -24,7 +24,6 @@ import warnings
 import pandas as pd
 import numpy as np
 from psychopy import visual, event, core, monitors
-import tobii_research as tr
 
 from sp_experiment.define_ttl_triggers import provide_trigger_dict
 from sp_experiment.define_payoff_settings import get_payoff_dict
@@ -148,6 +147,7 @@ def run_descriptions(events_file, monitor='testMonitor', ser=Fake_serial(),
     try:
         eyetracker = find_eyetracker()
         track_eyes = True
+        import tobii_research as tr
     except RuntimeError:
         print('Not using eyetracking. Did not find a tracker')
         track_eyes = False

@@ -6,7 +6,6 @@ from collections import OrderedDict
 import numpy as np
 import pandas as pd
 from psychopy import visual, event, core, gui, monitors
-import tobii_research as tr
 
 import sp_experiment
 from sp_experiment.define_settings import (KEYLIST_SAMPLES,
@@ -403,6 +402,7 @@ def run_flow(monitor='testMonitor', ser=Fake_serial(), max_ntrls=10,
     try:
         eyetracker = find_eyetracker()
         track_eyes = True
+        import tobii_research as tr
     except RuntimeError:
         print('Not using eyetracking. Did not find a tracker')
         track_eyes = False

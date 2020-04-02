@@ -24,6 +24,6 @@ dependencies:
   - flake8-docstrings  # linter
   - pip:
     - psychopy==3.0
-    - tobii-research
+    - tobii-research==1.7.0
     - pytest-sugar  # testing
     - pytest-faulthandler  # testing

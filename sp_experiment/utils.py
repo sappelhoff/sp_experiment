@@ -13,7 +13,7 @@ from time import perf_counter
 
 import numpy as np
 import pandas as pd
-import tobii_research as tr
+tr = None  # noqa: E402 for later lazy import: import tobii_research as tr
 
 import sp_experiment
 from sp_experiment.define_payoff_settings import get_payoff_dict
@@ -473,6 +473,12 @@ def log_data(fpath, onset='n/a', duration=0, trial='n/a', action='n/a',
 
     if onset != 'n/a':
         onset = onset - (deduct_onset_frames / fps)
+
+    # Lazy import of tobii_research
+    # https://wiki.python.org/moin/PythonSpeed/PerformanceTips#Import_Statement_Overhead
+    global tr
+    if tr is None:
+        import tobii_research as tr
 
     # Write the data
     with open(fpath, 'a') as fout:

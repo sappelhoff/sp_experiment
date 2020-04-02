@@ -4,7 +4,6 @@ import os.path as op
 
 import numpy as np
 import pandas as pd
-import tobii_research as tr
 
 import sp_experiment
 from sp_experiment.utils import get_final_choice_outcomes
@@ -119,6 +118,7 @@ def run_instructions(kind, monitor='testMonitor', font=font, lang=lang,
     """
     if not return_text_only:
         from psychopy import visual, monitors
+        import tobii_research as tr
 
         # Check if we have an eyetracker ... if yes, switch to showing
         # instructions with eyetracker instructions as well
