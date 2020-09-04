@@ -144,15 +144,16 @@ if isinstance(ser, str):
         ser = serial.Serial(ser)
 
     # If it doesn't work, raise an error ... except when we are on
-    # Azure Pipelines for the CI testing. ('Agent.Id' is defined there.)
+    # a run for the CI testing.
     except serial.SerialException as ee:
-        agent_id = os.getenv('AZURE_PIPELINE', False)
-        if not agent_id:
+        ci_run = os.getenv('CI', False)
+        if not ci_run:
             raise ee
         else:
             print('serial "{}" does not exist. Not raising an error, assuming '
-                  'we are on Azure Pipelines with Agend.Id={}'
-                  .format(ser, agent_id))
+                  'we are on a CI run, because the "CI" environment variable '
+                  'is set to true.'
+                  .format(ser))
 else:
     print('No serial port specified. We will not send triggers.')
 

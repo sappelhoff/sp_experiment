@@ -1,4 +1,5 @@
 [![Build Status](https://dev.azure.com/sappelhoff/sp_experiment/_apis/build/status/sappelhoff.sp_experiment?branchName=master)](https://dev.azure.com/sappelhoff/sp_experiment/_build/latest?definitionId=1&branchName=master)
+[![Python tests](https://github.com/sappelhoff/sp_experiment/workflows/Python%20tests/badge.svg)](https://github.com/sappelhoff/sp_experiment/actions?query=workflow%3A%22Python+tests%22)
 [![codecov](https://codecov.io/gh/sappelhoff/sp_experiment/branch/master/graph/badge.svg)](https://codecov.io/gh/sappelhoff/sp_experiment)
 [![DOI](https://zenodo.org/badge/149852122.svg)](https://zenodo.org/badge/latestdoi/149852122)
 
