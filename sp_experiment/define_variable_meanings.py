@@ -210,8 +210,8 @@ def make_events_json_dict():
 
     # Keys in levels for "value" are bytes: we need to turn them into integers
     events_json_dict['value']['Levels'] = OrderedDict((ord(key), val)
-                                                       for key, val
-                                                       in events_json_dict['value']['Levels'].items())  # noqa: E501
+                                                      for key, val
+                                                      in events_json_dict['value']['Levels'].items())  # noqa: E501
 
     # return
     return events_json_dict

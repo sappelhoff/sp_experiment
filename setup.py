@@ -14,7 +14,9 @@ if version is None:
 
 setup(name='sp_experiment',
       version=version,
-      description='Implemetation of the Sampling Paradigm in PsychoPy',
+      description=(
+          'Implemetation of a sampling paradigm experiment in PsychoPy'
+          ),
       url='http://github.com/sappelhoff/sp_experiment',
       author='Stefan Appelhoff',
       author_email='stefan.appelhoff@mailbox.org',
@@ -24,5 +26,9 @@ setup(name='sp_experiment',
           'Operating System :: Microsoft :: Windows',
           'Intended Audience :: Science/Research',
       ],
+      keywords=[
+          "experiment", "psychology", "eeg", "neuroscience",
+          "psychopy", "tobii", "tobii4c", "4c", "eyetracking"
+          ],
       packages=find_packages(),
       zip_safe=False)

@@ -1,0 +1,24 @@
+{
+  "title": "sp_experiment",
+  "description": "Implemetation of a sampling paradigm experiment in PsychoPy",
+  "creators": [
+    {
+      "affiliation": "Center for Adaptive Rationality, Max Planck Institute for Human Development, Berlin, Germany",
+      "name": "Appelhoff, Stefan",
+      "orcid": "0000-0001-8002-0877"
+    }
+  ],
+  "keywords": [
+    "experiment",
+    "psychology",
+    "eeg",
+    "neuroscience",
+    "psychopy",
+    "tobii",
+    "tobii4c",
+    "4c",
+    "eyetracking"
+  ],
+  "license": "BSD-3-Clause",
+  "upload_type": "software"
+}

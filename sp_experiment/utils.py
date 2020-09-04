@@ -15,10 +15,10 @@ import numpy as np
 import pandas as pd
 tr = None  # noqa: E402 for later lazy import: import tobii_research as tr
 
-import sp_experiment
-from sp_experiment.define_payoff_settings import get_payoff_dict
-from sp_experiment.define_ttl_triggers import provide_trigger_dict
-from sp_experiment.define_settings import (KEYLIST_SAMPLES,
+import sp_experiment  # noqa: E402
+from sp_experiment.define_payoff_settings import get_payoff_dict  # noqa: E402
+from sp_experiment.define_ttl_triggers import provide_trigger_dict  # noqa: E402 E501
+from sp_experiment.define_settings import (KEYLIST_SAMPLES,  # noqa: E402
                                            EXPECTED_FPS
                                            )
 
