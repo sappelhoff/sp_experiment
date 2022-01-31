@@ -25,6 +25,36 @@ For more information, see the section on [background literature](README.md#backg
 After these three tasks, participants in the study also performed the
 [Berlin Numeracy Task](https://www.riskliteracy.org/).
 
+# Further information
+
+This experiment code was used in the `mpib_sp_eeg` project.
+
+## Preprint
+
+A preprint is available on BioRxiv.
+
+- BioRxiv: https://doi.org/10.1101/2021.06.03.446960
+
+## Experiment code
+
+The experiment code in this repository is also archived on Zenodo.
+available on GitHub, and is archived on Zenodo.
+
+- Zenodo: https://doi.org/10.5281/zenodo.3354368
+
+## Data
+
+The data is available on GIN.
+
+- GIN: https://gin.g-node.org/sappelhoff/mpib_sp_eeg
+
+## Analysis code
+
+The analysis code for the data is available on GitHub and Zenodo.
+
+- GitHub: https://github.com/sappelhoff/sp_code/
+- Zenodo: https://doi.org/10.5281/zenodo.5929222
+
 # Installation
 
 This package is intended and tested to run on Microsoft Windows 10.
