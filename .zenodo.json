@@ -31,27 +31,27 @@
   "related_identifies": [
     {
         "relation": "isSupplementedBy",
-        "identifier":"https://github.com/sappelhoff/sp_experiment/",
+        "identifier": "https://github.com/sappelhoff/sp_experiment/",
         "resource_type": "software"
     },
     {
         "relation": "isSupplementTo",
-        "identifier":"10.12751/g-node.dtyh14",
+        "identifier": "10.12751/g-node.dtyh14",
         "resource_type": "dataset"
     },
     {
         "relation": "isSupplementTo",
-        "identifier":"10.1101/2021.06.03.446960",
+        "identifier": "10.1101/2021.06.03.446960",
         "resource_type": "preprint"
     },
     {
         "relation": "isSupplementTo",
-        "identifier":"10.5281/zenodo.5929223",
+        "identifier": "10.5281/zenodo.5929223",
         "resource_type": "software"
     },
     {
         "relation": "isSupplementTo",
-        "identifier":"10.1093/cercor/bhac062",
+        "identifier": "10.1093/cercor/bhac062",
         "resource_type": "article"
     }
 ]
