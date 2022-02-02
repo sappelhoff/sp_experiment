@@ -36,7 +36,7 @@
     },
     {
         "relation": "isSupplementTo",
-        "identifier":"https://gin.g-node.org/sappelhoff/mpib_sp_eeg/",
+        "identifier":"10.12751/g-node.dtyh14",
         "resource_type": "dataset"
     },
     {
