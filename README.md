@@ -29,7 +29,7 @@ After these three tasks, participants in the study also performed the
 
 This experiment code was used in the `mpib_sp_eeg` project.
 
-### Paper
+## Paper
 
 The paper is available (open access) in Cerebral Cortex.
 
