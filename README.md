@@ -29,6 +29,12 @@ After these three tasks, participants in the study also performed the
 
 This experiment code was used in the `mpib_sp_eeg` project.
 
+### Paper
+
+The paper is available (open access) in Cerebral Cortex.
+
+- Cerebral Cortex: https://doi.org/10.1093/cercor/bhac062
+
 ## Preprint
 
 A preprint is available on BioRxiv.
@@ -44,9 +50,11 @@ available on GitHub, and is archived on Zenodo.
 
 ## Data
 
-The data is available on GIN.
+The data is available on GIN (see "Download the data" below).
 
-- GIN: https://gin.g-node.org/sappelhoff/mpib_sp_eeg
+- GIN
+    - repository: https://gin.g-node.org/sappelhoff/mpib_sp_eeg
+    - archive: https://doi.org/10.12751/g-node.dtyh14
 
 ## Analysis code
 
