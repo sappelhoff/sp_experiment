@@ -28,7 +28,7 @@
   "upload_type": "software",
   "access_right": "open",
   "language": "eng",
-  "related_identifies": [
+  "related_identifiers": [
     {
         "relation": "isSupplementedBy",
         "identifier": "https://github.com/sappelhoff/sp_experiment/",
@@ -42,7 +42,7 @@
     {
         "relation": "isSupplementTo",
         "identifier": "10.1101/2021.06.03.446960",
-        "resource_type": "preprint"
+        "resource_type": "publication-preprint"
     },
     {
         "relation": "isSupplementTo",
@@ -52,7 +52,7 @@
     {
         "relation": "isSupplementTo",
         "identifier": "10.1093/cercor/bhac062",
-        "resource_type": "article"
+        "resource_type": "publication-article"
     }
 ]
 }
